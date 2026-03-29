@@ -1,0 +1,23 @@
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Workspace / IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Data & Reports (Personal)
+*.xlsx
+*.csv
+gemini_prompt_*.txt
+
+# Logs
+*.log
