@@ -1,0 +1,6 @@
+pandas
+google-api-python-client
+textblob
+vaderSentiment
+emoji
+openpyxl

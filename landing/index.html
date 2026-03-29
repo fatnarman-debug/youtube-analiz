@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidInsight | Profesyonel YouTube Yorum Analiz Sistemi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="logo.png" alt="VidInsight Logo" id="nav-logo">
+        </div>
+        <ul class="nav-links">
+            <li><a href="#ozellikler">Özellikler</a></li>
+            <li><a href="#fiyatlandirma">Fiyatlandırma</a></li>
+            <li><a href="#iletisim">İletişim</a></li>
+        </ul>
+        <a href="#fiyatlandirma" class="btn-primary nav-btn">Hemen Başla</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">Yapay Zeka Destekli</div>
+            <h1>YouTube Yorumlarınızı <br><span class="highlight">Veriye Dönüştürün</span></h1>
+            <p>Onlarca videodaki binlerce yorumu saniyeler içinde analiz edin. Gizli küfürleri yakalayın, izleyici sorularını derleyin ve kanalınızı hızla büyütün.</p>
+            <div class="hero-actions">
+                <a href="#fiyatlandirma" class="btn-primary">Paketleri İncele</a>
+                <a href="#ozellikler" class="btn-secondary">Neden Biz? <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="glass-card mockup">
+                <div class="mockup-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                </div>
+                <div class="mockup-body">
+                    <div class="stat-row">
+                        <div class="stat-box">
+                            <i class="fa-solid fa-smile text-green"></i>
+                            <div>
+                                <span>%76</span>
+                                <small>Olumlu</small>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fa-solid fa-circle-question text-yellow"></i>
+                            <div>
+                                <span>142</span>
+                                <small>Soru</small>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fa-solid fa-ban text-red"></i>
+                            <div>
+                                <span>3</span>
+                                <small>Küfür</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Özellikler (Neden VidInsight?) -->
+    <section id="ozellikler" class="features">
+        <div class="section-title">
+            <h2>Neden VidInsight?</h2>
+            <p>İzleyicilerinizin söylediklerinin çok ötesini görün.</p>
+        </div>
+        
+        <div class="feature-grid">
+            <div class="feature-card glass-card">
+                <div class="icon-box"><i class="fa-solid fa-chart-pie"></i></div>
+                <h3>Gelişmiş Duygu Analizi</h3>
+                <p>Kullanıcıların genel eğilimini (olumlu/olumsuz) yüzdesel olarak raporlayarak kitlenizi anlayın.</p>
+            </div>
+            
+            <div class="feature-card glass-card">
+                <div class="icon-box"><i class="fa-solid fa-filter"></i></div>
+                <h3>Akıllı Küfür Filtresi</h3>
+                <p>Gizlenmiş veya ek almış (s*k, g.ö.t vb.) küfür/hakaret barındıran yorumları tam isabetle yakalayın.</p>
+            </div>
+            
+            <div class="feature-card glass-card">
+                <div class="icon-box"><i class="fa-solid fa-lightbulb"></i></div>
+                <h3>Öneri ve Eleştiri Ayrışımı</h3>
+                <p>Takipçilerinizin sizden neler beklediğini veya neyi sevmediğini özet listeler halinde çıkarın.</p>
+            </div>
+            
+            <div class="feature-card glass-card">
+                <div class="icon-box"><i class="fa-solid fa-clipboard-question"></i></div>
+                <h3>Soru Yakalama Kalıpları</h3>
+                <p>Gelen yorumlar arasındaki soruları derleyip tek bir Excel sekmesinde cevaplamaya hazır hale getirin.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fiyatlandırma -->
+    <section id="fiyatlandirma" class="pricing">
+        <div class="section-title">
+            <h2>İhtiyacınıza Uygun Paketler</h2>
+            <p>Hemen işinize yarayacak basit ve anlaşılır fiyatlandırma planları.</p>
+        </div>
+        
+        <div class="pricing-grid">
+            <!-- Paket 1 -->
+            <div class="pricing-card glass-card">
+                <div class="pkg-header">Single</div>
+                <div class="pkg-price">€5<span>/Tek Video</span></div>
+                <p class="pkg-desc">Sadece belli bir videonun genel tepkilerini görmek isteyenler için idealdir.</p>
+                <ul class="pkg-features">
+                    <li><i class="fa-solid fa-check text-yellow"></i> 1 Video Analizi</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> Excel Raporu Çıktısı</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> Duygu Analizi</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> Küfür ve Soru Filtresi</li>
+                </ul>
+                <button class="btn-primary w-100 open-modal-btn" data-package="Single (1 Video)" data-link="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y">Satın Al - 5€</button>
+            </div>
+
+            <!-- Paket 2 -->
+            <div class="pricing-card glass-card popular">
+                <div class="popular-badge">En Çok Tercih Edilen</div>
+                <div class="pkg-header">Creator</div>
+                <div class="pkg-price">€15<span>/Aylık</span></div>
+                <p class="pkg-desc">Düzenli içerik üreten YouTuber'lar için aylık olarak 5 videonun sürekli analizi.</p>
+                <ul class="pkg-features">
+                    <li><i class="fa-solid fa-check text-yellow"></i> Ayda 5 Video Analizi</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> Tüm Rapor Çıktıları</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> Gelişmiş Şikayet Takibi</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> Öncelikli Analiz Sırası</li>
+                </ul>
+                <button class="btn-primary w-100 open-modal-btn" data-package="Creator (5 Video/Aylık)" data-link="https://buy.stripe.com/14AaEXavEbBA6Rj7nYcZa0z">Abone Ol - 15€/Ay</button>
+            </div>
+
+            <!-- Paket 3 -->
+            <div class="pricing-card glass-card">
+                <div class="pkg-header">Agency</div>
+                <div class="pkg-price">€20<span>/Aylık</span></div>
+                <p class="pkg-desc">Profesyonel iş yapan kanallar veya markalar için büyük analiz kapasitesi.</p>
+                <ul class="pkg-features">
+                    <li><i class="fa-solid fa-check text-yellow"></i> Ayda 10 Video Analizi</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> Derinlemesine Detaylar</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> Toplu E-Tablo Aktarımı</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> Özel Destek Hattı</li>
+                </ul>
+                <button class="btn-primary w-100 open-modal-btn" data-package="Agency (10 Video/Aylık)" data-link="https://buy.stripe.com/7sYcN5fPY5dc0sV5fQcZa0A">Abone Ol - 20€/Ay</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="iletisim">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <img src="logo.png" alt="VidInsight Logo" width="150" style="margin-bottom: 20px;">
+                <p>YouTube yorumlarınızı veriye ve stratejiye dönüştürmenin en akıllı yolu.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Hızlı Menü</h4>
+                <ul>
+                    <li><a href="#ozellikler">Özellikler</a></li>
+                    <li><a href="#fiyatlandirma">Paketler</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>İletişim</h4>
+                <p>İletişim bilgilerimiz yakında eklenecektir.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 VidInsight. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+
+    <!-- Satın Alma Form Modalı -->
+    <div class="modal-overlay" id="purchaseModal">
+        <div class="modal glass-card">
+            <button class="close-modal" id="closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            <h2>Siparişinizi Tamamlayın</h2>
+            <p id="selectedPackageText">Seçilen Paket: <strong>...</strong></p>
+            
+            <form id="purchaseForm" action="https://api.web3forms.com/submit" method="POST">
+                
+                <!-- Web3Forms Key (Kullanıcı Tarafından Değiştirilecek) -->
+                <input type="hidden" name="access_key" value="68443760-05e3-46aa-9aa2-650c3340a842">
+                <!-- Güvenlik Özelliği (Spam engelleme) -->
+                <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+                
+                <!-- Otomatik Konu Başlığı -->
+                <input type="hidden" name="subject" value="Yeni Satın Alma / Sepet İşlemi - VidInsight">
+                
+                <!-- Paket Türünü de Göndermek İçin Gizli Alan -->
+                <input type="hidden" name="paket_adi" id="hiddenPackageName" value="">
+
+                <div class="input-group">
+                    <label for="fullName">Adınız Soyadınız</label>
+                    <input type="text" id="fullName" name="Ad_Soyad" placeholder="Ad Soyad giriniz" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="email">E-posta Adresiniz</label>
+                    <input type="email" id="email" name="Email" placeholder="ornek@mail.com" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="youtubeLink">YouTube Kanal Linkiniz (veya Video Linkiniz)</label>
+                    <input type="url" id="youtubeLink" name="Youtube_Link" placeholder="https://youtube.com/..." required>
+                </div>
+
+                <div class="input-group">
+                    <label for="description">Eklemek İstedikleriniz (Opsiyonel)</label>
+                    <textarea id="description" name="Aciklama" rows="3" placeholder="Analiz hakkında özel bir notunuz var mı?"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary w-100" id="submitBtn">
+                        Güvenli Ödeme Adımına Geç <i class="fa-solid fa-lock" style="margin-left:8px;"></i>
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Loading and Success Messages -->
+            <div id="formStatus" class="form-status" style="display:none;">
+                <p class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Bilgileriniz iletiliyor, ödeme sistemine yönlendiriliyorsunuz...</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Modal ve Form Elementleri
+        const modalOverlay = document.getElementById('purchaseModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const openModalBtns = document.querySelectorAll('.open-modal-btn');
+        
+        const selectedPackageText = document.getElementById('selectedPackageText');
+        const hiddenPackageName = document.getElementById('hiddenPackageName');
+        const purchaseForm = document.getElementById('purchaseForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const formStatus = document.getElementById('formStatus');
+
+        let currentStripeLink = ""; 
+
+        // Modal Açma İşlemi
+        openModalBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const packageName = btn.getAttribute('data-package');
+                const stripeUrl = btn.getAttribute('data-link');
+                currentStripeLink = stripeUrl;
+                selectedPackageText.innerHTML = `Seçilen Paket: <strong class="text-yellow">${packageName}</strong>`;
+                hiddenPackageName.value = packageName;
+                modalOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        // Modal Kapatma
+        const closeModal = () => {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto'; 
+            formStatus.style.display = 'none';
+            submitBtn.style.display = 'block';
+            setTimeout(() => purchaseForm.reset(), 300); 
+        };
+
+        closeModalBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        // Form Gönderimi
+        purchaseForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            submitBtn.style.display = 'none';
+            formStatus.style.display = 'block';
+            formStatus.innerHTML = '<p class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Bilgileriniz iletiliyor, ödeme sayfasına yönlendiriliyorsunuz...</p>';
+            
+            const formAction = this.action;
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch(formAction, { method: 'POST', body: formData });
+                const json = await response.json();
+                
+                if (response.status === 200) {
+                    formStatus.innerHTML = '<p class="text-green"><i class="fa-solid fa-check-circle"></i> Başarılı! Ödeme sayfasına aktarılıyorsunuz...</p>';
+                    setTimeout(() => { window.location.href = currentStripeLink; }, 1000);
+                } else {
+                    console.error("Web3Forms Hatası:", json);
+                    formStatus.innerHTML = '<p class="text-red"><i class="fa-solid fa-circle-exclamation"></i> Form gönderilirken bir hata oluştu. Lütfen bağlantınızı kontrol edip tekrar deneyin.</p>';
+                    submitBtn.style.display = 'block';
+                    submitBtn.innerHTML = 'Tekrar Dene';
+                }
+            } catch (error) {
+                console.error("Fetch Hatası", error);
+                formStatus.innerHTML = '<p class="text-red"><i class="fa-solid fa-circle-exclamation"></i> Sistemsel bir hata oluştu veya e-posta anahtarınız eksik. Lütfen sayfayı yenileyiniz.</p>';
+                submitBtn.style.display = 'block';
+            }
+        });
+
+        // Sayfa içi smooth scrolling
+        document.querySelectorAll('.navbar a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    });
+    </script>
+</body>
+</html>
