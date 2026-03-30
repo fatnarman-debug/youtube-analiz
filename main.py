@@ -186,6 +186,36 @@ async def logout(response: Response):
     response.delete_cookie(ADMIN_SESSION_NAME)
     return response
 
+# Manual Add Customer (Admin Only)
+@app.post("/admin/add_customer")
+async def admin_add_customer(
+    request: Request,
+    Ad_Soyad: str = Form(...),
+    Email: str = Form(...),
+    Youtube_Link: str = Form(...),
+    paket_adi: str = Form(...),
+    Aciklama: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        raise HTTPException(status_code=401, detail="Yetkisiz erişim.")
+
+    try:
+        new_customer = models.Customer(
+            full_name=Ad_Soyad,
+            email=Email,
+            youtube_link=Youtube_Link,
+            package=paket_adi,
+            description=Aciklama
+        )
+        db.add(new_customer)
+        db.commit()
+        return RedirectResponse(url="/admin", status_code=status.HTTP_303_SEE_OTHER)
+    except Exception as e:
+        print(f"Error manually adding customer: {e}")
+        return HTMLResponse(content=f"Hata: {str(e)}", status_code=500)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
