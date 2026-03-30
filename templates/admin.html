@@ -134,7 +134,7 @@
             </div>
             <div class="stat-card">
                 <h4>Aktif Hesaplar</h4>
-                <div class="value">{{ customers | selectattr('is_active', 'equalto', True) | list | length }}</div>
+                <div class="value">{{ customers | selectattr('is_active', 'true') | list | length }}</div>
             </div>
             <div class="stat-card">
                 <h4>Bu Ay Gelen</h4>

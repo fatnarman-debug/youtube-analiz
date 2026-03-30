@@ -1,21 +1,32 @@
 from fastapi import FastAPI, Depends, Request, Form, Response, HTTPException, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 import os
 import models
+import traceback
 from database import engine, get_db, SessionLocal
 from passlib.context import CryptContext
 
-# Create database tables
-models.Base.metadata.create_all(bind=engine)
+# Create database tables with detailed error logging
+try:
+    print("Veritabanı tabloları oluşturuluyor...")
+    models.Base.metadata.create_all(bind=engine)
+    print("Tablolar başarıyla oluşturuldu veya zaten var.")
+except Exception as e:
+    print("VERİTABANI HATASI (Startup):")
+    traceback.print_exc()
 
 app = FastAPI()
 
 # Setup Templates and Static Files
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+try:
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+    templates = Jinja2Templates(directory="templates")
+except Exception as e:
+    print("STATIC/TEMPLATES HATASI:")
+    traceback.print_exc()
 
 # Password Hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -26,14 +37,22 @@ ADMIN_CREDENTIALS = {
     "password": "12345678qw.ASX"
 }
 
-# Simple session management (using cookie)
-# NOTE: In a real app, use JWT or a more secure session system
 ADMIN_SESSION_NAME = "vidinsight_admin_session"
+
+# Health check endpoint to verify if the server is alive
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "app": "vidinsight", "version": "1.0.1"}
 
 # Root route - Landing Page
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    try:
+        return templates.TemplateResponse("index.html", {"request": request})
+    except Exception as e:
+        print("TEMPLATES HATASI (index.html):")
+        traceback.print_exc()
+        return HTMLResponse(content="Sayfa yüklenirken bir hata oluştu. Logları kontrol edin.", status_code=500)
 
 # Form Submission endpoint (Saving to DB)
 @app.post("/submit_form")
@@ -60,6 +79,7 @@ async def submit_form(
         return {"status": "success", "message": "Bilgileriniz başarıyla kaydedildi."}
     except Exception as e:
         print(f"Error saving customer: {e}")
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail="Sistemsel bir hata oluştu.")
 
 # Admin Login Route (as requested)
@@ -76,7 +96,6 @@ async def login(
 ):
     if username == ADMIN_CREDENTIALS["username"] and password == ADMIN_CREDENTIALS["password"]:
         redirect_response = RedirectResponse(url="/admin", status_code=status.HTTP_303_SEE_OTHER)
-        # In a real app, use a cryptographically signed cookie
         redirect_response.set_cookie(key=ADMIN_SESSION_NAME, value="authenticated")
         return redirect_response
     else:
@@ -89,8 +108,13 @@ async def admin_dashboard(request: Request, db: Session = Depends(get_db)):
     if session != "authenticated":
         return RedirectResponse(url="/girisburdan")
 
-    customers = db.query(models.Customer).order_by(models.Customer.created_at.desc()).all()
-    return templates.TemplateResponse("admin.html", {"request": request, "customers": customers})
+    try:
+        customers = db.query(models.Customer).order_by(models.Customer.created_at.desc()).all()
+        return templates.TemplateResponse("admin.html", {"request": request, "customers": customers})
+    except Exception as e:
+        print("ADMIN DASHBOARD HATASI:")
+        traceback.print_exc()
+        return HTMLResponse(content="Dashboard yüklenirken hata oluştu.", status_code=500)
 
 # Toggle Account Status (Active/Passive)
 @app.post("/admin/toggle/{customer_id}")
