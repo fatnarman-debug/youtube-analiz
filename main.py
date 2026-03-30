@@ -75,12 +75,19 @@ async def read_root(request: Request):
         return HTMLResponse(content="HATA: Şablon sistemi yüklenemedi. (Templates missing)", status_code=500)
     
     try:
-        return templates.TemplateResponse("index.html", {"request": request})
+        # Modern TemplateResponse signature for Starlette 0.28+
+        return templates.TemplateResponse(
+            request=request, 
+            name="index.html", 
+            context={}
+        )
     except Exception as e:
-        error_msg = f"TEMPLATES HATASI (index.html): {str(e)}"
-        print(error_msg)
-        traceback.print_exc()
-        return HTMLResponse(content=f"Sayfa yüklenirken bir hata oluştu: {error_msg}", status_code=500)
+        full_error = traceback.format_exc()
+        print(f"TEMPLATES HATASI (index.html):\n{full_error}")
+        return HTMLResponse(
+            content=f"<h1>Sayfa Yükleme Hatası</h1><p>{str(e)}</p><pre>{full_error}</pre>", 
+            status_code=500
+        )
 
 # Form Submission endpoint (Saving to DB)
 @app.post("/submit_form")
@@ -114,7 +121,11 @@ async def submit_form(
 @app.get("/girisburdan", response_class=HTMLResponse)
 async def login_page(request: Request):
     if not templates: return HTMLResponse(content="Templates missing", status_code=500)
-    return templates.TemplateResponse("login.html", {"request": request})
+    try:
+        return templates.TemplateResponse(request=request, name="login.html", context={})
+    except Exception as e:
+        full_error = traceback.format_exc()
+        return HTMLResponse(content=f"<pre>{full_error}</pre>", status_code=500)
 
 @app.post("/girisburdan")
 async def login(
@@ -128,7 +139,11 @@ async def login(
         redirect_response.set_cookie(key=ADMIN_SESSION_NAME, value="authenticated")
         return redirect_response
     else:
-        return templates.TemplateResponse("login.html", {"request": request, "error": "Geçersiz kullanıcı adı veya şifre!"})
+        return templates.TemplateResponse(
+            request=request, 
+            name="login.html", 
+            context={"error": "Geçersiz kullanıcı adı veya şifre!"}
+        )
 
 # Admin Dashboard (Restricted)
 @app.get("/admin", response_class=HTMLResponse)
@@ -141,12 +156,15 @@ async def admin_dashboard(request: Request, db: Session = Depends(get_db)):
 
     try:
         customers = db.query(models.Customer).order_by(models.Customer.created_at.desc()).all()
-        return templates.TemplateResponse("admin.html", {"request": request, "customers": customers})
+        return templates.TemplateResponse(
+            request=request, 
+            name="admin.html", 
+            context={"customers": customers}
+        )
     except Exception as e:
-        error_msg = f"ADMIN DASHBOARD HATASI: {str(e)}"
-        print(error_msg)
-        traceback.print_exc()
-        return HTMLResponse(content=error_msg, status_code=500)
+        full_error = traceback.format_exc()
+        print(f"ADMIN DASHBOARD HATASI:\n{full_error}")
+        return HTMLResponse(content=f"<h1>Dashboard Hatası</h1><pre>{full_error}</pre>", status_code=500)
 
 # Toggle Account Status
 @app.post("/admin/toggle/{customer_id}")
