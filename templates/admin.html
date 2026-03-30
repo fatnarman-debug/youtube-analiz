@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | VidInsight Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      :root {
+        --admin-bg: #f8fafc;
+        --admin-sidebar: #0f172a;
+        --card-bg-light: #ffffff;
+      }
+      body {
+        margin: 0;
+        background: var(--admin-bg);
+        color: #1e293b;
+        display: flex;
+        min-height: 100vh;
+      }
+      .sidebar {
+        width: 280px;
+        background: var(--admin-sidebar);
+        color: white;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+      }
+      .main-content {
+        flex: 1;
+        padding: 3rem;
+        overflow-y: auto;
+      }
+      .admin-logo { height: 40px; margin-bottom: 3rem; }
+      .nav-item {
+        padding: 1rem;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s;
+      }
+      .nav-item.active { background: rgba(255, 255, 255, 0.05); color: white; }
+      .nav-item:hover { color: white; }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+      .stat-card {
+        background: var(--card-bg-light);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+      }
+      .stat-card h4 { margin: 0; color: #64748b; font-size: 0.9rem; margin-bottom: 0.5rem; }
+      .stat-card .value { font-size: 1.8rem; font-weight: 800; color: #0f172a; }
+
+      .table-card {
+        background: var(--card-bg-light);
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+      }
+      .table-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      table { width: 100%; border-collapse: collapse; }
+      th { text-align: left; padding: 1.2rem 2rem; background: #f1f5f9; color: #64748b; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+      td { padding: 1.2rem 2rem; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
+      
+      .badge {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .badge-success { background: #dcfce7; color: #166534; }
+      .badge-error { background: #fee2e2; color: #991b1b; }
+
+      .action-btn {
+        background: transparent;
+        border: 1px solid #e2e8f0;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+        color: #475569;
+      }
+      .action-btn:hover { background: #f1f5f9; border-color: #cbd5e1; }
+      .action-btn.toggle-on { color: #059669; }
+      .action-btn.toggle-off { color: #dc2626; }
+      
+      .btn-logout { margin-top: auto; color: #ef4444 !important; }
+      
+      @media (max-width: 900px) {
+        body { flex-direction: column; }
+        .sidebar { width: 100%; padding: 1rem 5%; height: auto; }
+        .main-content { padding: 1.5rem; }
+      }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <img src="/static/img/logo.png" alt="VidInsight" class="admin-logo" style="filter: brightness(0) invert(1);">
+        <nav>
+            <a href="/admin" class="nav-item active"><i class="fa-solid fa-users"></i> Müşteriler</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-chart-line"></i> Analizler</a>
+            <a href="/" target="_blank" class="nav-item"><i class="fa-solid fa-external-link"></i> Siteye Git</a>
+        </nav>
+        <a href="/cikis" class="nav-item btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Toplam Müşteri</h4>
+                <div class="value">{{ customers|length }}</div>
+            </div>
+            <div class="stat-card">
+                <h4>Aktif Hesaplar</h4>
+                <div class="value">{{ customers | selectattr('is_active', 'equalto', True) | list | length }}</div>
+            </div>
+            <div class="stat-card">
+                <h4>Bu Ay Gelen</h4>
+                <div class="value">+ {{ customers|length }}</div>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h2>Müşteri Listesi</h2>
+                <div style="font-size: 0.9rem; color: #64748b;">
+                    Son başvuru tarihlerine göre sıralanmıştır.
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Müşteri</th>
+                        <th>Paket</th>
+                        <th>YouTube Adresi</th>
+                        <th>Durum</th>
+                        <th>Kayıt Tarihi</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">{{ customer.full_name }}</div>
+                            <div style="font-size: 0.85rem; color: #64748b;">{{ customer.email }}</div>
+                        </td>
+                        <td>
+                            <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #B45309;">
+                                {{ customer.package }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ customer.youtube_link }}" target="_blank" style="color: #3b82f6;">
+                                <i class="fa-brands fa-youtube"></i> Kanala Git
+                            </a>
+                        </td>
+                        <td>
+                            {% if customer.is_active %}
+                                <span class="badge badge-success">Aktif</span>
+                            {% else %}
+                                <span class="badge badge-error">Pasif</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ customer.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <form action="/admin/toggle/{{ customer.id }}" method="POST" style="display:inline;">
+                                <button type="submit" class="action-btn {% if customer.is_active %}toggle-off{% else %}toggle-on{% endif %}">
+                                    {% if customer.is_active %}
+                                        <i class="fa-solid fa-user-slash"></i> Durdur
+                                    {% else %}
+                                        <i class="fa-solid fa-user-check"></i> Aktif Et
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not customers %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 3rem; color: #64748b;">
+                            Henüz müşteri kaydı bulunmuyor.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

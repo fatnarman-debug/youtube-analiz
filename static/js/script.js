@@ -58,50 +58,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Form Gönderimi (AJAX ile Backend'e/Web3Forms'a)
+    // Form Gönderimi (FastAPI Backend'e)
     purchaseForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // UI Durum Güncellemesi (Kullanıcı beklerken)
+        // UI Durum Güncellemesi
         submitBtn.style.display = 'none';
         formStatus.style.display = 'block';
-        formStatus.innerHTML = '<p class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Bilgileriniz iletiliyor, ödeme sayfasına yönlendiriliyorsunuz...</p>';
+        formStatus.innerHTML = '<p class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Bilgileriniz kaydediliyor, ödeme sayfasına yönlendiriliyorsunuz...</p>';
         
         const formAction = this.action;
         const formData = new FormData(this);
 
         try {
-            // Arka planda veriyi gönder (Web3Forms API)
+            // Veriyi kendi sunucumuza gönder
             const response = await fetch(formAction, {
                 method: 'POST',
                 body: formData,
             });
             
-            const json = await response.json();
+            const result = await response.json();
             
-            if (response.status === 200) {
+            if (response.ok) {
                 // BAŞARILI DURUM
-                // Bilgiler sahibine ulaştı, şimdi Stripes linkine yönlendir
                 formStatus.innerHTML = '<p class="text-green"><i class="fa-solid fa-check-circle"></i> Başarılı! Ödeme sayfasına aktarılıyorsunuz...</p>';
                 
-                // Müşteriyi 1 saniye sonra stripe linkine yönlendir (deneyimi yumuşatmak için)
+                // Müşteriyi 1 saniye sonra stripe linkine yönlendir
                 setTimeout(() => {
                     window.location.href = currentStripeLink;
                 }, 1000);
             } else {
-                // API Hata döndü
-                console.error("Web3Forms Hatası:", json);
-                formStatus.innerHTML = '<p class="text-red"><i class="fa-solid fa-circle-exclamation"></i> Form gönderilirken bir hata oluştu. Lütfen bağlantınızı kontrol edip tekrar deneyin.</p>';
+                // Backend hata döndü
+                console.error("Sunucu Hatası:", result);
+                formStatus.innerHTML = `<p class="text-red"><i class="fa-solid fa-circle-exclamation"></i> ${result.detail || 'Bir hata oluştu. Lütfen tekrar deneyin.'}</p>`;
                 submitBtn.style.display = 'block';
                 submitBtn.innerHTML = 'Tekrar Dene';
             }
             
         } catch (error) {
-            // Network hatası vb. durumlarda da Stripe linkine en kötü ihtimalle gönderelim mi?
-            // "Kullanıcı bari ödemeyi yapsın" stratejisi de olabilir, fakat bilgileri gelmeyebilir.
-            // O yüzden hata mesajı basmak daha profesyoneldir:
-            console.error("Fetch Hatası", error);
-            formStatus.innerHTML = '<p class="text-red"><i class="fa-solid fa-circle-exclamation"></i> Sistemsel bir hata oluştu veya e-posta anahtarınız eksik. Lütfen sayfayı yenileyiniz.</p>';
+            console.error("Bağlantı Hatası", error);
+            formStatus.innerHTML = '<p class="text-red"><i class="fa-solid fa-circle-exclamation"></i> Sunucuya bağlanılamadı. Lütfen internetinizi kontrol edip sayfayı yenileyiniz.</p>';
             submitBtn.style.display = 'block';
         }
     });

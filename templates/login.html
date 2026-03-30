@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş | VidInsight Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--primary);
+        }
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 3rem;
+            text-align: center;
+        }
+        .login-card h1 { margin-bottom: 2rem; font-size: 2rem; }
+        .input-group { text-align: left; margin-bottom: 1.5rem; }
+        .error-msg { color: #EF4444; margin-bottom: 1rem; font-size: 0.9rem; }
+        .logo-img { height: 50px; margin-bottom: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="glass-card login-card">
+        <img src="/static/img/logo.png" alt="VidInsight" class="logo-img">
+        <h1>Yönetici Girişi</h1>
+        
+        {% if error %}
+            <p class="error-msg">{{ error }}</p>
+        {% endif %}
+
+        <form action="/girisburdan" method="POST">
+            <div class="input-group">
+                <label>Kullanıcı Adı</label>
+                <input type="text" name="username" required placeholder="Kullanıcı adınız">
+            </div>
+            <div class="input-group">
+                <label>Şifre</label>
+                <input type="password" name="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-primary w-100">Giriş Yap</button>
+        </form>
+        
+        <p style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted);">
+            VidInsight Control Panel v1.0
+        </p>
+    </div>
+</body>
+</html>

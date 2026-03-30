@@ -12,10 +12,18 @@
     --header-bg: #FFFFFF; /* Beyaz Giriş Kısmı */
 }
 
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; /* Yatay kaymayı tamamen engelle */
+    position: relative;
+}
+
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-sizing: border-box; /* Tüm elemanlar border-box kuralına uymalı */
     font-family: 'Outfit', sans-serif;
 }
 
@@ -23,7 +31,6 @@ body {
     background-color: var(--primary);
     color: var(--text-light);
     line-height: 1.6;
-    overflow-x: hidden;
 }
 
 /* Glassmorphism Utilities */
@@ -220,17 +227,21 @@ a { text-decoration: none; color: inherit; }
 .features {
     padding: 7rem 5%;
     background: #0B1120; /* Koyu geçiş */
+    overflow: hidden; /* Taşmaları engelle */
 }
 .feature-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Daha dar ekranlar için küçültüldü */
+    gap: 2rem;
 }
 .feature-card.glass-card {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     padding: 2.5rem;
+    width: 100%;
+    max-width: 100%; /* Kartın ekranı taşmamasını sağlar */
 }
 .feature-card.glass-card:hover { border-color: var(--accent); }
 .icon-box {
@@ -252,6 +263,7 @@ a { text-decoration: none; color: inherit; }
 .pricing {
     padding: 6rem 5%;
     position: relative;
+    overflow: hidden; /* Arka plan gradyanının taşmasını engelle */
 }
 .pricing::after {
     content: '';
@@ -263,19 +275,25 @@ a { text-decoration: none; color: inherit; }
     background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, rgba(15, 23, 42, 0) 70%);
     z-index: -1;
     filter: blur(50px);
+    max-width: 100vw; /* Gradyan ekran dışına taşmasın */
 }
 
 .pricing-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 320px cihazlar için minmax optimize edildi */
     gap: 2rem;
-    align-items: center;
+    align-items: stretch; /* Kartların boyu eşit olsun */
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 .pricing-card {
     position: relative;
     padding: 3rem 2rem;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 100%;
 }
 .pricing-card.popular {
     transform: scale(1.05);
@@ -414,19 +432,58 @@ footer {
     font-size: 0.9rem;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-    .hero { flex-direction: column; text-align: center; padding-top: 3rem; }
-    .hero-content p { margin: 0 auto 2rem; }
-    .hero-actions { justify-content: center; }
-    
-    .nav-links { display: none; } /* Simplified mobile nav */
-    
-    .pricing-card.popular { transform: scale(1); }
-    .pricing-card.popular:hover { transform: translateY(-5px); }
+/* Responsive Breakpoints */
+
+/* Tablet & Smaller Desktop (Laptops) */
+@media (max-width: 1024px) {
+    .pricing-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    .hero { padding: 4rem 5%; }
 }
 
-@media (max-width: 600px) {
-    h1 { font-size: 2.5rem; }
-    .hero { padding: 3rem 5%; }
+/* Tablet & Large Mobile */
+@media (max-width: 768px) {
+    .navbar { padding: 1rem 5%; }
+    .nav-links { display: none; }
+    
+    .hero { 
+        flex-direction: column; 
+        text-align: center; 
+        padding: 4rem 5% 6rem;
+    }
+    .hero-content {
+        margin-bottom: 3rem;
+    }
+    .hero-content p { margin: 0 auto 2.5rem; }
+    .hero-actions { justify-content: center; }
+    
+    .section-title h2 { font-size: 2rem; }
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 450px; /* Kartları ortalamak için mobil-genel genişlik */
+    }
+    
+    .pricing-card.popular { transform: scale(1); margin: 1rem 0; }
+    .pricing-card.popular:hover { transform: translateY(-5px); }
+    
+    .footer-content { flex-direction: column; gap: 2rem; text-align: center; }
+    .footer-brand p { margin: 0 auto; }
 }
+
+/* Small Mobile (320px - 480px) */
+@media (max-width: 480px) {
+    h1 { font-size: 2.2rem; }
+    h2 { font-size: 1.8rem; }
+    .hero { padding: 3rem 4% 5rem; }
+    .hero-actions { flex-direction: column; width: 100%; gap: 1rem; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+    
+    .pricing { padding: 4rem 4%; }
+    .pricing-card { padding: 2.5rem 1.5rem; }
+    .pkg-price { font-size: 2.8rem; }
+    
+    .modal { padding: 2rem 1.5rem; margin: 10px; border-radius: 12px; }
+}
+

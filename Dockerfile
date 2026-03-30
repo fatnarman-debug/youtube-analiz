@@ -1,14 +1,21 @@
-# Stage 1: Serve with Nginx
-FROM nginx:alpine
+FROM python:3.11-slim
 
-# Copy static files to nginx html folder
-COPY . /usr/share/nginx/html
+WORKDIR /app
 
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Expose port 80
-EXPOSE 80
+# Copy requirements and install
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Copy project files
+COPY . .
+
+# Expose port
+EXPOSE 8000
+
+# Run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
