@@ -2,15 +2,20 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 import os
+from pathlib import Path
+
+# Absolute path for the database file
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "vidinsight.db"
 
 # Veritabanı dosya yolu kontrolü
-DB_PATH = "./vidinsight.db"
-if os.path.exists(DB_PATH) and os.path.isdir(DB_PATH):
-    print(f"KRİTİK HATA: {DB_PATH} bir klasör olarak görünüyor! Lütfen Coolify'da 'File' veya doğru 'Volume' seçtiğinizden emin olun.")
-    # Uygulamanın çökmemesi için geçici bir isim verelim ama loglarda görünsün
-    DB_PATH = "./vidinsight_emergency.db"
+if DB_PATH.exists() and DB_PATH.is_dir():
+    print(f"KRİTİK HATA: {DB_PATH} bir klasör olarak görünüyor! Acil durum veri tabanı oluşturuluyor.")
+    DB_PATH = BASE_DIR / "vidinsight_emergency.db"
 
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
+
+print(f"Bağlanılan Veritabanı Yolu: {SQLALCHEMY_DATABASE_URL}")
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
