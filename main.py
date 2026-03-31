@@ -229,7 +229,9 @@ async def signup(
     new_user = models.User(
         full_name=Ad_Soyad,
         email=Email,
-        hashed_password=hashed_sifre
+        hashed_password=hashed_sifre,
+        credits_remaining=5, # 5 Trial credits for testing
+        is_active=True
     )
     db.add(new_user)
     db.commit()
@@ -255,6 +257,7 @@ async def user_login(
 ):
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user or not verify_password(password, user.hashed_password):
+        print(f"Giriş Başarısız: {email} (Kullanıcı Bulunamadı veya Yanlış Şifre)")
         return templates.TemplateResponse(
             request=request, 
             name="user_login.html", 
@@ -269,6 +272,8 @@ async def user_login(
         key=USER_SESSION_NAME, 
         value=access_token, 
         httponly=True, 
+        secure=request.url.scheme == "https", # Secure if HTTPS
+        samesite="lax",
         max_age=60*60*24*7 # 1 week
     )
     return redirect_response
