@@ -21,3 +21,9 @@ gemini_prompt_*.txt
 
 # Logs
 *.log
+
+# Database
+vidinsight.db
+
+# Reports folder
+static/reports/

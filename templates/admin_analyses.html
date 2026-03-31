@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analizler | VidInsight Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      :root {
+        --admin-bg: #f8fafc;
+        --admin-sidebar: #0f172a;
+        --card-bg-light: #ffffff;
+      }
+      body { margin: 0; background: var(--admin-bg); color: #1e293b; display: flex; min-height: 100vh; }
+      .sidebar { width: 280px; background: var(--admin-sidebar); color: white; padding: 2rem; display: flex; flex-direction: column; }
+      .main-content { flex: 1; padding: 3rem; overflow-y: auto; }
+      .admin-logo { height: 40px; margin-bottom: 3rem; }
+      .nav-item { padding: 1rem; color: #94a3b8; display: flex; align-items: center; gap: 12px; text-decoration: none; border-radius: 8px; margin-bottom: 0.5rem; transition: all 0.2s; }
+      .nav-item.active { background: rgba(255, 255, 255, 0.05); color: white; }
+      .nav-item:hover { color: white; }
+      .table-card { background: var(--card-bg-light); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; overflow: hidden; }
+      .table-header { padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; }
+      table { width: 100%; border-collapse: collapse; }
+      th { text-align: left; padding: 1.2rem 2rem; background: #f1f5f9; color: #64748b; font-size: 0.85rem; text-transform: uppercase; }
+      td { padding: 1.2rem 2rem; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
+      .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+      .badge-pending { background: #fef9c3; color: #854d0e; }
+      .badge-processing { background: #dbeafe; color: #1e40af; }
+      .badge-completed { background: #dcfce7; color: #166534; }
+      .badge-error { background: #fee2e2; color: #991b1b; }
+      .btn-logout { margin-top: auto; color: #ef4444 !important; }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <img src="/static/img/logo.png" alt="VidInsight" class="admin-logo" style="filter: brightness(0) invert(1);">
+        <nav>
+            <a href="/admin" class="nav-item"><i class="fa-solid fa-users"></i> Müşteriler</a>
+            <a href="/admin/analyses" class="nav-item active"><i class="fa-solid fa-chart-line"></i> Tüm Analizler</a>
+            <a href="/" target="_blank" class="nav-item"><i class="fa-solid fa-external-link"></i> Siteye Git</a>
+        </nav>
+        <a href="/cikis" class="nav-item btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="table-card">
+            <div class="table-header">
+                <h2>Sistem Genelindeki Analizler</h2>
+                <div style="font-size: 0.9rem; color: #64748b;">Tüm kullanıcıların analiz talepleri ve durumları.</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kullanıcı</th>
+                        <th>Video</th>
+                        <th>Durum</th>
+                        <th>Tarih</th>
+                        <th>Rapor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in analyses %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">{{ req.user.full_name }}</div>
+                            <div style="font-size: 0.8rem; color: #64748b;">{{ req.user.email }}</div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 600; max-width: 300px;">{{ req.video_title or "Başlık Alınamadı" }}</div>
+                            <a href="{{ req.video_url }}" target="_blank" style="font-size: 0.8rem; color: #3b82f6;">Videoyu Aç</a>
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ req.status }}">
+                                {{ req.status.upper() }}
+                            </span>
+                        </td>
+                        <td>{{ req.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>
+                            {% if req.status == 'completed' %}
+                            <div style="display:flex; gap:5px;">
+                                <a href="/report/download/{{ req.id }}?format=excel" title="Excel" style="color:#166534;"><i class="fa-solid fa-file-excel"></i></a>
+                                <a href="/report/download/{{ req.id }}?format=pdf" title="PDF" style="color:#991b1b;"><i class="fa-solid fa-file-pdf"></i></a>
+                            </div>
+                            {% elif req.status == 'error' %}
+                            <span title="{{ req.error_message }}" style="color:#ef4444; cursor:help;"><i class="fa-solid fa-circle-info"></i> Hata</span>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not analyses %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 3rem; color: #64748b;">
+                            Henüz analiz talebi bulunmuyor.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

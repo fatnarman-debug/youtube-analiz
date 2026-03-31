@@ -155,7 +155,7 @@
         <img src="/static/img/logo.png" alt="VidInsight" class="admin-logo" style="filter: brightness(0) invert(1);">
         <nav>
             <a href="/admin" class="nav-item active"><i class="fa-solid fa-users"></i> Müşteriler</a>
-            <a href="#" class="nav-item"><i class="fa-solid fa-chart-line"></i> Analizler</a>
+            <a href="/admin/analyses" class="nav-item"><i class="fa-solid fa-chart-line"></i> Tüm Analizler</a>
             <a href="/" target="_blank" class="nav-item"><i class="fa-solid fa-external-link"></i> Siteye Git</a>
         </nav>
         <a href="/cikis" class="nav-item btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</a>
@@ -164,82 +164,84 @@
     <main class="main-content">
         <div class="stats-grid">
             <div class="stat-card">
-                <h4>Toplam Müşteri</h4>
-                <div class="value">{{ customers|length }}</div>
+                <h4>Toplam Kayıtlı Kullanıcı</h4>
+                <div class="value">{{ users|length }}</div>
             </div>
             <div class="stat-card">
                 <h4>Aktif Hesaplar</h4>
-                <div class="value">{{ customers | selectattr('is_active') | list | length }}</div>
+                <div class="value">{{ users | selectattr('is_active') | list | length }}</div>
             </div>
             <div class="stat-card">
-                <h4>Bu Ay Gelen</h4>
-                <div class="value">+ {{ customers|length }}</div>
+                <h4>Bekleyen Onay</h4>
+                <div class="value">0</div>
             </div>
         </div>
 
         <div class="table-card">
             <div class="table-header">
                 <div>
-                    <h2>Müşteri Listesi</h2>
-                    <div style="font-size: 0.9rem; color: #64748b;">Son başvuru tarihlerine göre sıralanmıştır.</div>
+                    <h2>Kullanıcı Yönetimi</h2>
+                    <div style="font-size: 0.9rem; color: #64748b;">Sistemdeki tüm kayıtlı kullanıcılar.</div>
                 </div>
-                <button class="btn-add-new" id="openAddModal">
-                    <i class="fa-solid fa-plus"></i> Yeni Müşteri Ekle
-                </button>
             </div>
             <table>
                 <thead>
                     <tr>
-                        <th>Müşteri</th>
-                        <th>Paket</th>
-                        <th>YouTube Adresi</th>
+                        <th>Kullanıcı</th>
+                        <th>Paket / Kredi</th>
                         <th>Durum</th>
                         <th>Kayıt Tarihi</th>
                         <th>İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for customer in customers %}
+                    {% for user in users %}
                     <tr>
                         <td>
-                            <div style="font-weight: 600;">{{ customer.full_name }}</div>
-                            <div style="font-size: 0.85rem; color: #64748b;">{{ customer.email }}</div>
+                            <div style="font-weight: 600;">{{ user.full_name }}</div>
+                            <div style="font-size: 0.85rem; color: #64748b;">{{ user.email }}</div>
                         </td>
                         <td>
-                            <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #B45309;">
-                                {{ customer.package }}
-                            </span>
+                            <div class="badge" style="background: rgba(245, 158, 11, 0.1); color: #B45309; margin-bottom: 5px; display:inline-block;">
+                                {{ user.package.name if user.package else "Paket Yok" }}
+                            </div>
+                            <div style="font-size: 0.8rem; color: #64748b;">Kalan Kredi: <strong>{{ user.credits_remaining }}</strong></div>
                         </td>
                         <td>
-                            <a href="{{ customer.youtube_link }}" target="_blank" style="color: #3b82f6;">
-                                <i class="fa-brands fa-youtube"></i> Kanala Git
-                            </a>
-                        </td>
-                        <td>
-                            {% if customer.is_active %}
+                            {% if user.is_active %}
                                 <span class="badge badge-success">Aktif</span>
                             {% else %}
                                 <span class="badge badge-error">Pasif</span>
                             {% endif %}
                         </td>
-                        <td>{{ customer.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ user.created_at.strftime('%d/%m/%Y') }}</td>
                         <td>
-                            <form action="/admin/toggle/{{ customer.id }}" method="POST" style="display:inline;">
-                                <button type="submit" class="action-btn {% if customer.is_active %}toggle-off{% else %}toggle-on{% endif %}">
-                                    {% if customer.is_active %}
-                                        <i class="fa-solid fa-user-slash"></i> Durdur
-                                    {% else %}
-                                        <i class="fa-solid fa-user-check"></i> Aktif Et
-                                    {% endif %}
+                            <div style="display:flex; gap: 8px;">
+                                <button class="action-btn" 
+                                        data-id="{{ user.id }}" 
+                                        data-name="{{ user.full_name }}" 
+                                        data-credits="{{ user.credits_remaining }}" 
+                                        data-package="{{ user.package_id or '' }}" 
+                                        onclick="openEditModalFromButton(this)">
+                                    <i class="fa-solid fa-edit"></i> Düzenle
                                 </button>
-                            </form>
+                                <form action="/admin/toggle/{{ user.id }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="action-btn {% if user.is_active %}toggle-off{% else %}toggle-on{% endif %}">
+                                        {% if user.is_active %}
+                                            <i class="fa-solid fa-user-slash"></i> Durdur
+                                        {% else %}
+                                            <i class="fa-solid fa-user-check"></i> Aktif Et
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
-                    {% if not customers %}
+                    {% if not users %}
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 3rem; color: #64748b;">
-                            Henüz müşteri kaydı bulunmuyor.
+                        <td colspan="5" style="text-align: center; padding: 3rem; color: #64748b;">
+                            Henüz kullanıcı kaydı bulunmuyor.
                         </td>
                     </tr>
                     {% endif %}
@@ -248,52 +250,60 @@
         </div>
     </main>
 
-    <!-- Add Customer Modal -->
-    <div class="admin-modal-overlay" id="addModalOverlay">
+    <!-- Edit User Modal -->
+    <div class="admin-modal-overlay" id="editModalOverlay">
         <div class="admin-modal">
-            <button class="modal-close" id="closeAddModal">&times;</button>
-            <h3 style="margin-top: 0; margin-bottom: 1.5rem;">Yeni Müşteri Kaydı</h3>
+            <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            <h3 id="editModalTitle" style="margin-top: 0; margin-bottom: 1.5rem;">Kullanıcı Düzenle</h3>
             
-            <form action="/admin/add_customer" method="POST">
+            <form id="editForm" method="POST">
                 <div class="admin-form-group">
-                    <label>Ad Soyad</label>
-                    <input type="text" name="Ad_Soyad" required placeholder="Örn: Ahmet Yılmaz">
+                    <label>Kalan Kredi</label>
+                    <input type="number" name="credits" id="editCredits" required>
                 </div>
                 <div class="admin-form-group">
-                    <label>E-posta</label>
-                    <input type="email" name="Email" required placeholder="ahmet@example.com">
-                </div>
-                <div class="admin-form-group">
-                    <label>YouTube Linki</label>
-                    <input type="url" name="Youtube_Link" required placeholder="https://youtube.com/...">
-                </div>
-                <div class="admin-form-group">
-                    <label>Paket</label>
-                    <select name="paket_adi" required>
-                        <option value="Single (1 Video)">Single (1 Video)</option>
-                        <option value="Creator (5 Video/Aylık)">Creator (5 Video/Aylık)</option>
-                        <option value="Agency (10 Video/Aylık)">Agency (10 Video/Aylık)</option>
-                        <option value="Özel Kurumsal">Özel Kurumsal</option>
+                    <label>Paket Seçimi</label>
+                    <select name="package_id" id="editPackage">
+                        <option value="">Paket Yok</option>
+                        {% for pkg in packages %}
+                        <option value="{{ pkg.id }}">{{ pkg.name }}</option>
+                        {% endfor %}
                     </select>
                 </div>
-                <div class="admin-form-group">
-                    <label>Notlar (Opsiyonel)</label>
-                    <textarea name="Aciklama" rows="3" placeholder="Müşteri hakkında özel notlar..."></textarea>
-                </div>
-                <button type="submit" class="btn-submit">Kaydet ve Ekle</button>
+                <button type="submit" class="btn-submit">Güncelle</button>
             </form>
         </div>
     </div>
 
     <script>
-        const openModalBtn = document.getElementById('openAddModal');
-        const closeModalBtn = document.getElementById('closeAddModal');
-        const modalOverlay = document.getElementById('addModalOverlay');
+        const editOverlay = document.getElementById('editModalOverlay');
+        const editForm = document.getElementById('editForm');
+        const editTitle = document.getElementById('editModalTitle');
+        const editCredits = document.getElementById('editCredits');
+        const editPackage = document.getElementById('editPackage');
 
-        openModalBtn.onclick = () => modalOverlay.classList.add('active');
-        closeModalBtn.onclick = () => modalOverlay.classList.remove('active');
-        modalOverlay.onclick = (e) => {
-            if (e.target === modalOverlay) modalOverlay.classList.remove('active');
+        function openEditModalFromButton(btn) {
+            const id = btn.getAttribute('data-id');
+            const name = btn.getAttribute('data-name');
+            const credits = btn.getAttribute('data-credits');
+            const packageId = btn.getAttribute('data-package');
+            openEditModal(id, name, credits, packageId);
+        }
+
+        function openEditModal(id, name, credits, packageId) {
+            editTitle.innerText = name + " - Düzenle";
+            editCredits.value = credits;
+            editPackage.value = packageId || "";
+            editForm.action = "/admin/update_user/" + id;
+            editOverlay.classList.add('active');
+        }
+
+        function closeEditModal() {
+            editOverlay.classList.remove('active');
+        }
+
+        window.onclick = (e) => {
+            if (e.target === editOverlay) closeEditModal();
         }
     </script>
 </body>

@@ -16,6 +16,8 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import emoji
 from collections import Counter
 import time
+from fpdf import FPDF
+import textwrap
 
 # ==================== KONFİGÜRASYON ====================
 
@@ -552,6 +554,112 @@ class YouTubeCommentAnalyzer:
             sentiment_pivot.to_excel(writer, sheet_name='Duygu_Dagilimi')
         
         print(f"✅ Excel raporu oluşturuldu: {output_path}")
+        return output_path
+
+    def create_pdf_report(self, output_path=None):
+        """FPDF kullanarak PDF raporu oluşturur"""
+        if self.comments_df is None or self.comments_df.empty:
+            return None
+        
+        if output_path is None:
+            output_path = f"youtube_analiz_{self.video_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        
+        stats = self.get_statistics()
+        
+        # PDF Ayarları
+        pdf = FPDF()
+        pdf.add_page()
+        
+        # Font Ayarı (Mac'te yaygın bulunan fontu kullanmayı deneyelim)
+        # Font bulunamazsa standart fonta döner
+        font_path = "/Library/Fonts/Arial Unicode.ttf"
+        try:
+            pdf.add_font("ArialUnicode", "", font_path)
+            pdf.set_font("ArialUnicode", size=12)
+        except:
+            pdf.set_font("Helvetica", size=12)
+
+        # Başlık Bölümü
+        pdf.set_font(style='B', size=20)
+        pdf.cell(200, 10, txt="VidInsight Analiz Raporu", ln=True, align='C')
+        pdf.ln(5)
+        
+        # Video Bilgileri
+        pdf.set_font(size=10)
+        pdf.set_text_color(100)
+        pdf.cell(200, 10, txt=f"Rapor Tarihi: {datetime.now().strftime('%d.%m.%Y %H:%M')}", ln=True, align='C')
+        pdf.ln(10)
+        
+        pdf.set_text_color(0)
+        pdf.set_font(style='B', size=14)
+        pdf.cell(200, 10, txt=f"Video Bilgileri", ln=True)
+        pdf.set_font(size=12)
+        pdf.multi_cell(0, 10, txt=f"Başlık: {self.video_title}")
+        pdf.cell(200, 10, txt=f"ID: {self.video_id}", ln=True)
+        pdf.ln(5)
+        
+        # İstatistikler
+        pdf.set_font(style='B', size=14)
+        pdf.cell(200, 10, txt="Genel İstatistikler", ln=True)
+        pdf.set_font(size=11)
+        
+        # Tablo benzeri yapı
+        stats_list = [
+            ("Toplam Yorum", str(stats['toplam_yorum'])),
+            ("Toplam Beğeni", str(int(self.comments_df['begeni_sayisi'].sum()))),
+            ("Olumlu Yorum Oranı", f"%{stats['olumlu_yuzde']:.1f}"),
+            ("Olumsuz Yorum Oranı", f"%{stats['olumsuz_yuzde']:.1f}"),
+            ("Küfür İçeren Yorum", str(stats['kufur_sayi'])),
+            ("Soru İçeren Yorum", str(stats['soru_sayi']))
+        ]
+        
+        for label, val in stats_list:
+            pdf.cell(60, 10, txt=label, border=1)
+            pdf.cell(40, 10, txt=val, border=1, ln=True)
+        
+        pdf.ln(10)
+        
+        # Duygu Analizi Özeti
+        pdf.set_font(style='B', size=14)
+        pdf.cell(200, 10, txt="Duygu Analizi", ln=True)
+        pdf.set_font(size=11)
+        
+        sentiment_txt = f"Video altındaki yorumların %{stats['olumlu_yuzde']:.1f}'i olumlu, %{stats['olumsuz_yuzde']:.1f}'i olumsuz ve %{stats['notr_yuzde']:.1f}'i nötr olarak belirlenmiştir."
+        pdf.multi_cell(0, 8, txt=sentiment_txt)
+        pdf.ln(5)
+        
+        # En Beğenilen Yorum
+        pdf.set_font(style='B', size=14)
+        pdf.cell(200, 10, txt="En Beğenilen Yorum", ln=True)
+        pdf.set_font(style='I', size=11)
+        top_comment = stats['en_cok_begenilen']
+        top_txt = f"\"{top_comment['yorum']}\" - {top_comment['kullanici']} ({top_comment['begeni_sayisi']} Beğeni)"
+        pdf.multi_cell(0, 8, txt=top_txt)
+        pdf.ln(5)
+
+        # Öneriler (İlk 5)
+        suggestions = self.get_top_suggestions(5)
+        if suggestions:
+            pdf.set_font(style='B', size=14)
+            pdf.cell(200, 10, txt="Öne Çıkan Öneriler", ln=True)
+            pdf.set_font(size=10)
+            for i, (sug, count) in enumerate(suggestions, 1):
+                pdf.multi_cell(0, 8, txt=f"{i}. {sug[:200]} ({count} kez)")
+            pdf.ln(5)
+
+        # Eleştiriler (İlk 5)
+        criticisms = self.get_top_criticisms(5)
+        if criticisms:
+            pdf.set_font(style='B', size=14)
+            pdf.cell(200, 10, txt="Öne Çıkan Eleştiriler", ln=True)
+            pdf.set_font(size=10)
+            for i, (crit, count) in enumerate(criticisms, 1):
+                pdf.multi_cell(0, 8, txt=f"{i}. {crit[:200]} ({count} kez)")
+            pdf.ln(5)
+            
+        # Kaydet
+        pdf.output(output_path)
+        print(f"✅ PDF raporu oluşturuldu: {output_path}")
         return output_path
     
     def generate_gemini_prompt(self):

@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Depends, Request, Form, Response, HTTPException, status
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi import FastAPI, Depends, Request, Form, Response, HTTPException, status, BackgroundTasks
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -8,7 +8,9 @@ import os
 import models
 import traceback
 from database import engine, get_db, SessionLocal
-from passlib.context import CryptContext
+from auth import get_password_hash, verify_password, create_access_token, decode_access_token
+from youtube_analyzer import YouTubeCommentAnalyzer
+import datetime
 
 # Absolute paths for Docker stability
 BASE_DIR = Path(__file__).resolve().parent
@@ -42,15 +44,98 @@ except Exception as e:
     print("STATIC/TEMPLATES HATASI:")
     traceback.print_exc()
 
-# Password Hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 # Hardcoded Admin credentials as requested
 ADMIN_CREDENTIALS = {
     "username": "hadibaslayalım",
     "password": "12345678qw.ASX"
 }
 ADMIN_SESSION_NAME = "vidinsight_admin_session"
+USER_SESSION_NAME = "vidinsight_user_session"
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "")
+
+# Background Worker
+def process_analysis(request_id: int):
+    # Separate session for background task
+    db = SessionLocal()
+    try:
+        req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == request_id).first()
+        if not req: return
+
+        req.status = "processing"
+        db.commit()
+
+        # Initialize analyzer
+        analyzer = YouTubeCommentAnalyzer(YOUTUBE_API_KEY)
+        video_id = analyzer.extract_video_id(req.video_url)
+        if not video_id:
+            req.status = "error"
+            req.error_message = "Geçersiz YouTube URL'si."
+            db.commit()
+            return
+
+        req.video_id = video_id
+        analyzer.video_id = video_id
+        
+        # Step 1: Collect
+        if not analyzer.collect_comments(max_comments=300):
+            req.status = "error"
+            req.error_message = "Yorumlar toplanamadı (video yorumlara kapalı olabilir)."
+            db.commit()
+            return
+            
+        # Step 2: Analyze
+        req.video_title = analyzer.video_title
+        analyzer.run_full_analysis(method='turkish')
+        summary = analyzer.generate_summary_text()
+        
+        # Step 3: Files (Excel)
+        reports_dir = STATIC_DIR / "reports"
+        if not reports_dir.exists(): reports_dir.mkdir(parents=True)
+        
+        excel_filename = f"analiz_{request_id}_{video_id}.xlsx"
+        pdf_filename = f"analiz_{request_id}_{video_id}.pdf"
+        
+        excel_path = reports_dir / excel_filename
+        pdf_path = reports_dir / pdf_filename
+        
+        analyzer.create_excel_report(output_path=str(excel_path))
+        analyzer.create_pdf_report(output_path=str(pdf_path))
+        
+        # Step 4: Report Entry
+        new_report = models.Report(
+            analysis_id=req.id,
+            excel_path=f"/static/reports/{excel_filename}",
+            pdf_path=f"/static/reports/{pdf_filename}",
+            summary_text=summary
+        )
+        db.add(new_report)
+        
+        req.status = "completed"
+        req.completed_at = datetime.datetime.utcnow()
+        db.commit()
+
+    except Exception as e:
+        print(f"BACKGROUND TASK ERROR (Request {request_id}):")
+        traceback.print_exc()
+        if req:
+            req.status = "error"
+            req.error_message = str(e)
+            db.commit()
+    finally:
+        db.close()
+
+# Helper for current user
+async def get_current_user(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get(USER_SESSION_NAME)
+    if not token:
+        return None
+    payload = decode_access_token(token)
+    if not payload:
+        return None
+    user_id = payload.get("sub")
+    if not user_id:
+        return None
+    return db.query(models.User).filter(models.User.id == int(user_id)).first()
 
 # Detailed Health check endpoint
 @app.get("/health")
@@ -117,7 +202,196 @@ async def submit_form(
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Sistemsel bir hata oluştu: {str(e)}")
 
-# Admin Login Route
+# ==================== CUSTOMER AUTH ROUTES ====================
+
+@app.get("/kayit", response_class=HTMLResponse)
+async def signup_page(request: Request):
+    return templates.TemplateResponse(request=request, name="signup.html", context={})
+
+@app.post("/kayit")
+async def signup(
+    request: Request,
+    Ad_Soyad: str = Form(...),
+    Email: str = Form(...),
+    Sifre: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    # Check if user exists
+    existing_user = db.query(models.User).filter(models.User.email == Email).first()
+    if existing_user:
+        return templates.TemplateResponse(
+            request=request, 
+            name="signup.html", 
+            context={"error": "Bu e-posta adresi zaten kayıtlı."}
+        )
+    
+    hashed_sifre = get_password_hash(Sifre)
+    new_user = models.User(
+        full_name=Ad_Soyad,
+        email=Email,
+        hashed_password=hashed_sifre
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    return RedirectResponse(url="/giris?success=1", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.get("/giris", response_class=HTMLResponse)
+async def user_login_page(request: Request, success: int = 0):
+    return templates.TemplateResponse(
+        request=request, 
+        name="user_login.html", 
+        context={"success": success}
+    )
+
+@app.post("/giris")
+async def user_login(
+    request: Request,
+    response: Response,
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user or not verify_password(password, user.hashed_password):
+        return templates.TemplateResponse(
+            request=request, 
+            name="user_login.html", 
+            context={"error": "Geçersiz e-posta veya şifre!"}
+        )
+    
+    # Create token
+    access_token = create_access_token(data={"sub": str(user.id)})
+    
+    redirect_response = RedirectResponse(url="/dashboard", status_code=status.HTTP_303_SEE_OTHER)
+    redirect_response.set_cookie(
+        key=USER_SESSION_NAME, 
+        value=access_token, 
+        httponly=True, 
+        max_age=60*60*24*7 # 1 week
+    )
+    return redirect_response
+
+@app.get("/cikisyap")
+async def user_logout(response: Response):
+    response = RedirectResponse(url="/giris")
+    response.delete_cookie(USER_SESSION_NAME)
+    return response
+
+# ==================== CUSTOMER DASHBOARD ROUTES ====================
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request, db: Session = Depends(get_db), user: models.User = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/giris")
+
+    # Fetch user's analyses
+    recent_analyses = db.query(models.AnalysisRequest).filter(
+        models.AnalysisRequest.user_id == user.id
+    ).order_by(models.AnalysisRequest.created_at.desc()).limit(10).all()
+
+    # Get active package details
+    package = user.package if user.package else None
+    
+    return templates.TemplateResponse(
+        request=request, 
+        name="dashboard.html", 
+        context={
+            "user": user,
+            "analyses": recent_analyses,
+            "package": package
+        }
+    )
+
+@app.post("/dashboard/submit")
+async def submit_analysis(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    video_url: str = Form(...),
+    db: Session = Depends(get_db),
+    user: models.User = Depends(get_current_user)
+):
+    if not user:
+        raise HTTPException(status_code=401, detail="Lütfen giriş yapın.")
+
+    # Check credits
+    if user.credits_remaining <= 0:
+        return JSONResponse(
+            status_code=400, 
+            content={"status": "error", "message": "Analiz hakkınız bitmiştir. Lütfen yeni paket alın."}
+        )
+
+    # Simple URL validation
+    if "youtube.com" not in video_url and "youtu.be" not in video_url:
+        return JSONResponse(
+            status_code=400, 
+            content={"status": "error", "message": "Geçerli bir YouTube linki giriniz."}
+        )
+
+    # Create request
+    new_request = models.AnalysisRequest(
+        user_id=user.id,
+        video_url=video_url,
+        status="pending"
+    )
+    db.add(new_request)
+    
+    # Deduct credit
+    user.credits_remaining -= 1
+    
+    db.commit()
+    db.refresh(new_request)
+
+    # Start Background Processing
+    background_tasks.add_task(process_analysis, new_request.id)
+    
+    return {"status": "success", "message": "Videonuz analiz sırasına alındı.", "request_id": new_request.id}
+
+@app.get("/report/download/{analysis_id}")
+async def download_report(
+    analysis_id: int, 
+    format: str = "excel",
+    db: Session = Depends(get_db), 
+    user: models.User = Depends(get_current_user)
+):
+    if not user:
+        return RedirectResponse(url="/giris")
+    
+    report = db.query(models.Report).filter(models.Report.analysis_id == analysis_id).first()
+    if not report:
+        raise HTTPException(status_code=404, detail="Rapor henüz hazır değil veya bulunamadı.")
+    
+    # Check ownership
+    analysis = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == analysis_id).first()
+    if not analysis or analysis.user_id != user.id:
+        raise HTTPException(status_code=403, detail="Bu rapora erişim yetkiniz yok.")
+        
+    # Select path based on format
+    if format == "pdf":
+        relative_path = report.pdf_path.lstrip('/') if report.pdf_path else None
+        download_name = f"vidinsight_analiz_{analysis_id}.pdf"
+        media_type = 'application/pdf'
+    else:
+        relative_path = report.excel_path.lstrip('/') if report.excel_path else None
+        download_name = f"vidinsight_analiz_{analysis_id}.xlsx"
+        media_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+    if not relative_path:
+        raise HTTPException(status_code=404, detail=f"İstenen format ({format}) mevcut değil.")
+
+    file_path = BASE_DIR / relative_path
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Dosya sunucuda bulunamadı.")
+        
+    return FileResponse(
+        path=str(file_path), 
+        filename=download_name,
+        media_type=media_type
+    )
+
+# ==================== ADMIN ROUTES ====================
 @app.get("/girisburdan", response_class=HTMLResponse)
 async def login_page(request: Request):
     if not templates: return HTMLResponse(content="Templates missing", status_code=500)
@@ -155,27 +429,63 @@ async def admin_dashboard(request: Request, db: Session = Depends(get_db)):
     if not templates: return HTMLResponse(content="Templates missing", status_code=500)
 
     try:
-        customers = db.query(models.Customer).order_by(models.Customer.created_at.desc()).all()
+        users = db.query(models.User).order_by(models.User.created_at.desc()).all()
+        packages = db.query(models.Package).all()
+        
         return templates.TemplateResponse(
             request=request, 
             name="admin.html", 
-            context={"customers": customers}
+            context={"users": users, "packages": packages}
         )
     except Exception as e:
         full_error = traceback.format_exc()
         print(f"ADMIN DASHBOARD HATASI:\n{full_error}")
         return HTMLResponse(content=f"<h1>Dashboard Hatası</h1><pre>{full_error}</pre>", status_code=500)
 
+# Update User Credits/Package
+@app.post("/admin/update_user/{user_id}")
+async def admin_update_user(
+    request: Request,
+    user_id: int, 
+    credits: int = Form(...),
+    package_id: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        raise HTTPException(status_code=401, detail="Yetkisiz erişim.")
+
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user:
+        user.credits_remaining = credits
+        user.package_id = package_id
+        db.commit()
+    return RedirectResponse(url="/admin", status_code=status.HTTP_303_SEE_OTHER)
+
+# Global Analyses View
+@app.get("/admin/analyses", response_class=HTMLResponse)
+async def admin_analyses_page(request: Request, db: Session = Depends(get_db)):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        return RedirectResponse(url="/girisburdan")
+        
+    analyses = db.query(models.AnalysisRequest).order_by(models.AnalysisRequest.created_at.desc()).all()
+    return templates.TemplateResponse(
+        request=request, 
+        name="admin_analyses.html", 
+        context={"analyses": analyses}
+    )
+
 # Toggle Account Status
-@app.post("/admin/toggle/{customer_id}")
-async def toggle_status(request: Request, customer_id: int, db: Session = Depends(get_db)):
+@app.post("/admin/toggle/{user_id}")
+async def toggle_status(request: Request, user_id: int, db: Session = Depends(get_db)):
     session = request.cookies.get(ADMIN_SESSION_NAME)
     if session != "authenticated":
         return RedirectResponse(url="/girisburdan")
 
-    customer = db.query(models.Customer).filter(models.Customer.id == customer_id).first()
-    if customer:
-        customer.is_active = not customer.is_active
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user:
+        user.is_active = not user.is_active
         db.commit()
     return RedirectResponse(url="/admin", status_code=status.HTTP_303_SEE_OTHER)
 

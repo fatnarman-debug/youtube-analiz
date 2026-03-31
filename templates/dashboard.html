@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Müşteri Paneli | VidInsight</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+        .db-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .user-welcome h1 { font-size: 2rem; margin: 0; }
+        .user-welcome p { color: var(--text-muted); margin: 0; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .stat-info h4 { margin: 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; }
+        .stat-info span { font-size: 1.8rem; font-weight: 800; color: white; }
+
+        .analysis-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        @media (max-width: 900px) {
+            .analysis-section { grid-template-columns: 1fr; }
+        }
+
+        .submit-card h3 { margin-top: 0; }
+        .reports-card h3 { margin-top: 0; }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: var(--accent); }
+        .status-processing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .status-completed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .status-error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .reports-table th, .reports-table td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .reports-table th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; }
+        .reports-table tr:hover { background: rgba(255,255,255,0.02); }
+
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    
+    <nav class="navbar">
+        <div class="logo">
+            <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo" id="nav-logo"></a>
+        </div>
+        <div class="nav-links">
+            <a href="/cikisyap" class="btn-secondary">Çıkış Yap <i class="fa-solid fa-right-from-bracket"></i></a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="db-header">
+            <div class="user-welcome">
+                <h1>Merhaba, {{ user.full_name }}</h1>
+                <p>Bugün hangi videoyu analiz ediyoruz?</p>
+            </div>
+            <div class="db-actions">
+                <a href="#submit" class="btn-primary">Yeni Analiz <i class="fa-solid fa-plus"></i></a>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
+                <div class="stat-info">
+                    <h4>Aktif Paket</h4>
+                    <span>{{ package.name if package else "Paket Yok" }}</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-ticket"></i></div>
+                <div class="stat-info">
+                    <h4>Kalan Analiz Hakkı</h4>
+                    <span>{{ user.credits_remaining }}</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-calendar"></i></div>
+                <div class="stat-info">
+                    <h4>Yenilenme Tarihi</h4>
+                    <span>{{ user.renewal_date.strftime('%d.%m.%Y') if user.renewal_date else "-" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="analysis-section">
+            <div class="submit-card glass-card" id="submit">
+                <h3>Analiz Başlat</h3>
+                <p>Paylaşmak istediğiniz videonun linkini aşağıya yapıştırın.</p>
+                <form id="analysisForm">
+                    <div class="input-group">
+                        <label for="videoUrl">YouTube Video URL</label>
+                        <input type="url" id="videoUrl" name="video_url" placeholder="https://www.youtube.com/watch?v=..." required>
+                    </div>
+                    <button type="submit" id="submitBtn" class="btn-primary w-100">
+                        Sıraya Ekle <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                    <div id="submitStatus" style="margin-top: 1rem; display:none;"></div>
+                </form>
+            </div>
+
+            <div class="reports-card glass-card">
+                <h3>Analizlerim</h3>
+                {% if not analyses %}
+                <p style="color: var(--text-muted); text-align: center; padding: 2rem;">Henüz bir analiz talebiniz bulunmuyor.</p>
+                {% else %}
+                <div style="overflow-x: auto;">
+                    <table class="reports-table">
+                        <thead>
+                            <tr>
+                                <th>Video</th>
+                                <th>Durum</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in analyses %}
+                            <tr>
+                                <td>
+                                    <div style="font-weight:600; font-size:0.9rem;">{{ req.video_title or "Video Çekiliyor..." }}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); word-break: break-all;">{{ req.video_url[:40] }}...</div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ req.status }}">
+                                        {{ req.status.capitalize() }}
+                                    </span>
+                                </td>
+                                <td>{{ req.created_at.strftime('%d.%m.%Y') }}</td>
+                                <td>
+                                    {% if req.status == 'completed' %}
+                                    <div style="display:flex; gap:5px; flex-wrap: wrap;">
+                                        <a href="/report/download/{{ req.id }}?format=excel" class="btn-primary btn-sm" title="Excel İndir"><i class="fa-solid fa-file-excel"></i> Excel</a>
+                                        <a href="/report/download/{{ req.id }}?format=pdf" class="btn-primary btn-sm" style="background:#ef4444; border:none;" title="PDF İndir"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                    </div>
+                                    {% else %}
+                                    <span style="color:var(--text-muted); font-size:0.8rem;">İşlemde...</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('analysisForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const status = document.getElementById('submitStatus');
+            const urlInput = document.getElementById('videoUrl');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> İşleniyor...';
+            status.style.display = 'block';
+            status.className = 'loading-text';
+            status.innerHTML = 'Lütfen bekleyin...';
+
+            const formData = new FormData();
+            formData.append('video_url', urlInput.value);
+
+            try {
+                const response = await fetch('/dashboard/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    status.innerHTML = '<span class="text-green"><i class="fa-solid fa-check"></i> ' + result.message + '</span>';
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    status.innerHTML = '<span class="text-red"><i class="fa-solid fa-xmark"></i> ' + (result.message || 'Hata oluştu') + '</span>';
+                    btn.disabled = false;
+                    btn.innerHTML = 'Sıraya Ekle <i class="fa-solid fa-paper-plane"></i>';
+                }
+            } catch (err) {
+                status.innerHTML = '<span class="text-red">Bağlantı hatası oluştu.</span>';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
