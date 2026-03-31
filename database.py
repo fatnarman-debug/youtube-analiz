@@ -4,20 +4,16 @@ from sqlalchemy import create_engine
 import os
 from pathlib import Path
 
-# Production'da kalıcı storage için /data klasörü kullan.
-# Docker volume ile bu klasör host makinede saklanır ve Redeploy'da SİLİNMEZ.
-# Eğer /data klasörü yoksa (yerel geliştirme ortamı), proje klasörünü kullan.
-DATA_DIR = Path(os.getenv("DATA_DIR", "/data"))
-LOCAL_FALLBACK = Path(__file__).resolve().parent
-
-if DATA_DIR.exists() and DATA_DIR.is_dir():
-    DB_PATH = DATA_DIR / "vidinsight.db"
-    print(f"Üretim Modu: Kalıcı veritabanı yolu -> {DB_PATH}")
-else:
-    DB_PATH = LOCAL_FALLBACK / "vidinsight.db"
-    print(f"Geliştirme Modu: Yerel veritabanı yolu -> {DB_PATH}")
+# Veritabanı dosyası her zaman /app/vidinsight.db konumunda tutulur.
+# Coolify'da bu yola bir Volume Mount bağlıdır (Destination: /app/vidinsight.db).
+# Bu sayede Redeploy yapıldığında Docker container yenilense bile
+# veritabanı dosyası sunucuda kalıcı olarak korunur, kullanıcılar silinmez.
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "vidinsight.db"
 
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
+
+print(f"Veritabanı Yolu: {SQLALCHEMY_DATABASE_URL}")
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
