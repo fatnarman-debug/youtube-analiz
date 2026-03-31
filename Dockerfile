@@ -14,6 +14,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project files
 COPY . .
 
+# Create the persistent data directory
+RUN mkdir -p /data
+
 # Expose port
 EXPOSE 8000
 

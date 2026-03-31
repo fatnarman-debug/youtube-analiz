@@ -230,7 +230,7 @@ async def signup(
         full_name=Ad_Soyad,
         email=Email,
         hashed_password=hashed_sifre,
-        credits_remaining=5, # 5 Trial credits for testing
+        credits_remaining=1, # 1 Trial credit
         is_active=True
     )
     db.add(new_user)
