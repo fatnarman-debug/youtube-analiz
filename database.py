@@ -8,12 +8,39 @@ from pathlib import Path
 # Coolify'da bu yola bir Volume Mount bağlıdır (Destination: /app/vidinsight.db).
 # Bu sayede Redeploy yapıldığında Docker container yenilense bile
 # veritabanı dosyası sunucuda kalıcı olarak korunur, kullanıcılar silinmez.
-BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "vidinsight.db"
+# Veritabanı yapılandırması
+# Öncelik Sırası:
+# 1. DATABASE_URL (env) - Örn: sqlite:////data/vidinsight.db
+# 2. DATABASE_PATH (env) - Örn: /data/vidinsight.db
+# 3. /data dizini varsa (/data/vidinsight.db)
+# 4. Mevcut dizin (vidinsight.db)
 
-SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
+DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_PATH = os.getenv("DATABASE_PATH")
 
-print(f"Veritabanı Yolu: {SQLALCHEMY_DATABASE_URL}")
+if DATABASE_URL:
+    SQLALCHEMY_DATABASE_URL = DATABASE_URL
+    STORAGE_TYPE = "Sistem Değişkeni (URL - Dış Kaynak)"
+elif DATABASE_PATH:
+    SQLALCHEMY_DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
+    STORAGE_TYPE = "Sistem Değişkeni (PATH - Dış Kaynak)"
+elif os.path.exists("/data"):
+    # /data klasörü varsa (Volume bağlanmışsa) orayı kullanırız.
+    DB_PATH = Path("/data/vidinsight.db")
+    SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
+    STORAGE_TYPE = "Otomatik Dış Birim (/data - KALICI)"
+else:
+    # Yerel geliştirme ortamı
+    BASE_DIR = Path(__file__).resolve().parent
+    DB_PATH = BASE_DIR / "vidinsight.db"
+    SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
+    STORAGE_TYPE = "Yerel Klasör (YALNIZCA GELİŞTİRME - GÖÇEBE)"
+
+print(f"{'='*50}")
+print(f"VERİTABANI YAPILANDIRMASI:")
+print(f"  - Depolama Tipi: {STORAGE_TYPE}")
+print(f"  - URL: {SQLALCHEMY_DATABASE_URL}")
+print(f"{'='*50}")
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}

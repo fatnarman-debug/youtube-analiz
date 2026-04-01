@@ -19,11 +19,11 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 
 # Create database tables
 try:
-    print(f"Veritabanı tabloları oluşturuluyor... (DB_PATH: {os.getcwd()}/vidinsight.db)")
+    # database.py zaten yolu yazdırdığı için burada sadece tabloları hazırlıyoruz
     models.Base.metadata.create_all(bind=engine)
-    print("Tablolar başarıyla hazır.")
+    print("Veritabanı tabloları hazır.")
 except Exception as e:
-    print("VERİTABANI HATASI (Startup):")
+    print("!!! VERİTABANI HATASI (Startup):")
     traceback.print_exc()
 
 app = FastAPI()
@@ -57,11 +57,20 @@ YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "")
 def process_analysis(request_id: int):
     # Separate session for background task
     db = SessionLocal()
+    req = None
     try:
         req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == request_id).first()
         if not req: return
 
+        # Check for API Key
+        if not YOUTUBE_API_KEY or YOUTUBE_API_KEY.strip() == "":
+            req.status = "error"
+            req.error_message = "YouTube API Key eksik. Lütfen Coolify Environment Variables kısmına YOUTUBE_API_KEY ekleyin."
+            db.commit()
+            return
+
         req.status = "processing"
+        req.error_message = None
         db.commit()
 
         # Initialize analyzer
@@ -77,9 +86,9 @@ def process_analysis(request_id: int):
         analyzer.video_id = video_id
         
         # Step 1: Collect
-        if not analyzer.collect_comments(max_comments=300):
+        if not analyzer.collect_comments(max_comments=200): # max 200 for stability
             req.status = "error"
-            req.error_message = "Yorumlar toplanamadı (video yorumlara kapalı olabilir)."
+            req.error_message = getattr(analyzer, 'error_log', 'Yorumlar toplanamadı (video yorumlara kapalı olabilir veya API kotası dolmuş olabilir).')
             db.commit()
             return
             
@@ -88,7 +97,7 @@ def process_analysis(request_id: int):
         analyzer.run_full_analysis(method='turkish')
         summary = analyzer.generate_summary_text()
         
-        # Step 3: Files (Excel)
+        # Step 3: Files (Excel & PDF)
         reports_dir = STATIC_DIR / "reports"
         if not reports_dir.exists(): reports_dir.mkdir(parents=True)
         
@@ -102,13 +111,20 @@ def process_analysis(request_id: int):
         analyzer.create_pdf_report(output_path=str(pdf_path))
         
         # Step 4: Report Entry
-        new_report = models.Report(
-            analysis_id=req.id,
-            excel_path=f"/static/reports/{excel_filename}",
-            pdf_path=f"/static/reports/{pdf_filename}",
-            summary_text=summary
-        )
-        db.add(new_report)
+        # Update existing report if it exists (for retries)
+        report = db.query(models.Report).filter(models.Report.analysis_id == req.id).first()
+        if report:
+            report.excel_path = f"/static/reports/{excel_filename}"
+            report.pdf_path = f"/static/reports/{pdf_filename}"
+            report.summary_text = summary
+        else:
+            new_report = models.Report(
+                analysis_id=req.id,
+                excel_path=f"/static/reports/{excel_filename}",
+                pdf_path=f"/static/reports/{pdf_filename}",
+                summary_text=summary
+            )
+            db.add(new_report)
         
         req.status = "completed"
         req.completed_at = datetime.datetime.utcnow()
@@ -118,8 +134,9 @@ def process_analysis(request_id: int):
         print(f"BACKGROUND TASK ERROR (Request {request_id}):")
         traceback.print_exc()
         if req:
+            db.rollback()
             req.status = "error"
-            req.error_message = str(e)
+            req.error_message = f"Sistemsel Hata: {str(e)}"
             db.commit()
     finally:
         db.close()
@@ -353,6 +370,35 @@ async def submit_analysis(
     
     return {"status": "success", "message": "Videonuz analiz sırasına alındı.", "request_id": new_request.id}
 
+# User Retry Analysis (Ownership check)
+@app.post("/dashboard/retry/{analysis_id}")
+async def user_retry_analysis(
+    analysis_id: int, 
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    user: models.User = Depends(get_current_user)
+):
+    if not user:
+        raise HTTPException(status_code=401, detail="Lütfen giriş yapın.")
+
+    analysis = db.query(models.AnalysisRequest).filter(
+        models.AnalysisRequest.id == analysis_id,
+        models.AnalysisRequest.user_id == user.id
+    ).first()
+    
+    if not analysis:
+        raise HTTPException(status_code=404, detail="Analiz bulunamadı veya yetkiniz yok.")
+
+    # Reset status
+    analysis.status = "pending"
+    analysis.error_message = None
+    db.commit()
+    
+    # Start Background Processing
+    background_tasks.add_task(process_analysis, analysis.id)
+    
+    return RedirectResponse(url="/dashboard", status_code=status.HTTP_303_SEE_OTHER)
+
 @app.get("/report/download/{analysis_id}")
 async def download_report(
     analysis_id: int, 
@@ -474,12 +520,40 @@ async def admin_analyses_page(request: Request, db: Session = Depends(get_db)):
     if session != "authenticated":
         return RedirectResponse(url="/girisburdan")
         
-    analyses = db.query(models.AnalysisRequest).order_by(models.AnalysisRequest.created_at.desc()).all()
+    analyses = db.query(models.AnalysisRequest).order_by(models.AnalysisRequest.desc()).all()
     return templates.TemplateResponse(
         request=request, 
         name="admin_analyses.html", 
         context={"analyses": analyses}
     )
+
+@app.get("/admin/analysis_error/{analysis_id}")
+async def get_analysis_error(analysis_id: int, db: Session = Depends(get_db)):
+    analysis = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == analysis_id).first()
+    if not analysis:
+        return {"error": "Analiz bulunamadı."}
+    return {"id": analysis.id, "error": analysis.error_message or "Hata detayı yok."}
+
+# Retry Analysis
+@app.post("/admin/retry_analysis/{analysis_id}")
+async def retry_analysis(
+    request: Request,
+    analysis_id: int, 
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        raise HTTPException(status_code=401, detail="Yetkisiz erişim.")
+
+    analysis = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == analysis_id).first()
+    if analysis:
+        analysis.status = "pending"
+        analysis.error_message = None
+        db.commit()
+        background_tasks.add_task(process_analysis, analysis.id)
+    
+    return RedirectResponse(url="/admin/analyses", status_code=status.HTTP_303_SEE_OTHER)
 
 # Toggle Account Status
 @app.post("/admin/toggle/{user_id}")

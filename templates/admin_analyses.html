@@ -79,12 +79,21 @@
                         <td>{{ req.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                         <td>
                             {% if req.status == 'completed' %}
-                            <div style="display:flex; gap:5px;">
-                                <a href="/report/download/{{ req.id }}?format=excel" title="Excel" style="color:#166534;"><i class="fa-solid fa-file-excel"></i></a>
-                                <a href="/report/download/{{ req.id }}?format=pdf" title="PDF" style="color:#991b1b;"><i class="fa-solid fa-file-pdf"></i></a>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <a href="/report/download/{{ req.id }}?format=excel" title="Excel" style="color:#166534;"><i class="fa-solid fa-file-excel fa-lg"></i></a>
+                                <a href="/report/download/{{ req.id }}?format=pdf" title="PDF" style="color:#991b1b;"><i class="fa-solid fa-file-pdf fa-lg"></i></a>
                             </div>
                             {% elif req.status == 'error' %}
-                            <span title="{{ req.error_message }}" style="color:#ef4444; cursor:help;"><i class="fa-solid fa-circle-info"></i> Hata</span>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <button onclick="showError({{ req.id }})" class="badge badge-error" style="cursor:pointer; border:none; padding:4px 8px;">
+                                    <i class="fa-solid fa-circle-info"></i> Hata Detayı
+                                </button>
+                                <form action="/admin/retry_analysis/{{ req.id }}" method="POST" style="margin:0;">
+                                    <button type="submit" class="badge badge-processing" title="Yeniden Dene" style="cursor:pointer; border:none; padding: 4px 8px;">
+                                        <i class="fa-solid fa-arrows-rotate"></i>
+                                    </button>
+                                </form>
+                            </div>
                             {% else %}
                             -
                             {% endif %}
@@ -102,5 +111,43 @@
             </table>
         </div>
     </main>
+
+    <!-- Simple Modal for Errors -->
+    <div id="errorModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:white; padding:2rem; border-radius:12px; max-width:600px; width:90%; box-shadow:0 10px 25px rgba(0,0,0,0.2); position:relative;">
+            <button onclick="closeModal()" style="position:absolute; top:1rem; right:1rem; border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+            <h3 style="margin-top:0; color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Hata Detayı</h3>
+            <pre id="errorText" style="background:#f1f5f9; padding:1rem; border-radius:8px; white-space:pre-wrap; font-size:0.9rem; max-height:400px; overflow-y:auto; color:#334155; border:1px solid #e2e8f0;"></pre>
+            <div style="margin-top:1.5rem; text-align:right;">
+                <button onclick="closeModal()" style="padding:0.6rem 1.5rem; background:#64748b; color:white; border:none; border-radius:6px; cursor:pointer;">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function showError(id) {
+            const modal = document.getElementById('errorModal');
+            const text = document.getElementById('errorText');
+            text.innerText = "Yükleniyor...";
+            modal.style.display = 'flex';
+            
+            try {
+                const response = await fetch('/admin/analysis_error/' + id);
+                const data = await response.json();
+                text.innerText = data.error || "Hata bilgisi alınamadı.";
+            } catch (err) {
+                text.innerText = "Bağlantı hatası: " + err;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('errorModal').style.display = 'none';
+        }
+
+        // Close on escape
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
 </body>
 </html>

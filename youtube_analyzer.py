@@ -54,6 +54,7 @@ class YouTubeCommentAnalyzer:
         self.video_id = None
         self.video_title = None
         self.comments_df = None
+        self.error_log = None
         
     def extract_video_id(self, url_or_id):
         """YouTube URL'sinden video ID'sini çıkarır"""
@@ -78,8 +79,12 @@ class YouTubeCommentAnalyzer:
             if response['items']:
                 self.video_title = response['items'][0]['snippet']['title']
                 return True
+        except HttpError as e:
+            self.error_log = f"YouTube API Hatası: {e.reason if hasattr(e, 'reason') else str(e)}"
+            print(f"Video detayları alınamadı: {self.error_log}")
         except Exception as e:
-            print(f"Video detayları alınamadı: {e}")
+            self.error_log = f"Beklenmeyen Hata (Video Detay): {str(e)}"
+            print(f"Video detayları alınamadı: {self.error_log}")
         return False
     
     def collect_comments(self, max_comments=500):
@@ -570,13 +575,27 @@ class YouTubeCommentAnalyzer:
         pdf = FPDF()
         pdf.add_page()
         
-        # Font Ayarı (Mac'te yaygın bulunan fontu kullanmayı deneyelim)
-        # Font bulunamazsa standart fonta döner
-        font_path = "/Library/Fonts/Arial Unicode.ttf"
-        try:
-            pdf.add_font("ArialUnicode", "", font_path)
-            pdf.set_font("ArialUnicode", size=12)
-        except:
+        # Font Ayarı
+        # Docker/Linux ve Mac için yaygın font yolları
+        possible_fonts = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/TTF/DejaVuSans.ttf",
+            "/Library/Fonts/Arial Unicode.ttf",
+            "Arial.ttf" # Local copy if exists
+        ]
+        
+        font_loaded = False
+        for fpath in possible_fonts:
+            if os.path.exists(fpath):
+                try:
+                    pdf.add_font("UnicodeFont", "", fpath)
+                    pdf.set_font("UnicodeFont", size=12)
+                    font_loaded = True
+                    break
+                except:
+                    continue
+        
+        if not font_loaded:
             pdf.set_font("Helvetica", size=12)
 
         # Başlık Bölümü

@@ -167,30 +167,42 @@
                                 <th>Video</th>
                                 <th>Durum</th>
                                 <th>Tarih</th>
-                                <th>İşlemler</th>
+                                <th>Haberleşme</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for req in analyses %}
                             <tr>
                                 <td>
-                                    <div style="font-weight:600; font-size:0.9rem;">{{ req.video_title or "Video Çekiliyor..." }}</div>
-                                    <div style="font-size:0.75rem; color:var(--text-muted); word-break: break-all;">{{ req.video_url[:40] }}...</div>
+                                    <div style="font-weight:600; font-size:0.95rem;">{{ req.video_title or "Video Çekiliyor..." }}</div>
+                                    <div style="font-size:0.8rem; color:var(--text-muted); word-break: break-all;">{{ req.video_url[:45] }}...</div>
                                 </td>
                                 <td>
+                                    {% if req.status == 'error' %}
+                                    <span class="status-badge status-error" title="{{ req.error_message }}" style="cursor:help;">
+                                        <i class="fa-solid fa-circle-exclamation"></i> Hata
+                                    </span>
+                                    {% else %}
                                     <span class="status-badge status-{{ req.status }}">
                                         {{ req.status.capitalize() }}
                                     </span>
+                                    {% endif %}
                                 </td>
                                 <td>{{ req.created_at.strftime('%d.%m.%Y') }}</td>
                                 <td>
                                     {% if req.status == 'completed' %}
-                                    <div style="display:flex; gap:5px; flex-wrap: wrap;">
+                                    <div style="display:flex; gap:10px;">
                                         <a href="/report/download/{{ req.id }}?format=excel" class="btn-primary btn-sm" title="Excel İndir"><i class="fa-solid fa-file-excel"></i> Excel</a>
                                         <a href="/report/download/{{ req.id }}?format=pdf" class="btn-primary btn-sm" style="background:#ef4444; border:none;" title="PDF İndir"><i class="fa-solid fa-file-pdf"></i> PDF</a>
                                     </div>
+                                    {% elif req.status == 'error' %}
+                                    <form action="/dashboard/retry/{{ req.id }}" method="POST" style="margin:0;">
+                                        <button type="submit" class="btn-secondary btn-sm" style="border:1px solid var(--accent); color:var(--accent);">
+                                            <i class="fa-solid fa-arrows-rotate"></i> Yeniden Dene
+                                        </button>
+                                    </form>
                                     {% else %}
-                                    <span style="color:var(--text-muted); font-size:0.8rem;">İşlemde...</span>
+                                    <span style="color:var(--text-muted); font-size:0.9rem;"><i class="fa-solid fa-spinner fa-spin"></i> İşleniyor...</span>
                                     {% endif %}
                                 </td>
                             </tr>
