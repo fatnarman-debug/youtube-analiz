@@ -520,7 +520,7 @@ async def admin_analyses_page(request: Request, db: Session = Depends(get_db)):
     if session != "authenticated":
         return RedirectResponse(url="/girisburdan")
         
-    analyses = db.query(models.AnalysisRequest).order_by(models.AnalysisRequest.desc()).all()
+    analyses = db.query(models.AnalysisRequest).order_by(models.AnalysisRequest.id.desc()).all()
     return templates.TemplateResponse(
         request=request, 
         name="admin_analyses.html", 
