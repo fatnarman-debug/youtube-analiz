@@ -579,17 +579,22 @@ class YouTubeCommentAnalyzer:
         # Font Ayarı
         # Docker/Linux ve Mac için yaygın font yolları
         possible_fonts = [
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            "/usr/share/fonts/TTF/DejaVuSans.ttf",
-            "/Library/Fonts/Arial Unicode.ttf",
-            "Arial.ttf" # Local copy if exists
+            ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
+            ("/usr/share/fonts/TTF/DejaVuSans.ttf", "/usr/share/fonts/TTF/DejaVuSans-Bold.ttf"),
+            ("/Library/Fonts/Arial Unicode.ttf", "/Library/Fonts/Arial Unicode.ttf"), # Mac fallback
         ]
         
         font_loaded = False
-        for fpath in possible_fonts:
-            if os.path.exists(fpath):
+        for reg_path, bold_path in possible_fonts:
+            if os.path.exists(reg_path):
                 try:
-                    pdf.add_font("UnicodeFont", "", fpath)
+                    pdf.add_font("UnicodeFont", "", reg_path)
+                    if os.path.exists(bold_path):
+                        pdf.add_font("UnicodeFont", "B", bold_path)
+                    else:
+                        # Kalın font yoksa normali kalın olarak da kullan
+                        pdf.add_font("UnicodeFont", "B", reg_path)
+                        
                     pdf.set_font("UnicodeFont", size=12)
                     font_loaded = True
                     break
@@ -597,7 +602,7 @@ class YouTubeCommentAnalyzer:
                     continue
         
         if not font_loaded:
-            pdf.set_font("Helvetica", size=12)
+            pdf.set_font("Helvetica", size=11)
 
         # Başlık Bölümü
         pdf.set_font(style='B', size=20)
