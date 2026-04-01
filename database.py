@@ -36,10 +36,21 @@ else:
     SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
     STORAGE_TYPE = "Yerel Klasör (YALNIZCA GELİŞTİRME - GÖÇEBE)"
 
+# Veritabanı dosyasının olduğu klasörün varlığından emin olalım.
+# SQLite bir dosyaya yazacağı zaman klasörü otomatik oluşturmaz, bu yüzden bir hata alabiliriz.
+db_file_path = None
+if SQLALCHEMY_DATABASE_URL.startswith("sqlite:///"):
+    path_str = SQLALCHEMY_DATABASE_URL.replace("sqlite:///", "")
+    db_file_path = Path(path_str)
+    # Üst klasörü (örneğin /data) oluştur
+    os.makedirs(db_file_path.parent, exist_ok=True)
+
 print(f"{'='*50}")
 print(f"VERİTABANI YAPILANDIRMASI:")
 print(f"  - Depolama Tipi: {STORAGE_TYPE}")
 print(f"  - URL: {SQLALCHEMY_DATABASE_URL}")
+if db_file_path:
+    print(f"  - Dosya Mevcut mu: {'Evet' if db_file_path.exists() else 'Hayır (Yeni oluşturulacak)'}")
 print(f"{'='*50}")
 
 engine = create_engine(
