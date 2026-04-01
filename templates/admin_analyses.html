@@ -112,23 +112,40 @@
         </div>
 
         <!-- System Storage Info -->
-        <div style="margin-top: 2rem; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.85rem; color: #64748b;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                <div>
-                    <strong>📁 Depolama Durumu:</strong> 
-                    <span style="color: {% if 'KALICI' in storage_type %}#10b981{% else %}#ef4444{% endif %}; font-weight: 700;">
-                        {{ storage_type }}
-                    </span>
+        <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 0.9rem; color: #64748b; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;">
+                <div style="flex: 1; min-width: 300px;">
+                    <div style="margin-bottom: 0.5rem;">
+                        <strong>📁 Depolama Türü:</strong> 
+                        <span style="color: #475569; font-weight: 600;">{{ storage_type }}</span>
+                    </div>
+                    <div style="margin-bottom: 0.5rem;">
+                        <strong>📍 Veritabanı Yolu:</strong> <code style="background: #e2e8f0; padding: 2px 4px; border-radius: 4px;">{{ db_url }}</code>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <strong>🛡️ Güvenlik Testi (Persistence Check):</strong> 
+                        {% if is_mount %}
+                        <span style="color: #10b981; font-weight: 700;">
+                            <i class="fa-solid fa-circle-check"></i> AKTİF (Kalıcı Volume Bağlı)
+                        </span>
+                        {% else %}
+                        <span style="color: #ef4444; font-weight: 700;">
+                            <i class="fa-solid fa-circle-xmark"></i> PASİF (Geçici Depolama!)
+                        </span>
+                        <p style="margin-top: 0.5rem; color: #ef4444; font-size: 0.8rem; font-weight: 600;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> DİKKAT: Coolify Volume ayarlarınızda bir sorun olabilir. 
+                            Veriler her güncellemede silinecektir. Lütfen "Destination Path" kısmının "/data" olduğundan emin olun.
+                        </p>
+                        {% endif %}
+                    </div>
                 </div>
-                <div>
-                    <strong>📍 Aktif Bölge:</strong> {{ db_url }}
+                <div style="text-align: right;">
+                    <a href="/admin/download_db" class="btn-primary" style="background: #6366f1; border: none; text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; display: inline-block;">
+                        <i class="fa-solid fa-download"></i> Veritabanını İndir (.db)
+                    </a>
+                    <p style="font-size: 0.75rem; margin-top: 0.5rem; color: #94a3b8;">Sorun analizi için dosyayı indirip kontrol edebilirsiniz.</p>
                 </div>
             </div>
-            {% if 'KALICI' not in storage_type %}
-            <div style="margin-top: 0.5rem; color: #ef4444; font-weight: 600;">
-                <i class="fa-solid fa-triangle-exclamation"></i> UYARI: Şu an geçici depolama kullanılıyor. Veri kaybını önlemek için Coolify VOLUME ayarlarını yapın.
-            </div>
-            {% endif %}
         </div>
     </main>
 

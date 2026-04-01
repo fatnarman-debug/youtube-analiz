@@ -521,16 +521,32 @@ async def admin_analyses_page(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/girisburdan")
         
     analyses = db.query(models.AnalysisRequest).order_by(models.AnalysisRequest.id.desc()).all()
-    from database import SQLALCHEMY_DATABASE_URL
+    from database import SQLALCHEMY_DATABASE_URL, actual_mount
     return templates.TemplateResponse(
         request=request, 
         name="admin_analyses.html", 
         context={
             "analyses": analyses,
             "storage_type": STORAGE_TYPE,
-            "db_url": SQLALCHEMY_DATABASE_URL
+            "db_url": SQLALCHEMY_DATABASE_URL,
+            "is_mount": actual_mount
         }
     )
+
+@app.get("/admin/download_db")
+async def download_db(request: Request):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        raise HTTPException(status_code=401, detail="Yetkisiz erişim.")
+    
+    from database import db_file_path
+    if db_file_path and db_file_path.exists():
+        return FileResponse(
+            path=str(db_file_path),
+            filename="vidinsight_backup.db",
+            media_type="application/x-sqlite3"
+        )
+    return {"error": "Veritabanı dosyası bulunamadı."}
 
 @app.get("/admin/analysis_error/{analysis_id}")
 async def get_analysis_error(analysis_id: int, db: Session = Depends(get_db)):

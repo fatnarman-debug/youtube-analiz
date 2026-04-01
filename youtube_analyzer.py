@@ -576,32 +576,43 @@ class YouTubeCommentAnalyzer:
         pdf = FPDF()
         pdf.add_page()
         
-        # Font Ayarı
-        # Docker/Linux ve Mac için yaygın font yolları
-        possible_fonts = [
-            ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
-            ("/usr/share/fonts/TTF/DejaVuSans.ttf", "/usr/share/fonts/TTF/DejaVuSans-Bold.ttf"),
-            ("/Library/Fonts/Arial Unicode.ttf", "/Library/Fonts/Arial Unicode.ttf"), # Mac fallback
+        # Font Ayarı (Regular, Bold, Italic, Bold-Italic)
+        # Linux/Docker DejaVu font yolları
+        font_base = "/usr/share/fonts/truetype/dejavu/DejaVuSans"
+        font_variants = [
+            ("", f"{font_base}.ttf"),
+            ("B", f"{font_base}-Bold.ttf"),
+            ("I", f"{font_base}-Oblique.ttf"),
+            ("BI", f"{font_base}-BoldOblique.ttf"),
         ]
         
-        font_loaded = False
-        for reg_path, bold_path in possible_fonts:
-            if os.path.exists(reg_path):
+        main_font_loaded = False
+        for style, fpath in font_variants:
+            if os.path.exists(fpath):
                 try:
-                    pdf.add_font("UnicodeFont", "", reg_path)
-                    if os.path.exists(bold_path):
-                        pdf.add_font("UnicodeFont", "B", bold_path)
-                    else:
-                        # Kalın font yoksa normali kalın olarak da kullan
-                        pdf.add_font("UnicodeFont", "B", reg_path)
-                        
-                    pdf.set_font("UnicodeFont", size=12)
-                    font_loaded = True
-                    break
+                    pdf.add_font("UnicodeFont", style, fpath)
+                    if style == "": main_font_loaded = True
                 except:
-                    continue
+                    pass
         
-        if not font_loaded:
+        # Mac Fallback (Arial Unicode)
+        if not main_font_loaded:
+            mac_font = "/Library/Fonts/Arial Unicode.ttf"
+            if os.path.exists(mac_font):
+                try:
+                    pdf.add_font("UnicodeFont", "", mac_font)
+                    pdf.add_font("UnicodeFont", "B", mac_font)
+                    pdf.add_font("UnicodeFont", "I", mac_font)
+                    pdf.add_font("UnicodeFont", "BI", mac_font)
+                    main_font_loaded = True
+                except:
+                    pass
+
+        if main_font_loaded:
+            pdf.set_font("UnicodeFont", size=12)
+        else:
+            # Kritik: Eğer Unicode font yüklenemediyse bile hata vermesin, 
+            # standart Helvetica'ya dönüp devam etsin (Türkçe karakterler bozulabilir ama uygulama çökmez).
             pdf.set_font("Helvetica", size=11)
 
         # Başlık Bölümü
