@@ -20,10 +20,10 @@ DATABASE_PATH = os.getenv("DATABASE_PATH")
 
 if DATABASE_URL:
     SQLALCHEMY_DATABASE_URL = DATABASE_URL
-    STORAGE_TYPE = "Sistem Değişkeni (URL - Dış Kaynak)"
+    STORAGE_TYPE = "Sistem Değişkeni (URL - KALICI)"
 elif DATABASE_PATH:
     SQLALCHEMY_DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
-    STORAGE_TYPE = "Sistem Değişkeni (PATH - Dış Kaynak)"
+    STORAGE_TYPE = "Sistem Değişkeni (PATH - KALICI)"
 elif os.path.exists("/data"):
     # /data klasörü varsa (Volume bağlanmışsa) orayı kullanırız.
     DB_PATH = Path("/data/vidinsight.db")
