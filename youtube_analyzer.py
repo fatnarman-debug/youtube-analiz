@@ -16,6 +16,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import emoji
 from collections import Counter
 import time
+import os
 from fpdf import FPDF
 import textwrap
 

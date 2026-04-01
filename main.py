@@ -7,7 +7,7 @@ from pathlib import Path
 import os
 import models
 import traceback
-from database import engine, get_db, SessionLocal
+from database import engine, get_db, SessionLocal, STORAGE_TYPE
 from auth import get_password_hash, verify_password, create_access_token, decode_access_token
 from youtube_analyzer import YouTubeCommentAnalyzer
 import datetime
@@ -521,10 +521,15 @@ async def admin_analyses_page(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/girisburdan")
         
     analyses = db.query(models.AnalysisRequest).order_by(models.AnalysisRequest.id.desc()).all()
+    from database import SQLALCHEMY_DATABASE_URL
     return templates.TemplateResponse(
         request=request, 
         name="admin_analyses.html", 
-        context={"analyses": analyses}
+        context={
+            "analyses": analyses,
+            "storage_type": STORAGE_TYPE,
+            "db_url": SQLALCHEMY_DATABASE_URL
+        }
     )
 
 @app.get("/admin/analysis_error/{analysis_id}")
