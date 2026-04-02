@@ -78,6 +78,12 @@ def check_and_renew_credits(user: models.User, db: Session):
         return
 
     now = datetime.datetime.utcnow()
+    # Eğer yenileme tarihi yoksa (eski kullanıcı), bugünü ata ve çık
+    if not user.last_renewal_date:
+        user.last_renewal_date = now
+        db.commit()
+        return
+
     # Eğer son yenilemeden beri 30 gün geçmişse
     if (now - user.last_renewal_date).days >= 30:
         # Planlara göre kredi sıfırla ve yeni hak tanımla
