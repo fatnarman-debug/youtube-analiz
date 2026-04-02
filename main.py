@@ -23,27 +23,61 @@ BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 TEMPLATES_DIR = BASE_DIR / "templates"
 
-# Create database tables
-try:
+# --- SIFIRDAN TEMIZ KURULUM MEKANIZMASI (Clean Setup) ---
+RESET_FLAG = os.path.join(STORAGE_ROOT, "clean_setup_v3.done")
+db_path = os.path.join(STORAGE_ROOT, "vidinsight.db")
+
+if not os.path.exists(RESET_FLAG):
+    print("!!! TEMİZ KURULUM BAŞLATILIYOR (Veritabanı Sıfırlanıyor)...")
+    if os.path.exists(db_path):
+        try:
+            os.remove(db_path)
+            print("Eski veritabanı silindi.")
+        except Exception as e:
+            print(f"Hata: Eski db silinemedi: {e}")
+    
+    # Tabloları yarat
     models.Base.metadata.create_all(bind=engine)
-    # Mevcut veritabanına yeni sütunları eklemek için (Alembic kullanmadığımız için manuel kontrol)
-    with engine.connect() as conn:
-        from sqlalchemy import text
-        print("Veritabanı sütunları kontrol ediliyor...")
-        # credits sütunu yoksa ekle
-        try: conn.execute(text("ALTER TABLE users ADD COLUMN credits INTEGER DEFAULT 1"))
-        except Exception as e: print(f"Bilgi: credits sütunu zaten olabilir veya eklenemedi: {e}")
-        # subscription_plan sütunu yoksa ekle
-        try: conn.execute(text("ALTER TABLE users ADD COLUMN subscription_plan VARCHAR(50) DEFAULT 'free'"))
-        except Exception as e: print(f"Bilgi: subscription_plan sütunu zaten olabilir veya eklenemedi: {e}")
-        # last_renewal_date sütunu yoksa ekle
-        try: conn.execute(text("ALTER TABLE users ADD COLUMN last_renewal_date DATETIME"))
-        except Exception as e: print(f"Bilgi: last_renewal_date sütunu zaten olabilir veya eklenemedi: {e}")
-        conn.commit()
-    print("Veritabanı kontrolü tamamlandı.")
-except Exception as e:
-    print(f"!!! VERİTABANI HATASI (Startup): {e}")
-    traceback.print_exc()
+    
+    # Admin Hesabını Yeniden Oluştur
+    db = SessionLocal()
+    try:
+        admin_user = db.query(models.User).filter(models.User.username == "hadibaslayalım").first()
+        if not admin_user:
+            new_admin = models.User(
+                username="hadibaslayalım",
+                email="admin@vid-insight.com",
+                full_name="Admin",
+                password_hash=get_password_hash("12345678qw.ASX"),
+                credits=999999,
+                subscription_plan="agency"
+            )
+            db.add(new_admin)
+            db.commit()
+            print("Admin hesabı otomatik oluşturuldu.")
+        
+        # Reset flag dosyasını yarat (Bir daha sıfırlamasın diye)
+        with open(RESET_FLAG, "w") as f:
+            f.write("done")
+    except Exception as e:
+        print(f"Admin oluşturma hatası: {e}")
+    finally:
+        db.close()
+    print("Temiz kurulum tamamlandı.")
+else:
+    # Normal Başlatma + Sütun Kontrolü
+    try:
+        models.Base.metadata.create_all(bind=engine)
+        with engine.connect() as conn:
+            from sqlalchemy import text
+            try: conn.execute(text("ALTER TABLE users ADD COLUMN credits INTEGER DEFAULT 1"))
+            except: pass
+            try: conn.execute(text("ALTER TABLE users ADD COLUMN subscription_plan VARCHAR(50) DEFAULT 'free'"))
+            except: pass
+            try: conn.execute(text("ALTER TABLE users ADD COLUMN last_renewal_date DATETIME"))
+            except: pass
+            conn.commit()
+    except: pass
 
 # Stripe Configuration with extra safety
 try:
