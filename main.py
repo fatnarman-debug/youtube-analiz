@@ -26,7 +26,20 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 # Create database tables
 try:
     models.Base.metadata.create_all(bind=engine)
-    print("Veritabanı tabloları hazır.")
+    # Mevcut veritabanına yeni sütunları eklemek için (Alembic kullanmadığımız için manuel kontrol)
+    with engine.connect() as conn:
+        from sqlalchemy import text
+        # credits sütunu yoksa ekle
+        try: conn.execute(text("ALTER TABLE users ADD COLUMN credits INTEGER DEFAULT 1"))
+        except: pass
+        # subscription_plan sütunu yoksa ekle
+        try: conn.execute(text("ALTER TABLE users ADD COLUMN subscription_plan VARCHAR(50) DEFAULT 'free'"))
+        except: pass
+        # last_renewal_date sütunu yoksa ekle
+        try: conn.execute(text("ALTER TABLE users ADD COLUMN last_renewal_date DATETIME"))
+        except: pass
+        conn.commit()
+    print("Veritabanı tabloları ve sütunları güncel.")
 except Exception as e:
     print("!!! VERİTABANI HATASI (Startup):")
     traceback.print_exc()
