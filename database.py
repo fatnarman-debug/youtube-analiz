@@ -45,21 +45,25 @@ if not IS_PREVIOUSLY_PERSISTENT:
 
 # UI için durum etiketleri
 if IS_PREVIOUSLY_PERSISTENT:
-    STORAGE_STATUS = "KESİN KALICI ✅ (Disk Bağlı)"
+    STORAGE_STATUS = "KESIN KALICI ✅ (Disk Bagli)"
 else:
-    STORAGE_STATUS = "İLK KURULUM / TEST ⏳ (Veriler ilk restartta kontrol edilecek)"
+    STORAGE_STATUS = "ILK KURULUM / TEST ⏳ (Veriler ilk restartta kontrol edilecek)"
 
 print(f"{'='*60}")
-print(f"VERİTABANI DURUMU:")
-print(f"  - Kök Dizin: {STORAGE_ROOT}")
+print(f"VERITABANI DURUMU:")
+print(f"  - Kok Dizin: {STORAGE_ROOT}")
 print(f"  - Durum: {STORAGE_STATUS}")
 print(f"{'='*60}")
 
-# VERITABANI ISMINI DEGISTIREREK TAZE BASLANGIC ZORLA
-DATABASE_URL = f"sqlite:///{os.path.join(STORAGE_ROOT, 'vidinsight_v2.db')}"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+# VERITABANI ISMINI VE YOLUNU EN BASITE INDIRGE (PERMISSION FIX)
+DATABASE_URL = "sqlite:///./vidinsight_final.db"
+try:
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    Base = declarative_base()
+except Exception as e:
+    print(f"CRITICAL: Veritabani baglantisi kurulamadi: {e}")
+    raise
 
 def get_db():
     db = SessionLocal()

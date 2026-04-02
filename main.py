@@ -23,53 +23,27 @@ BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 TEMPLATES_DIR = BASE_DIR / "templates"
 
-# --- SIFIRDAN TEMIZ KURULUM MEKANIZMASI (Clean Setup) ---
-# v2db dosyasını kullandığımız için flag ismini de güncelliyoruz
-RESET_FLAG = os.path.join(STORAGE_ROOT, "clean_setup_v4_v2db.done")
-
-if not os.path.exists(RESET_FLAG):
-    print("!!! YENİ VERİTABANI OLUŞTURULUYOR... (v2db)")
-    # Tabloları yarat
+# --- ZIRHLI BASLATMA VE KURULUM ---
+try:
     models.Base.metadata.create_all(bind=engine)
-    
-    # Admin Hesabını Yeniden Oluştur
     db = SessionLocal()
-    try:
-        # Şifrelenmiş admin şifresi: 12345678qw.ASX
+    # Admin 'hadibaslayalim' (Turkce karakter icermez)
+    admin_exists = db.query(models.User).filter(models.User.username == "hadibaslayalim").first()
+    if not admin_exists:
         new_admin = models.User(
-            username="hadibaslayalım",
+            username="hadibaslayalim",
             email="admin@vid-insight.com",
-            full_name="Admin",
+            full_name="Admin User",
             password_hash=get_password_hash("12345678qw.ASX"),
             credits=999999,
             subscription_plan="agency"
         )
         db.add(new_admin)
         db.commit()
-        print("Admin hesabı (hadibaslayalım) otomatik oluşturuldu.")
-        
-        # Reset flag dosyasını yarat
-        with open(RESET_FLAG, "w") as f:
-            f.write("done")
-    except Exception as e:
-        print(f"Admin oluşturma hatası: {e}")
-    finally:
-        db.close()
-    print("Temiz kurulum v2db tamamlandı.")
-else:
-    # Normal Başlatma + Sütun Kontrolü (Gerekirse)
-    try:
-        models.Base.metadata.create_all(bind=engine)
-        with engine.connect() as conn:
-            from sqlalchemy import text
-            try: conn.execute(text("ALTER TABLE users ADD COLUMN credits INTEGER DEFAULT 1"))
-            except: pass
-            try: conn.execute(text("ALTER TABLE users ADD COLUMN subscription_plan VARCHAR(50) DEFAULT 'free'"))
-            except: pass
-            try: conn.execute(text("ALTER TABLE users ADD COLUMN last_renewal_date DATETIME"))
-            except: pass
-            conn.commit()
-    except: pass
+    db.close()
+    print("Sistem basariyla hazirlandi.")
+except Exception as e:
+    print(f"Sistem baslatma hatasi (Gozardi edildi): {e}")
 
 # Stripe Configuration with extra safety
 try:
@@ -81,6 +55,21 @@ except Exception as e:
     print(f"!!! STRIPE YAPILANDIRMA HATASI: {e}")
 
 app = FastAPI()
+
+# --- GLOBAL HATA YAKALAYICI (DEBUG) ---
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    error_detail = traceback.format_exc()
+    print(f"!!! GLOBAL HATA: {error_detail}")
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": "Sunucu tarafında global bir hata oluştu.",
+            "error": str(exc),
+            "traceback": error_detail
+        }
+    )
 
 # Setup Templates and Static Files
 if STATIC_DIR.exists():
@@ -169,21 +158,35 @@ async def signup_post(request: Request,
                       email: str = Form(...),
                       full_name: str = Form(...),
                       password: str = Form(...),
-                      db: Session = Depends(get_db)):
-    
-    # Check if exists
-    if db.query(models.User).filter((models.User.username == username) | (models.User.email == email)).first():
-        return templates.TemplateResponse(request=request, name="signup.html", context={"error": "Bu kullanıcı adı veya e-posta zaten kullanımda."})
-    
-    new_user = models.User(
-        username=username,
-        email=email,
-        full_name=full_name,
-        password_hash=get_password_hash(password)
-    )
-    db.add(new_user)
-    db.commit()
-    return RedirectResponse(url="/giris?success=true", status_code=status.HTTP_303_SEE_OTHER)
+                      db: Session = Depends(get_db)
+):
+    try:
+        # Check if username or email exists
+        user_exists = db.query(models.User).filter(
+            (models.User.username == username) | (models.User.email == email)
+        ).first()
+        
+        if user_exists:
+            return templates.TemplateResponse(request=request, name="user_signup.html", context={
+                "request": request, "error": "Bu kullanıcı adı veya e-posta zaten kullanımda."
+            })
+
+        new_user = models.User(
+            username=username,
+            email=email,
+            full_name=full_name,
+            password_hash=get_password_hash(password)
+        )
+        new_user.credits = 1
+        new_user.subscription_plan = "free"
+        new_user.last_renewal_date = datetime.datetime.utcnow()
+
+        db.add(new_user)
+        db.commit()
+        return RedirectResponse(url="/giris?msg=success", status_code=status.HTTP_303_SEE_OTHER)
+    except Exception as e:
+        err_msg = traceback.format_exc()
+        return JSONResponse(status_code=500, content={"error": str(e), "traceback": err_msg})
 
 @app.get("/cikis")
 async def logout():
