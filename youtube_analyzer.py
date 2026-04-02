@@ -594,6 +594,13 @@ class YouTubeCommentAnalyzer:
                     if style == "": main_font_loaded = True
                 except:
                     pass
+            elif main_font_loaded:
+                # Eğer ana font (regular) yüklendiyse ama bu varyasyon yoksa 
+                # çökmemesi için ana fontu bu stil için de tanıtalım (Sahte kalın/eğik)
+                try:
+                    pdf.add_font("UnicodeFont", style, font_variants[0][1])
+                except:
+                    pass
         
         # Mac Fallback (Arial Unicode)
         if not main_font_loaded:

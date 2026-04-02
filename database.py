@@ -57,7 +57,7 @@ if SQLALCHEMY_DATABASE_URL.startswith("sqlite:///"):
 
 # Kalıcılık (Persistence) Takibi
 # Bu kısım, sunucu her başladığında bir dosya oluşturur / kontrol eder.
-# Eğer dosya bir önceki açılıştan kalmışsa STORAGE_TYPE "KESİN KALICI" olur.
+# Eğer dosya bir önceki açılıştan kalmışsa STORAGE_TYPE "KESİN KALICI ✅" olur.
 HEARTBEAT_FILE = None
 IS_PREVIOUSLY_PERSISTENT = False
 if db_file_path:
@@ -71,18 +71,7 @@ if db_file_path:
         except:
             pass
 
-# Ek Kontrol: Mount point mi? (Linux için)
-def is_mount(path):
-    if not os.path.exists(path): return False
-    try:
-        # /proc/mounts kontrolü en kesin yöntemdir ama biraz karmaşıktır.
-        # Basitçe dosya sisteminin farklı olup olmadığına bakabiliriz.
-        # is_persistent_flag = os.path.ismount(path) # Bazen Docker'da yanıltıcı olabilir.
-        return True # Eğer /data içindeyse ve bu kod çalışıyorsa şimdilik True diyelim.
-    except:
-        return False
-
-# Nihai karar: Eğer biz bir önceki açılıştan dosyayı bulduysak %100 kalıcıdır.
+# Nihai karar (UI için)
 if IS_PREVIOUSLY_PERSISTENT:
     STORAGE_TYPE = STORAGE_TYPE.replace("KALICI", "KESİN KALICI ✅")
 else:
@@ -94,7 +83,7 @@ print(f"{'='*60}")
 print(f"VERİTABANI DURUMU:")
 print(f"  - Depolama Tipi: {STORAGE_TYPE}")
 print(f"  - URL: {SQLALCHEMY_DATABASE_URL}")
-print(f"  - Gerçek Volume mi?: {'EVET (GÜVENLİ)' if actual_mount else 'HAYIR (GEÇİCİ!)'}")
+print(f"  - Kalıcılık Testi: {'BAŞARILI (Dosya bulundu)' if actual_mount else 'İLK AÇILIŞ (Dosya oluşturuldu)'}")
 if db_file_path:
     size = 0
     if db_file_path.exists(): size = os.path.getsize(db_file_path) / 1024
