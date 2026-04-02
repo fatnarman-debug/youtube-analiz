@@ -29,20 +29,30 @@ try:
     # Mevcut veritabanına yeni sütunları eklemek için (Alembic kullanmadığımız için manuel kontrol)
     with engine.connect() as conn:
         from sqlalchemy import text
+        print("Veritabanı sütunları kontrol ediliyor...")
         # credits sütunu yoksa ekle
         try: conn.execute(text("ALTER TABLE users ADD COLUMN credits INTEGER DEFAULT 1"))
-        except: pass
+        except Exception as e: print(f"Bilgi: credits sütunu zaten olabilir veya eklenemedi: {e}")
         # subscription_plan sütunu yoksa ekle
         try: conn.execute(text("ALTER TABLE users ADD COLUMN subscription_plan VARCHAR(50) DEFAULT 'free'"))
-        except: pass
+        except Exception as e: print(f"Bilgi: subscription_plan sütunu zaten olabilir veya eklenemedi: {e}")
         # last_renewal_date sütunu yoksa ekle
         try: conn.execute(text("ALTER TABLE users ADD COLUMN last_renewal_date DATETIME"))
-        except: pass
+        except Exception as e: print(f"Bilgi: last_renewal_date sütunu zaten olabilir veya eklenemedi: {e}")
         conn.commit()
-    print("Veritabanı tabloları ve sütunları güncel.")
+    print("Veritabanı kontrolü tamamlandı.")
 except Exception as e:
-    print("!!! VERİTABANI HATASI (Startup):")
+    print(f"!!! VERİTABANI HATASI (Startup): {e}")
     traceback.print_exc()
+
+# Stripe Configuration with extra safety
+try:
+    STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "sk_test_placeholder")
+    STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "whsec_9kskzuBvWaIY8Kkr3VsnFNZKpfy4RKuN")
+    stripe.api_key = STRIPE_SECRET_KEY
+    print("Stripe yapılandırması yüklendi.")
+except Exception as e:
+    print(f"!!! STRIPE YAPILANDIRMA HATASI: {e}")
 
 app = FastAPI()
 
