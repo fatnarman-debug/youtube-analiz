@@ -57,18 +57,18 @@ def get_current_user(request: Request, db: Session):
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
     user = get_current_user(request, db)
-    return templates.TemplateResponse("index.html", {"request": request, "user": user})
+    return templates.TemplateResponse(request=request, name="index.html", context={"user": user})
 
 @app.get("/giris", response_class=HTMLResponse)
 async def user_login_get(request: Request, error: str = None, success: bool = False):
-    return templates.TemplateResponse("user_login.html", {"request": request, "error": error, "success": success})
+    return templates.TemplateResponse(request=request, name="user_login.html", context={"error": error, "success": success})
 
 @app.post("/giris")
 async def user_login_post(request: Request, email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     # Email VEYA Username ile giriş
     user = db.query(models.User).filter((models.User.email == email) | (models.User.username == email)).first()
     if not user or not verify_password(password, user.password_hash):
-        return templates.TemplateResponse("user_login.html", {"request": request, "error": "Geçersiz bilgiler."})
+        return templates.TemplateResponse(request=request, name="user_login.html", context={"error": "Geçersiz bilgiler."})
     
     token = create_access_token(data={"sub": user.username})
     response = RedirectResponse(url="/dashboard", status_code=status.HTTP_303_SEE_OTHER)
@@ -77,7 +77,7 @@ async def user_login_post(request: Request, email: str = Form(...), password: st
 
 @app.get("/kayit", response_class=HTMLResponse)
 async def signup_get(request: Request, error: str = None):
-    return templates.TemplateResponse("signup.html", {"request": request, "error": error})
+    return templates.TemplateResponse(request=request, name="signup.html", context={"error": error})
 
 @app.post("/kayit")
 async def signup_post(request: Request, 
@@ -89,7 +89,7 @@ async def signup_post(request: Request,
     
     # Check if exists
     if db.query(models.User).filter((models.User.username == username) | (models.User.email == email)).first():
-        return templates.TemplateResponse("signup.html", {"request": request, "error": "Bu kullanıcı adı veya e-posta zaten kullanımda."})
+        return templates.TemplateResponse(request=request, name="signup.html", context={"error": "Bu kullanıcı adı veya e-posta zaten kullanımda."})
     
     new_user = models.User(
         username=username,
@@ -114,7 +114,7 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
     if not user: return RedirectResponse(url="/giris")
     
     analyses = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.user_id == user.id).order_by(models.AnalysisRequest.id.desc()).all()
-    return templates.TemplateResponse("dashboard.html", {"request": request, "user": user, "analyses": analyses})
+    return templates.TemplateResponse(request=request, name="dashboard.html", context={"user": user, "analyses": analyses})
 
 @app.post("/analyze")
 async def create_analysis(request: Request, video_url: str = Form(...), db: Session = Depends(get_db)):
@@ -148,7 +148,7 @@ async def download_report(request_id: int, request: Request, db: Session = Depen
 # --- ADMIN ROUTES ---
 @app.get("/girisburdan", response_class=HTMLResponse)
 async def admin_login_get(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="login.html", context={})
 
 @app.post("/girisburdan")
 async def admin_login_post(username: str = Form(...), password: str = Form(...)):

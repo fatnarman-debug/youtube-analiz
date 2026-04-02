@@ -25,5 +25,5 @@ gemini_prompt_*.txt
 # Database
 vidinsight.db
 
-# Reports folder
-static/reports/
+# Storage
+storage/
