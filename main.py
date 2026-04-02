@@ -24,48 +24,40 @@ STATIC_DIR = BASE_DIR / "static"
 TEMPLATES_DIR = BASE_DIR / "templates"
 
 # --- SIFIRDAN TEMIZ KURULUM MEKANIZMASI (Clean Setup) ---
-RESET_FLAG = os.path.join(STORAGE_ROOT, "clean_setup_v3.done")
-db_path = os.path.join(STORAGE_ROOT, "vidinsight.db")
+# v2db dosyasını kullandığımız için flag ismini de güncelliyoruz
+RESET_FLAG = os.path.join(STORAGE_ROOT, "clean_setup_v4_v2db.done")
 
 if not os.path.exists(RESET_FLAG):
-    print("!!! TEMİZ KURULUM BAŞLATILIYOR (Veritabanı Sıfırlanıyor)...")
-    if os.path.exists(db_path):
-        try:
-            os.remove(db_path)
-            print("Eski veritabanı silindi.")
-        except Exception as e:
-            print(f"Hata: Eski db silinemedi: {e}")
-    
+    print("!!! YENİ VERİTABANI OLUŞTURULUYOR... (v2db)")
     # Tabloları yarat
     models.Base.metadata.create_all(bind=engine)
     
     # Admin Hesabını Yeniden Oluştur
     db = SessionLocal()
     try:
-        admin_user = db.query(models.User).filter(models.User.username == "hadibaslayalım").first()
-        if not admin_user:
-            new_admin = models.User(
-                username="hadibaslayalım",
-                email="admin@vid-insight.com",
-                full_name="Admin",
-                password_hash=get_password_hash("12345678qw.ASX"),
-                credits=999999,
-                subscription_plan="agency"
-            )
-            db.add(new_admin)
-            db.commit()
-            print("Admin hesabı otomatik oluşturuldu.")
+        # Şifrelenmiş admin şifresi: 12345678qw.ASX
+        new_admin = models.User(
+            username="hadibaslayalım",
+            email="admin@vid-insight.com",
+            full_name="Admin",
+            password_hash=get_password_hash("12345678qw.ASX"),
+            credits=999999,
+            subscription_plan="agency"
+        )
+        db.add(new_admin)
+        db.commit()
+        print("Admin hesabı (hadibaslayalım) otomatik oluşturuldu.")
         
-        # Reset flag dosyasını yarat (Bir daha sıfırlamasın diye)
+        # Reset flag dosyasını yarat
         with open(RESET_FLAG, "w") as f:
             f.write("done")
     except Exception as e:
         print(f"Admin oluşturma hatası: {e}")
     finally:
         db.close()
-    print("Temiz kurulum tamamlandı.")
+    print("Temiz kurulum v2db tamamlandı.")
 else:
-    # Normal Başlatma + Sütun Kontrolü
+    # Normal Başlatma + Sütun Kontrolü (Gerekirse)
     try:
         models.Base.metadata.create_all(bind=engine)
         with engine.connect() as conn:

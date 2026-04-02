@@ -52,14 +52,12 @@ else:
 print(f"{'='*60}")
 print(f"VERİTABANI DURUMU:")
 print(f"  - Kök Dizin: {STORAGE_ROOT}")
-print(f"  - URL: {SQLALCHEMY_DATABASE_URL}")
 print(f"  - Durum: {STORAGE_STATUS}")
 print(f"{'='*60}")
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-
+# VERITABANI ISMINI DEGISTIREREK TAZE BASLANGIC ZORLA
+DATABASE_URL = f"sqlite:///{os.path.join(STORAGE_ROOT, 'vidinsight_v2.db')}"
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
