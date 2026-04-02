@@ -83,9 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // BAŞARILI DURUM
                 formStatus.innerHTML = '<p class="text-green"><i class="fa-solid fa-check-circle"></i> Başarılı! Ödeme sayfasına aktarılıyorsunuz...</p>';
                 
-                // Müşteriyi 1 saniye sonra stripe linkine yönlendir
+                // Müşteri Panelinı 1 saniye sonra stripe linkine yönlendir
                 setTimeout(() => {
-                    window.location.href = currentStripeLink;
+                    let finalUrl = currentStripeLink;
+                    if (typeof CURRENT_USER_ID !== 'undefined' && CURRENT_USER_ID) {
+                        const separator = finalUrl.includes('?') ? '&' : '?';
+                        finalUrl = `${finalUrl}${separator}client_reference_id=${CURRENT_USER_ID}`;
+                    }
+                    window.location.href = finalUrl;
                 }, 1000);
             } else {
                 // Backend hata döndü

@@ -231,6 +231,9 @@
     </div>
 
     <!-- Footer Script (Now in static/js/script.js) -->
+    <script>
+        const CURRENT_USER_ID = "{{ user.id if user else '' }}";
+    </script>
     <script src="/static/js/script.js"></script>
 </body>
 </html>

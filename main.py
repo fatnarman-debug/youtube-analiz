@@ -11,6 +11,12 @@ import traceback
 from database import engine, get_db, SessionLocal, STORAGE_STATUS, STORAGE_ROOT, REPORTS_DIR
 from auth import get_password_hash, verify_password, create_access_token, decode_access_token
 import datetime
+import stripe
+
+# Stripe Configuration
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "sk_test_51K...yazdırmayalım_simdi") # Buraya gerçek secret key gelmeli
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "whsec_9kskzuBvWaIY8Kkr3VsnFNZKpfy4RKuN")
+stripe.api_key = STRIPE_SECRET_KEY
 
 # Absolute paths for Docker stability
 BASE_DIR = Path(__file__).resolve().parent
@@ -52,6 +58,29 @@ def get_current_user(request: Request, db: Session):
     if not payload: return None
     username = payload.get("sub")
     return db.query(models.User).filter(models.User.username == username).first()
+
+def check_and_renew_credits(user: models.User, db: Session):
+    """Aylık kredi yenileme ve sıfırlama mantığı (Lazy Renewal)"""
+    if user.subscription_plan == "free":
+        return
+
+    now = datetime.datetime.utcnow()
+    # Eğer son yenilemeden beri 30 gün geçmişse
+    if (now - user.last_renewal_date).days >= 30:
+        # Planlara göre kredi sıfırla ve yeni hak tanımla
+        plan_credits = {
+            "creator": 5,
+            "agency": 10,
+            "single": 0 # Single paketler aylık yenilenmez
+        }
+        
+        if user.subscription_plan in plan_credits:
+            new_credits = plan_credits[user.subscription_plan]
+            # Sadece aylık planlar (creator, agency) için yenileme yap
+            if new_credits > 0:
+                user.credits = new_credits
+                user.last_renewal_date = now
+                db.commit()
 
 # --- PUBLIC ROUTES ---
 @app.get("/", response_class=HTMLResponse)
@@ -114,6 +143,10 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
     if not user: return RedirectResponse(url="/giris")
     
     analyses = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.user_id == user.id).order_by(models.AnalysisRequest.id.desc()).all()
+    
+    # Kredileri kontrol et ve yenile
+    check_and_renew_credits(user, db)
+    
     return templates.TemplateResponse(request=request, name="dashboard.html", context={"user": user, "analyses": analyses})
 
 @app.post("/analyze")
@@ -121,11 +154,24 @@ async def create_analysis(request: Request, video_url: str = Form(...), db: Sess
     user = get_current_user(request, db)
     if not user: return RedirectResponse(url="/giris")
     
+    if user.credits <= 0:
+        # Dashboard'a hata mesajıyla dön
+        analyses = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.user_id == user.id).order_by(models.AnalysisRequest.id.desc()).all()
+        return templates.TemplateResponse(request=request, name="dashboard.html", context={
+            "request": request, 
+            "user": user, 
+            "analyses": analyses,
+            "error": "Yetersiz kredi! Lütfen yeni bir paket satın alın."
+        })
+
     new_request = models.AnalysisRequest(
         user_id=user.id,
         video_url=video_url,
         status="pending"
     )
+    # KREDİ DÜŞÜR
+    user.credits -= 1
+    
     db.add(new_request)
     db.commit()
     return RedirectResponse(url="/dashboard", status_code=status.HTTP_303_SEE_OTHER)
@@ -228,6 +274,56 @@ async def admin_logout():
     response = RedirectResponse(url="/")
     response.delete_cookie(ADMIN_SESSION_NAME)
     return response
+
+# --- STRIPE WEBHOOK ---
+@app.post("/stripe-webhook")
+async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature")
+    
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, STRIPE_WEBHOOK_SECRET
+        )
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=400)
+
+    # Ödeme başarılı olduğunda
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        
+        # Kullanıcıyı e-posta veya client_reference_id ile bul
+        customer_email = session.get("customer_details", {}).get("email")
+        client_reference_id = session.get("client_reference_id")
+        
+        user = None
+        if client_reference_id:
+            user = db.query(models.User).filter(models.User.id == int(client_reference_id)).first()
+        elif customer_email:
+            user = db.query(models.User).filter(models.User.email == customer_email).first()
+            
+        if user:
+            # Ödenen miktara veya ürün adlarına göre kredi tanımla
+            # Bu kısımda session["line_items"] veya metadata kullanılabilir.
+            # Şimdilik tutara göre basit bir eşleştirme yapalım (Örn: 5 EUR -> 1, 15 EUR -> 5, 20 EUR -> 10)
+            amount_total = session.get("amount_total", 0) / 100 # Cents to Euro
+            
+            if amount_total <= 5:
+                user.credits += 1
+                user.subscription_plan = "single"
+            elif amount_total <= 15:
+                user.credits = 5
+                user.subscription_plan = "creator"
+                user.last_renewal_date = datetime.datetime.utcnow()
+            elif amount_total <= 20:
+                user.credits = 10
+                user.subscription_plan = "agency"
+                user.last_renewal_date = datetime.datetime.utcnow()
+                
+            db.commit()
+            print(f"Kredi tanımlandı: {user.email} -> {user.credits} hak.")
+
+    return JSONResponse(content={"status": "success"})
 
 # Root redirect
 @app.get("/{path:path}")

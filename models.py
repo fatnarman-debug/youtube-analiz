@@ -13,6 +13,11 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     
+    # Credit & Subscription System
+    credits = Column(Integer, default=1)  # Başlangıçta 1 ücretsiz hak
+    subscription_plan = Column(String(50), default="free")  # free, single, creator, agency
+    last_renewal_date = Column(DateTime, default=datetime.datetime.utcnow)
+    
     analyses = relationship("AnalysisRequest", back_populates="user")
 
 class AnalysisRequest(Base):

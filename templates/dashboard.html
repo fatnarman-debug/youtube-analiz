@@ -57,6 +57,34 @@
         .reports-table tr:hover { background: rgba(255,255,255,0.02); }
 
         .btn-sm { padding: 0.5rem 1rem; font-size: 0.9rem; }
+
+        /* Kredi Kartı Görünümü */
+        .credit-badge {
+            background: linear-gradient(135deg, var(--accent) 0%, #d97706 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 200px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .credit-badge .label { font-size: 0.8rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+        .credit-badge .value { font-size: 2rem; font-weight: 800; }
+        .credit-badge .plan { font-size: 0.9rem; font-weight: 600; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 5px; align-self: flex-start; }
+        
+        .alert-error {
+            background: rgba(220, 38, 38, 0.1);
+            color: #ef4444;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -76,10 +104,21 @@
                 <h1>Merhaba, {{ user.full_name }}</h1>
                 <p>Yeni bir analiz talebi oluşturmak ister misiniz?</p>
             </div>
-            <div class="db-actions">
-                <a href="#submit" class="btn-primary">Yeni Analiz <i class="fa-solid fa-plus"></i></a>
+            <div class="db-actions" style="display: flex; gap: 1.5rem; align-items: center;">
+                <div class="credit-badge">
+                    <span class="label">Kalan Kredi</span>
+                    <span class="value">{{ user.credits }}</span>
+                    <span class="plan">{{ user.subscription_plan|upper }} PAKET</span>
+                </div>
             </div>
         </div>
+
+        {% if error %}
+        <div class="alert-error">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            {{ error }}
+        </div>
+        {% endif %}
 
         <div class="analysis-section">
             <div class="submit-card glass-card" id="submit">
