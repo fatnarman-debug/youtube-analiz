@@ -24,35 +24,6 @@
         .user-welcome h1 { font-size: 2rem; margin: 0; }
         .user-welcome p { color: var(--text-muted); margin: 0; }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-        .stat-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            padding: 1.5rem;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--accent);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-        .stat-info h4 { margin: 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; }
-        .stat-info span { font-size: 1.8rem; font-weight: 800; color: white; }
-
         .analysis-section {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -63,9 +34,6 @@
             .analysis-section { grid-template-columns: 1fr; }
         }
 
-        .submit-card h3 { margin-top: 0; }
-        .reports-card h3 { margin-top: 0; }
-
         .status-badge {
             padding: 4px 10px;
             border-radius: 20px;
@@ -73,9 +41,7 @@
             font-weight: 600;
         }
         .status-pending { background: rgba(245, 158, 11, 0.1); color: var(--accent); }
-        .status-processing { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
         .status-completed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-        .status-error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
         .reports-table {
             width: 100%;
@@ -100,7 +66,7 @@
             <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo" id="nav-logo"></a>
         </div>
         <div class="nav-links">
-            <a href="/cikisyap" class="btn-secondary">Çıkış Yap <i class="fa-solid fa-right-from-bracket"></i></a>
+            <a href="/cikis" class="btn-secondary">Çıkış Yap <i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
     </nav>
 
@@ -108,55 +74,33 @@
         <div class="db-header">
             <div class="user-welcome">
                 <h1>Merhaba, {{ user.full_name }}</h1>
-                <p>Bugün hangi videoyu analiz ediyoruz?</p>
+                <p>Yeni bir analiz talebi oluşturmak ister misiniz?</p>
             </div>
             <div class="db-actions">
                 <a href="#submit" class="btn-primary">Yeni Analiz <i class="fa-solid fa-plus"></i></a>
             </div>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
-                <div class="stat-info">
-                    <h4>Aktif Paket</h4>
-                    <span>{{ package.name if package else "Paket Yok" }}</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fa-solid fa-ticket"></i></div>
-                <div class="stat-info">
-                    <h4>Kalan Analiz Hakkı</h4>
-                    <span>{{ user.credits_remaining }}</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fa-solid fa-calendar"></i></div>
-                <div class="stat-info">
-                    <h4>Yenilenme Tarihi</h4>
-                    <span>{{ user.renewal_date.strftime('%d.%m.%Y') if user.renewal_date else "-" }}</span>
-                </div>
-            </div>
-        </div>
-
         <div class="analysis-section">
             <div class="submit-card glass-card" id="submit">
-                <h3>Analiz Başlat</h3>
-                <p>Paylaşmak istediğiniz videonun linkini aşağıya yapıştırın.</p>
-                <form id="analysisForm">
+                <h3>Analiz Talebi</h3>
+                <p>Analiz edilmesini istediğiniz YouTube video linkini aşağıya ekleyin.</p>
+                <form action="/analyze" method="POST">
                     <div class="input-group">
                         <label for="videoUrl">YouTube Video URL</label>
                         <input type="url" id="videoUrl" name="video_url" placeholder="https://www.youtube.com/watch?v=..." required>
                     </div>
-                    <button type="submit" id="submitBtn" class="btn-primary w-100">
-                        Sıraya Ekle <i class="fa-solid fa-paper-plane"></i>
+                    <button type="submit" class="btn-primary w-100">
+                        Talep Oluştur <i class="fa-solid fa-paper-plane"></i>
                     </button>
-                    <div id="submitStatus" style="margin-top: 1rem; display:none;"></div>
+                    <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">
+                        * Talebiniz admin ekibimize iletilecek ve raporunuz en kısa sürede buraya yüklenecektir.
+                    </p>
                 </form>
             </div>
 
             <div class="reports-card glass-card">
-                <h3>Analizlerim</h3>
+                <h3>Taleplerim & Raporlar</h3>
                 {% if not analyses %}
                 <p style="color: var(--text-muted); text-align: center; padding: 2rem;">Henüz bir analiz talebiniz bulunmuyor.</p>
                 {% else %}
@@ -164,45 +108,34 @@
                     <table class="reports-table">
                         <thead>
                             <tr>
-                                <th>Video</th>
+                                <th>Video / Detay</th>
                                 <th>Durum</th>
                                 <th>Tarih</th>
-                                <th>Haberleşme</th>
+                                <th>Dosya</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for req in analyses %}
                             <tr>
                                 <td>
-                                    <div style="font-weight:600; font-size:0.95rem;">{{ req.video_title or "Video Çekiliyor..." }}</div>
-                                    <div style="font-size:0.8rem; color:var(--text-muted); word-break: break-all;">{{ req.video_url[:45] }}...</div>
+                                    <div style="font-weight:600; font-size:0.95rem;">{{ req.video_title }}</div>
+                                    <div style="font-size:0.8rem; color:var(--text-muted); word-break: break-all;">
+                                        <a href="{{ req.video_url }}" target="_blank" style="color: inherit;">{{ req.video_url[:40] }}...</a>
+                                    </div>
                                 </td>
                                 <td>
-                                    {% if req.status == 'error' %}
-                                    <span class="status-badge status-error" title="{{ req.error_message }}" style="cursor:help;">
-                                        <i class="fa-solid fa-circle-exclamation"></i> Hata
-                                    </span>
-                                    {% else %}
                                     <span class="status-badge status-{{ req.status }}">
-                                        {{ req.status.capitalize() }}
+                                        {{ "Beklemede" if req.status == "pending" else "Tamamlandı" }}
                                     </span>
-                                    {% endif %}
                                 </td>
                                 <td>{{ req.created_at.strftime('%d.%m.%Y') }}</td>
                                 <td>
                                     {% if req.status == 'completed' %}
-                                    <div style="display:flex; gap:10px;">
-                                        <a href="/report/download/{{ req.id }}?format=excel" class="btn-primary btn-sm" title="Excel İndir"><i class="fa-solid fa-file-excel"></i> Excel</a>
-                                        <a href="/report/download/{{ req.id }}?format=pdf" class="btn-primary btn-sm" style="background:#ef4444; border:none;" title="PDF İndir"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                    </div>
-                                    {% elif req.status == 'error' %}
-                                    <form action="/dashboard/retry/{{ req.id }}" method="POST" style="margin:0;">
-                                        <button type="submit" class="btn-secondary btn-sm" style="border:1px solid var(--accent); color:var(--accent);">
-                                            <i class="fa-solid fa-arrows-rotate"></i> Yeniden Dene
-                                        </button>
-                                    </form>
+                                    <a href="/download/{{ req.id }}" class="btn-primary btn-sm" style="background: #10b981; border: none;">
+                                        <i class="fa-solid fa-download"></i> Raporu İndir
+                                    </a>
                                     {% else %}
-                                    <span style="color:var(--text-muted); font-size:0.9rem;"><i class="fa-solid fa-spinner fa-spin"></i> İşleniyor...</span>
+                                    <span style="color:var(--text-muted); font-size:0.8rem;">Hazırlanıyor...</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -214,43 +147,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.getElementById('analysisForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            const status = document.getElementById('submitStatus');
-            const urlInput = document.getElementById('videoUrl');
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> İşleniyor...';
-            status.style.display = 'block';
-            status.className = 'loading-text';
-            status.innerHTML = 'Lütfen bekleyin...';
-
-            const formData = new FormData();
-            formData.append('video_url', urlInput.value);
-
-            try {
-                const response = await fetch('/dashboard/submit', {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-
-                if (response.ok) {
-                    status.innerHTML = '<span class="text-green"><i class="fa-solid fa-check"></i> ' + result.message + '</span>';
-                    setTimeout(() => window.location.reload(), 1500);
-                } else {
-                    status.innerHTML = '<span class="text-red"><i class="fa-solid fa-xmark"></i> ' + (result.message || 'Hata oluştu') + '</span>';
-                    btn.disabled = false;
-                    btn.innerHTML = 'Sıraya Ekle <i class="fa-solid fa-paper-plane"></i>';
-                }
-            } catch (err) {
-                status.innerHTML = '<span class="text-red">Bağlantı hatası oluştu.</span>';
-                btn.disabled = false;
-            }
-        });
-    </script>
 </body>
 </html>

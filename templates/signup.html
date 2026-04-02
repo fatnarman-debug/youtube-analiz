@@ -68,17 +68,22 @@
             <form action="/kayit" method="POST">
                 <div class="input-group">
                     <label for="fullName">Ad Soyad</label>
-                    <input type="text" id="fullName" name="Ad_Soyad" placeholder="Ad Soyad" required>
+                    <input type="text" id="fullName" name="full_name" placeholder="Ad Soyad" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="email">E-posta veya Kullanıcı Adı</label>
-                    <input type="text" id="email" name="Email" placeholder="ornek@mail.com veya kullanıcı adı" required>
+                    <label for="username">Kullanıcı Adı</label>
+                    <input type="text" id="username" name="username" placeholder="kullanici_adi" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">E-posta Adresi</label>
+                    <input type="email" id="email" name="email" placeholder="ornek@mail.com" required>
                 </div>
                 
                 <div class="input-group">
                     <label for="password">Şifre</label>
-                    <input type="password" id="password" name="Sifre" placeholder="••••••••" required>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
                 </div>
 
                 <button type="submit" class="btn-primary w-100">Kayıt Ol</button>

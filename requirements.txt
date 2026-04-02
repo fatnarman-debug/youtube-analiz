@@ -1,11 +1,3 @@
-# YouTube Analyzer Dependencies
-pandas
-google-api-python-client
-textblob
-vaderSentiment
-emoji
-openpyxl
-
 # Backend & API
 fastapi
 uvicorn
@@ -14,4 +6,3 @@ jinja2
 python-multipart
 python-jose[cryptography]
 passlib[bcrypt]
-fpdf2

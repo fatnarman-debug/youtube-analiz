@@ -3,188 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analizler | VidInsight Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/css/style.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <title>Sistem Genelindeki Analizler | VidInsight</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-      :root {
-        --admin-bg: #f8fafc;
-        --admin-sidebar: #0f172a;
-        --card-bg-light: #ffffff;
-      }
-      body { margin: 0; background: var(--admin-bg); color: #1e293b; display: flex; min-height: 100vh; }
-      .sidebar { width: 280px; background: var(--admin-sidebar); color: white; padding: 2rem; display: flex; flex-direction: column; }
-      .main-content { flex: 1; padding: 3rem; overflow-y: auto; }
-      .admin-logo { height: 40px; margin-bottom: 3rem; }
-      .nav-item { padding: 1rem; color: #94a3b8; display: flex; align-items: center; gap: 12px; text-decoration: none; border-radius: 8px; margin-bottom: 0.5rem; transition: all 0.2s; }
-      .nav-item.active { background: rgba(255, 255, 255, 0.05); color: white; }
-      .nav-item:hover { color: white; }
-      .table-card { background: var(--card-bg-light); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; overflow: hidden; }
-      .table-header { padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0; }
-      table { width: 100%; border-collapse: collapse; }
-      th { text-align: left; padding: 1.2rem 2rem; background: #f1f5f9; color: #64748b; font-size: 0.85rem; text-transform: uppercase; }
-      td { padding: 1.2rem 2rem; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
-      .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
-      .badge-pending { background: #fef9c3; color: #854d0e; }
-      .badge-processing { background: #dbeafe; color: #1e40af; }
-      .badge-completed { background: #dcfce7; color: #166534; }
-      .badge-error { background: #fee2e2; color: #991b1b; }
-      .btn-logout { margin-top: auto; color: #ef4444 !important; }
+        .admin-main {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-top: 10px;
+        }
+        .upload-form input, .upload-form textarea {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.9rem;
+        }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #fef9c3; color: #a16207; }
+        .status-completed { background: #dcfce7; color: #15803d; }
+        
+        .upload-section {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <img src="/static/img/logo.png" alt="VidInsight" class="admin-logo" style="filter: brightness(0) invert(1);">
-        <nav>
-            <a href="/admin" class="nav-item"><i class="fa-solid fa-users"></i> Müşteriler</a>
-            <a href="/admin/analyses" class="nav-item active"><i class="fa-solid fa-chart-line"></i> Tüm Analizler</a>
-            <a href="/" target="_blank" class="nav-item"><i class="fa-solid fa-external-link"></i> Siteye Git</a>
-        </nav>
-        <a href="/cikis" class="nav-item btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</a>
-    </aside>
-
-    <main class="main-content">
-        <div class="table-card">
-            <div class="table-header">
-                <h2>Sistem Genelindeki Analizler</h2>
-                <div style="font-size: 0.9rem; color: #64748b;">Tüm kullanıcıların analiz talepleri ve durumları.</div>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Kullanıcı</th>
-                        <th>Video</th>
-                        <th>Durum</th>
-                        <th>Tarih</th>
-                        <th>Rapor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for req in analyses %}
-                    <tr>
-                        <td>
-                            <div style="font-weight: 600;">{{ req.user.full_name }}</div>
-                            <div style="font-size: 0.8rem; color: #64748b;">{{ req.user.email }}</div>
-                        </td>
-                        <td>
-                            <div style="font-weight: 600; max-width: 300px;">{{ req.video_title or "Başlık Alınamadı" }}</div>
-                            <a href="{{ req.video_url }}" target="_blank" style="font-size: 0.8rem; color: #3b82f6;">Videoyu Aç</a>
-                        </td>
-                        <td>
-                            <span class="badge badge-{{ req.status }}">
-                                {{ req.status.upper() }}
-                            </span>
-                        </td>
-                        <td>{{ req.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
-                        <td>
-                            {% if req.status == 'completed' %}
-                            <div style="display:flex; gap:10px; align-items:center;">
-                                <a href="/report/download/{{ req.id }}?format=excel" title="Excel" style="color:#166534;"><i class="fa-solid fa-file-excel fa-lg"></i></a>
-                                <a href="/report/download/{{ req.id }}?format=pdf" title="PDF" style="color:#991b1b;"><i class="fa-solid fa-file-pdf fa-lg"></i></a>
-                            </div>
-                            {% elif req.status == 'error' %}
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <button onclick="showError({{ req.id }})" class="badge badge-error" style="cursor:pointer; border:none; padding:4px 8px;">
-                                    <i class="fa-solid fa-circle-info"></i> Hata Detayı
-                                </button>
-                                <form action="/admin/retry_analysis/{{ req.id }}" method="POST" style="margin:0;">
-                                    <button type="submit" class="badge badge-processing" title="Yeniden Dene" style="cursor:pointer; border:none; padding: 4px 8px;">
-                                        <i class="fa-solid fa-arrows-rotate"></i>
-                                    </button>
-                                </form>
-                            </div>
-                            {% else %}
-                            -
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% if not analyses %}
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 3rem; color: #64748b;">
-                            Henüz analiz talebi bulunmuyor.
-                        </td>
-                    </tr>
-                    {% endif %}
-                </tbody>
-            </table>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="/static/img/logo.png" alt="VidInsight Logo">
         </div>
+        <nav>
+            <a href="/admin/analyses" class="active"><i class="fa-solid fa-chart-line"></i> Tüm Analizler</a>
+            <a href="/" style="margin-top: auto; color: #ef4444;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Çıkış Yap</a>
+        </nav>
+    </div>
 
-        <!-- System Storage Info -->
-        <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 0.9rem; color: #64748b; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;">
-                <div style="flex: 1; min-width: 300px;">
-                    <div style="margin-bottom: 0.5rem;">
-                        <strong>📁 Depolama Türü:</strong> 
-                        <span style="color: #475569; font-weight: 600;">{{ storage_type }}</span>
+    <main class="content">
+        <div class="admin-main">
+            <div class="admin-header">
+                <div>
+                    <h1>Analiz Talepleri</h1>
+                    <p>Müşterilerin talep ettiği videolar ve rapor yükleme paneli.</p>
+                </div>
+                <div class="admin-actions">
+                    <a href="/admin/download_db" class="btn-primary" style="background: #6366f1;">
+                        <i class="fa-solid fa-download"></i> DB İndir
+                    </a>
+                </div>
+            </div>
+
+            {% for req in analyses %}
+            <div class="upload-section">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">ID: #{{ req.id }} | {{ req.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
+                        <div style="font-weight: 800; color: #0f172a; font-size: 1.1rem; margin-bottom: 5px;">
+                            {{ req.user.full_name }} ({{ req.user.username }})
+                        </div>
+                        <div style="color: #6366f1; text-decoration: underline;">
+                            <a href="{{ req.video_url }}" target="_blank">{{ req.video_url }}</a>
+                        </div>
                     </div>
-                    <div style="margin-bottom: 0.5rem;">
-                        <strong>📍 Veritabanı Yolu:</strong> <code style="background: #e2e8f0; padding: 2px 4px; border-radius: 4px;">{{ db_url }}</code>
-                    </div>
-                    <div style="margin-top: 1rem;">
-                        <strong>🛡️ Güvenlik Testi (Persistence Check):</strong> 
-                        {% if is_mount %}
-                        <span style="color: #10b981; font-weight: 700;">
-                            <i class="fa-solid fa-circle-check"></i> AKTİF (Kalıcı Volume Bağlı)
+                    <div>
+                        <span class="status-badge status-{{ req.status }}">
+                            {{ "BEKLEMEDE" if req.status == 'pending' else "TAMAMLANDI" }}
                         </span>
-                        {% else %}
-                        <span style="color: #ef4444; font-weight: 700;">
-                            <i class="fa-solid fa-circle-xmark"></i> PASİF (Geçici Depolama!)
-                        </span>
-                        <p style="margin-top: 0.5rem; color: #ef4444; font-size: 0.8rem; font-weight: 600;">
-                            <i class="fa-solid fa-triangle-exclamation"></i> DİKKAT: Coolify Volume ayarlarınızda bir sorun olabilir. 
-                            Veriler her güncellemede silinecektir. Lütfen "Destination Path" kısmının "/data" olduğundan emin olun.
-                        </p>
-                        {% endif %}
                     </div>
                 </div>
-                <div style="text-align: right;">
-                    <a href="/admin/download_db" class="btn-primary" style="background: #6366f1; border: none; text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 600; display: inline-block;">
-                        <i class="fa-solid fa-download"></i> Veritabanını İndir (.db)
-                    </a>
-                    <p style="font-size: 0.75rem; margin-top: 0.5rem; color: #94a3b8;">Sorun analizi için dosyayı indirip kontrol edebilirsiniz.</p>
+
+                <form action="/admin/upload_report/{{ req.id }}" method="POST" enctype="multipart/form-data" class="upload-form">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <input type="text" name="video_title" placeholder="Videonun Adı (Rapor başlığı)" value="{{ req.video_title }}" required>
+                        <input type="file" name="report_file" required>
+                    </div>
+                    <textarea name="admin_note" rows="2" placeholder="Kullanıcıya not (opsiyonel)">{{ req.admin_note or '' }}</textarea>
+                    
+                    <button type="submit" class="btn-primary" style="margin-top: 5px;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> 
+                        {{ "Raporu Yükle / Güncelle" if req.status == 'completed' else "Raporu Yükle ve Tamamla" }}
+                    </button>
+                    
+                    {% if req.report_file_name %}
+                    <div style="margin-top: 10px; font-size: 0.85rem; color: #15803d; font-weight: 600;">
+                        <i class="fa-solid fa-file-circle-check"></i> Mevcut Dosya: {{ req.report_file_name }}
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 50px; color: #64748b;">
+                <i class="fa-solid fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p>Henüz analiz talebi bulunmuyor.</p>
+            </div>
+            {% endfor %}
+
+            <!-- System Info -->
+            <div style="margin-top: 3rem; padding: 1.5rem; background: #0f172a; color: white; border-radius: 12px; font-size: 0.85rem;">
+                <strong>🔍 Sistem Bilgisi:</strong> {{ storage_status }} <br>
+                <strong>📍 Yol:</strong> {{ db_url }} <br>
+                <div style="margin-top: 10px; color: #94a3b8;">
+                    * Uygulama her başladığında 'heartbeat' kontrolü yapar. <br>
+                    * Eğer 'KALICI' yazmıyorsa, Coolify Volume /app/storage olarak bağlı değildir.
                 </div>
             </div>
         </div>
     </main>
-
-    <!-- Simple Modal for Errors -->
-    <div id="errorModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-        <div style="background:white; padding:2rem; border-radius:12px; max-width:600px; width:90%; box-shadow:0 10px 25px rgba(0,0,0,0.2); position:relative;">
-            <button onclick="closeModal()" style="position:absolute; top:1rem; right:1rem; border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
-            <h3 style="margin-top:0; color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Hata Detayı</h3>
-            <pre id="errorText" style="background:#f1f5f9; padding:1rem; border-radius:8px; white-space:pre-wrap; font-size:0.9rem; max-height:400px; overflow-y:auto; color:#334155; border:1px solid #e2e8f0;"></pre>
-            <div style="margin-top:1.5rem; text-align:right;">
-                <button onclick="closeModal()" style="padding:0.6rem 1.5rem; background:#64748b; color:white; border:none; border-radius:6px; cursor:pointer;">Kapat</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        async function showError(id) {
-            const modal = document.getElementById('errorModal');
-            const text = document.getElementById('errorText');
-            text.innerText = "Yükleniyor...";
-            modal.style.display = 'flex';
-            
-            try {
-                const response = await fetch('/admin/analysis_error/' + id);
-                const data = await response.json();
-                text.innerText = data.error || "Hata bilgisi alınamadı.";
-            } catch (err) {
-                text.innerText = "Bağlantı hatası: " + err;
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('errorModal').style.display = 'none';
-        }
-
-        // Close on escape
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
-        });
-    </script>
 </body>
 </html>
