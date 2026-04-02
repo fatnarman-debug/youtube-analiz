@@ -55,15 +55,17 @@ print(f"  - Kok Dizin: {STORAGE_ROOT}")
 print(f"  - Durum: {STORAGE_STATUS}")
 print(f"{'='*60}")
 
-# VERITABANI ISMINI VE YOLUNU EN BASITE INDIRGE (PERMISSION FIX)
-DATABASE_URL = "sqlite:///./vidinsight_final.db"
-try:
-    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    Base = declarative_base()
-except Exception as e:
-    print(f"CRITICAL: Veritabani baglantisi kurulamadi: {e}")
-    raise
+# PERSISTENT STORAGE (COOLIFY VOLUME) KONTROLÜ
+STORAGE_ROOT = "/app/storage"
+if not os.path.exists(STORAGE_ROOT):
+    STORAGE_ROOT = os.path.join(os.getcwd(), "storage")
+    os.makedirs(STORAGE_ROOT, exist_ok=True)
+
+# YAZMA IZNI OLAN DIZINE TASIMA
+DATABASE_URL = f"sqlite:///{os.path.join(STORAGE_ROOT, 'vidinsight_final_v3.db')}"
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
 
 def get_db():
     db = SessionLocal()
