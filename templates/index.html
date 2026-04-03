@@ -124,7 +124,11 @@
                     <li><i class="fa-solid fa-check text-yellow"></i> Duygu Analizi</li>
                     <li><i class="fa-solid fa-check text-yellow"></i> Küfür ve Soru Filtresi</li>
                 </ul>
+                {% if user %}
+                <a href="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y?client_reference_id={{ user.id }}" class="btn-primary w-100" style="text-align: center; text-decoration: none;">Satın Al - 5€</a>
+                {% else %}
                 <button class="btn-primary w-100 open-modal-btn" data-package="Single (1 Video)" data-link="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y">Satın Al - 5€</button>
+                {% endif %}
             </div>
 
             <!-- Paket 2 -->
@@ -139,7 +143,11 @@
                     <li><i class="fa-solid fa-check text-yellow"></i> Gelişmiş Şikayet Takibi</li>
                     <li><i class="fa-solid fa-check text-yellow"></i> Öncelikli Analiz Sırası</li>
                 </ul>
+                {% if user %}
+                <a href="https://buy.stripe.com/14AaEXavEbBA6Rj7nYcZa0z?client_reference_id={{ user.id }}" class="btn-primary w-100" style="text-align: center; text-decoration: none;">Abone Ol - 15€/Ay</a>
+                {% else %}
                 <button class="btn-primary w-100 open-modal-btn" data-package="Creator (5 Video/Aylık)" data-link="https://buy.stripe.com/14AaEXavEbBA6Rj7nYcZa0z">Abone Ol - 15€/Ay</button>
+                {% endif %}
             </div>
 
             <!-- Paket 3 -->
@@ -153,7 +161,11 @@
                     <li><i class="fa-solid fa-check text-yellow"></i> Toplu E-Tablo Aktarımı</li>
                     <li><i class="fa-solid fa-check text-yellow"></i> Özel Destek Hattı</li>
                 </ul>
+                {% if user %}
+                <a href="https://buy.stripe.com/7sYcN5fPY5dc0sV5fQcZa0A?client_reference_id={{ user.id }}" class="btn-primary w-100" style="text-align: center; text-decoration: none;">Abone Ol - 20€/Ay</a>
+                {% else %}
                 <button class="btn-primary w-100 open-modal-btn" data-package="Agency (10 Video/Aylık)" data-link="https://buy.stripe.com/7sYcN5fPY5dc0sV5fQcZa0A">Abone Ol - 20€/Ay</button>
+                {% endif %}
             </div>
         </div>
     </section>
