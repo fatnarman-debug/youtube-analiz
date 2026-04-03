@@ -110,8 +110,22 @@
         <!-- DEBUG INFO (Bottom) -->
         <div style="margin-top: 40px; padding: 20px; background: #1E293B; border-radius: 12px; color: #94A3B8; font-size: 0.8rem;">
             <strong>STORAGE:</strong> {{ storage_status }} | <strong>DB:</strong> {{ db_url }}
+            <button onclick="testEmail()" style="margin-left: 15px; background: #6366F1; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem;">Test E-posta Gönder</button>
         </div>
     </main>
 
+    <script>
+        async function testEmail() {
+            if(!confirm("SMTP ayarlarınızı test etmek için admin hesabınıza bir e-posta gönderilsin mi?")) return;
+            
+            try {
+                const res = await fetch('/admin/test_email');
+                const data = await res.json();
+                alert(data.message);
+            } catch (e) {
+                alert("Hata oluştu! Coolify üzerindeki SMTP ayarlarınızı kontrol edin.");
+            }
+        }
+    </script>
 </body>
 </html>

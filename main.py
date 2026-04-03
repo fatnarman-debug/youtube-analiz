@@ -124,6 +124,74 @@ async def send_report_email(user_email: str, user_name: str, video_title: str):
     except Exception as e:
         print(f"!!! E-posta gönderim hatası: {e}")
 
+async def send_welcome_email(user_email: str, user_name: str):
+    """Yeni üyelere hoş geldin e-postası gönderir."""
+    if not SMTP_USER or not SMTP_PASSWORD: return
+
+    message = EmailMessage()
+    message["From"] = SMTP_FROM
+    message["To"] = user_email
+    message["Subject"] = "Welcome to VidInsight! 🚀"
+
+    html_content = f"""
+    <html>
+        <body style="font-family: sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
+                <div style="background: #0F172A; padding: 20px; text-align: center; color: white;">
+                    <h1>VidInsight</h1>
+                </div>
+                <div style="padding: 30px;">
+                    <h2>Daha Akıllı Video Analizine Hoş Geldiniz!</h2>
+                    <p>Merhaba <strong>{user_name}</strong>,</p>
+                    <p>VidInsight ailesine katıldığınız için mutluyuz. Artık binlerce yorumu saniyeler içinde analiz edebilir, kitlenizi daha iyi tanıyabilirsiniz.</p>
+                    <p>Hemen başlamak için ilk video linkinizi dashboard'unuza ekleyin!</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://vid-insight.com/dashboard" style="background: #F59E0B; color: #000; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Hemen Başla</a>
+                    </div>
+                </div>
+            </div>
+        </body>
+    </html>
+    """
+    message.set_content("VidInsight'a Hoş Geldiniz! Hemen başlayın.")
+    message.add_alternative(html_content, subtype="html")
+    try:
+        await aiosmtplib.send(message, hostname=SMTP_HOST, port=SMTP_PORT, username=SMTP_USER, password=SMTP_PASSWORD, use_tls=False, start_tls=True)
+        print(f"--- Hoş geldin e-postası gönderildi: {user_email}")
+    except: pass
+
+async def send_analysis_received_email(user_email: str, user_name: str, video_url: str):
+    """Analiz talebi alındığında kullanıcıya onay e-postası gönderir."""
+    if not SMTP_USER or not SMTP_PASSWORD: return
+
+    message = EmailMessage()
+    message["From"] = SMTP_FROM
+    message["To"] = user_email
+    message["Subject"] = "Videonuzu Aldık! 📽️"
+
+    html_content = f"""
+    <html>
+        <body style="font-family: sans-serif; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
+                <div style="background: #0F172A; padding: 20px; text-align: center; color: white;">
+                    <h1>VidInsight</h1>
+                </div>
+                <div style="padding: 30px;">
+                    <p>Merhaba <strong>{user_name}</strong>,</p>
+                    <p><strong>{video_url}</strong> adresli videonuz için analiz talebiniz başarıyla alındı.</p>
+                    <p>Ekibimiz (veya yapay zekamız) şu an yorumları tarıyor. Analiz tamamlandığında size tekrar haber vereceğiz.</p>
+                    <p>Güncel durumu panelinizden takip edebilirsiniz.</p>
+                </div>
+            </div>
+        </body>
+    </html>
+    """
+    message.set_content("Videonuzu aldık, analiz başlıyor!")
+    message.add_alternative(html_content, subtype="html")
+    try:
+        await aiosmtplib.send(message, hostname=SMTP_HOST, port=SMTP_PORT, username=SMTP_USER, password=SMTP_PASSWORD, use_tls=False, start_tls=True)
+    except: pass
+
 # --- v1.0.8 DEBUG ROTASI ---
 @app.get("/debug")
 async def debug_system():
@@ -232,6 +300,7 @@ async def signup_get(request: Request, error: str = None):
 
 @app.post("/kayit")
 async def signup_post(request: Request, 
+                      background_tasks: BackgroundTasks,
                       username: str = Form(...),
                       email: str = Form(...),
                       full_name: str = Form(...),
@@ -261,6 +330,10 @@ async def signup_post(request: Request,
 
         db.add(new_user)
         db.commit()
+
+        # Kayıt sonrası HOŞ GELDİN e-postası
+        background_tasks.add_task(send_welcome_email, email, full_name)
+
         return RedirectResponse(url="/giris?msg=success", status_code=status.HTTP_303_SEE_OTHER)
     except Exception as e:
         err_msg = traceback.format_exc()
@@ -286,7 +359,10 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(request=request, name="dashboard.html", context={"user": user, "analyses": analyses})
 
 @app.post("/analyze")
-async def create_analysis(request: Request, video_url: str = Form(...), db: Session = Depends(get_db)):
+async def create_analysis(request: Request, 
+                          background_tasks: BackgroundTasks,
+                          video_url: str = Form(...), 
+                          db: Session = Depends(get_db)):
     user = get_current_user(request, db)
     if not user: return RedirectResponse(url="/giris")
     
@@ -310,6 +386,10 @@ async def create_analysis(request: Request, video_url: str = Form(...), db: Sess
     
     db.add(new_request)
     db.commit()
+
+    # Analiz talebi alınınca e-posta gönder
+    background_tasks.add_task(send_analysis_received_email, user.email, user.full_name, video_url)
+
     return RedirectResponse(url="/dashboard", status_code=status.HTTP_303_SEE_OTHER)
 
 @app.get("/download/{request_id}")
@@ -385,6 +465,16 @@ async def admin_update_credits(user_id: int,
         user.subscription_plan = plan
         db.commit()
     return RedirectResponse(url="/admin/users", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.get("/admin/test_email")
+async def admin_test_email(request: Request, background_tasks: BackgroundTasks):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        return RedirectResponse(url="/girisburdan")
+    
+    # E-posta kuyruğu (admin@vid-insight.com adresine gider)
+    background_tasks.add_task(send_report_email, "admin@vid-insight.com", "Yönetici Testi", "SİSTEM TEST VİDEOSU")
+    return {"status": "ok", "message": "Test e-postası kuyruğa eklendi. Lütfen admin@vid-insight.com adresini kontrol edin."}
 
 @app.post("/admin/upload_report/{analysis_id}")
 async def upload_report(analysis_id: int, 
