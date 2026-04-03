@@ -1,4 +1,5 @@
 FROM python:3.11-slim
+ENV BUILD_VERSION=v1.0.7
 
 WORKDIR /app
 

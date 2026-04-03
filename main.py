@@ -56,16 +56,17 @@ except Exception as e:
 
 app = FastAPI()
 
-# --- v1.0.6 GÜNCELLEME ETİKETİ VE TEŞHİS ---
+# --- v1.0.7 KESIN GUNCELLEME ETİKETİ VE TEŞHİS ---
+# BU KOD CALISIYORSA LOGIN 198. SATIRDA OLMALIDIR
 @app.get("/debug")
 async def debug_system():
     import os
     return {
-        "versiyon": "v1.0.6-final-check",
+        "versiyon": "v1.0.7-final-check",
         "durum": "aktif",
         "veritabanı_yolu": str(DATABASE_URL),
         "yazma_izni": os.access(STORAGE_ROOT, os.W_OK) if os.path.exists(STORAGE_ROOT) else "dizin_yok",
-        "çalışma_dizini": os.getcwd()
+        "mesaj": "Sistem basariyla guncellendi!"
     }
 
 # --- GLOBAL HATA YAKALAYICI (DEBUG) ---
