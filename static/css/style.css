@@ -487,3 +487,127 @@ footer {
     .modal { padding: 2rem 1.5rem; margin: 10px; border-radius: 12px; }
 }
 
+
+/* --- ADMIN PREMIUM LAYOUT --- */
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+    background: #F8FAFC;
+    color: #0F172A;
+}
+
+.admin-sidebar {
+    width: 280px;
+    background: #0F172A;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 2.5rem 0;
+    position: fixed;
+    height: 100vh;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.admin-sidebar .sidebar-logo {
+    padding: 0 2rem 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 2.5rem;
+}
+
+.admin-sidebar .sidebar-logo img {
+    height: 50px;
+    width: auto;
+}
+
+.admin-sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 1.2rem;
+}
+
+.admin-sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    color: #94A3B8;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.95rem;
+}
+
+.admin-sidebar nav a i {
+    width: 24px;
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+.admin-sidebar nav a:hover {
+    background: rgba(255,255,255,0.05);
+    color: white;
+    transform: translateX(5px);
+}
+
+.admin-sidebar nav a.active {
+    background: #6366F1;
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.admin-sidebar nav a.active i {
+    opacity: 1;
+}
+
+.admin-sidebar .logout-link {
+    margin-top: auto;
+    color: #EF4444 !important;
+}
+
+.admin-sidebar .logout-link:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.admin-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 3.5rem 5rem;
+    background: #F8FAFC;
+}
+
+/* Admin Card UI */
+.admin-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    border: 1px solid #E2E8F0;
+    padding: 2.5rem;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
+}
+
+.admin-card:hover {
+    box-shadow: 0 20px 30px -10px rgba(0,0,0,0.05);
+}
+
+.admin-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3.5rem;
+}
+
+.admin-header-flex h1 {
+    font-size: 2.4rem;
+    color: #0F172A;
+    margin: 0;
+    font-weight: 800;
+}
+
+.admin-header-flex p {
+    color: #64748B;
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+}
+

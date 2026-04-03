@@ -3,96 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Genelindeki Analizler | VidInsight</title>
+    <title>Analiz Talepleri | VidInsight Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .admin-main {
-            padding: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #f1f5f9;
-        }
-        .upload-form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            margin-top: 10px;
-        }
-        .upload-form input, .upload-form textarea {
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
-            font-size: 0.9rem;
-        }
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .status-pending { background: #fef9c3; color: #a16207; }
-        .status-completed { background: #dcfce7; color: #15803d; }
-        
-        .upload-section {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
+        /* Override basic colors for admin white-bg */
+        body { background: #F8FAFC; color: #0F172A; }
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+        .status-pending { background: #FEF9C3; color: #854D0E; }
+        .status-completed { background: #DCFCE7; color: #166534; }
+        .upload-form { margin-top: 1.5rem; padding: 1.5rem; background: #F1F5F9; border-radius: 12px; border: 1px solid #E2E8F0; }
+        .upload-form input, .upload-form textarea { padding: 10px; border: 1px solid #CBD5E1; border-radius: 8px; width: 100%; margin-bottom: 10px; }
+        .analysis-card { margin-bottom: 2rem; }
     </style>
 </head>
-<body>
-    <div class="sidebar">
-        <div class="logo">
+<body class="admin-container">
+    
+    <!-- Modern Side Navigation -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-logo">
             <img src="/static/img/logo.png" alt="VidInsight Logo">
         </div>
         <nav>
-            <a href="/admin/analyses" class="active"><i class="fa-solid fa-chart-line"></i> Analiz Talepleri</a>
-            <a href="/admin/users"><i class="fa-solid fa-users"></i> Kullanıcılar</a>
-            <a href="/" style="margin-top: auto; color: #ef4444;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Çıkış Yap</a>
+            <a href="/admin/analyses" class="active">
+                <i class="fa-solid fa-chart-pie"></i> Analiz Talepleri
+            </a>
+            <a href="/admin/users">
+                <i class="fa-solid fa-users-gear"></i> Kullanıcı Yönetimi
+            </a>
+            <a href="/admin/download_db">
+                <i class="fa-solid fa-database"></i> Veritabanı Yedeği
+            </a>
+            <a href="/admin/logout" class="logout-link">
+                <i class="fa-solid fa-power-off"></i> Çıkış Yap
+            </a>
         </nav>
-    </div>
+    </aside>
 
-    <main class="content">
-        <div class="admin-main">
-            <div class="admin-header">
-                <div>
-                    <h1>Analiz Talepleri</h1>
-                    <p>Müşterilerin talep ettiği videolar ve rapor yükleme paneli.</p>
-                </div>
-                <div class="admin-actions">
-                    <a href="/admin/download_db" class="btn-primary" style="background: #6366f1;">
-                        <i class="fa-solid fa-download"></i> DB İndir
-                    </a>
+    <!-- Main Content Area -->
+    <main class="admin-content">
+        <header class="admin-header-flex">
+            <div>
+                <h1>Analiz Talepleri</h1>
+                <p>Müşterilerinizden gelen yeni video analiz isteklerini buradan yönetebilirsiniz.</p>
+            </div>
+            <div class="admin-stats" style="display: flex; gap: 20px;">
+                <div class="admin-card" style="padding: 1rem 1.5rem; text-align: center;">
+                    <div style="font-size: 0.8rem; color: #64748B; font-weight: 600;">TOPLAM İŞ</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #6366F1;">{{ analyses|length }}</div>
                 </div>
             </div>
+        </header>
 
+        <section class="admin-job-list">
             {% for req in analyses %}
-            <div class="upload-section">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+            <div class="admin-card analysis-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                     <div>
-                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">ID: #{{ req.id }} | {{ req.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
-                        <div style="font-weight: 800; color: #0f172a; font-size: 1.1rem; margin-bottom: 5px;">
-                            {{ req.user.full_name }} ({{ req.user.username }})
-                        </div>
-                        <div style="color: #6366f1; text-decoration: underline;">
-                            <a href="{{ req.video_url }}" target="_blank">{{ req.video_url }}</a>
-                        </div>
+                        <div style="font-size: 0.75rem; color: #94A3B8; font-weight: 700; text-transform: uppercase;">TALEP #{{ req.id }} • {{ req.created_at.strftime('%d %B %H:%M') }}</div>
+                        <h3 style="margin: 5px 0; color: #0F172A; font-size: 1.25rem;">{{ req.user.full_name }}</h3>
+                        <a href="{{ req.video_url }}" target="_blank" style="color: #6366F1; font-size: 0.9rem; font-weight: 600;">
+                            <i class="fa-solid fa-link"></i> Videoyu Görüntüle
+                        </a>
                     </div>
                     <div>
                         <span class="status-badge status-{{ req.status }}">
@@ -102,41 +75,43 @@
                 </div>
 
                 <form action="/admin/upload_report/{{ req.id }}" method="POST" enctype="multipart/form-data" class="upload-form">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <input type="text" name="video_title" placeholder="Videonun Adı (Rapor başlığı)" value="{{ req.video_title }}" required>
-                        <input type="file" name="report_file" required>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px;">Video Başlığı</label>
+                            <input type="text" name="video_title" placeholder="Rapor Başlığı" value="{{ req.video_title }}" required>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px;">Rapor Dosyası (.xlsx)</label>
+                            <input type="file" name="report_file" {% if not req.report_file_name %}required{% endif %}>
+                        </div>
                     </div>
-                    <textarea name="admin_note" rows="2" placeholder="Kullanıcıya not (opsiyonel)">{{ req.admin_note or '' }}</textarea>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px;">Kullanıcıya Not</label>
+                    <textarea name="admin_note" rows="2" placeholder="Analiz hakkında kısa bir not...">{{ req.admin_note or '' }}</textarea>
                     
-                    <button type="submit" class="btn-primary" style="margin-top: 5px;">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> 
-                        {{ "Raporu Yükle / Güncelle" if req.status == 'completed' else "Raporu Yükle ve Tamamla" }}
+                    <button type="submit" class="btn-primary" style="width: auto; padding: 10px 25px; font-size: 0.9rem; background: #0F172A; color: white;">
+                        <i class="fa-solid fa-check-circle"></i> {{ "Güncelle ve Bildirim Gönder" if req.status == 'completed' else "Tamamla ve Kullanıcıya Bildir" }}
                     </button>
-                    
+
                     {% if req.report_file_name %}
-                    <div style="margin-top: 10px; font-size: 0.85rem; color: #15803d; font-weight: 600;">
-                        <i class="fa-solid fa-file-circle-check"></i> Mevcut Dosya: {{ req.report_file_name }}
+                    <div style="margin-top: 15px; color: #166534; font-size: 0.85rem; font-weight: 600;">
+                        <i class="fa-solid fa-file-excel"></i> Mevcut: {{ req.report_file_name }}
                     </div>
                     {% endif %}
                 </form>
             </div>
             {% else %}
-            <div style="text-align: center; padding: 50px; color: #64748b;">
-                <i class="fa-solid fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                <p>Henüz analiz talebi bulunmuyor.</p>
+            <div class="admin-card" style="text-align: center; padding: 100px;">
+                <i class="fa-solid fa-hourglass-empty" style="font-size: 4rem; color: #CBD5E1; margin-bottom: 20px;"></i>
+                <p style="color: #64748B; font-weight: 600;">Henüz bekleyen bir analiz talebi yok.</p>
             </div>
             {% endfor %}
+        </section>
 
-            <!-- System Info -->
-            <div style="margin-top: 3rem; padding: 1.5rem; background: #0f172a; color: white; border-radius: 12px; font-size: 0.85rem;">
-                <strong>🔍 Sistem Bilgisi:</strong> {{ storage_status }} <br>
-                <strong>📍 Yol:</strong> {{ db_url }} <br>
-                <div style="margin-top: 10px; color: #94a3b8;">
-                    * Uygulama her başladığında 'heartbeat' kontrolü yapar. <br>
-                    * Eğer 'KALICI' yazmıyorsa, Coolify Volume /app/storage olarak bağlı değildir.
-                </div>
-            </div>
+        <!-- DEBUG INFO (Bottom) -->
+        <div style="margin-top: 40px; padding: 20px; background: #1E293B; border-radius: 12px; color: #94A3B8; font-size: 0.8rem;">
+            <strong>STORAGE:</strong> {{ storage_status }} | <strong>DB:</strong> {{ db_url }}
         </div>
     </main>
+
 </body>
 </html>

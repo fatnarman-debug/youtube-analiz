@@ -8,73 +8,107 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .admin-main { padding: 30px; max-width: 1200px; margin: 0 auto; }
-        .user-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-        .user-table th, .user-table td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        .user-table th { background: #f8fafc; font-weight: 600; color: #64748b; font-size: 0.85rem; text-transform: uppercase; }
-        .user-table tr:hover { background: #f1f5f9; }
-        .credit-badge { background: #6366f1; color: white; padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; }
-        .plan-tag { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
-        .plan-free { background: #e2e8f0; color: #475569; }
-        .plan-agency { background: #fef3c7; color: #92400e; }
-        .plan-creator { background: #dcfce7; color: #15803d; }
+        /* Admin-specific overrides for white background */
+        body { background: #F8FAFC; color: #0F172A; }
+        .user-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 1.5rem; }
+        .user-table th { background: #F1F5F9; color: #64748B; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; padding: 18px 24px; text-align: left; border-bottom: 2px solid #E2E8F0; }
+        .user-table td { padding: 22px 24px; border-bottom: 1px solid #E2E8F0; vertical-align: middle; }
+        .user-table tr:last-child td { border-bottom: none; }
+        .user-table tr:hover { background: #F8FAFC; }
         
-        .edit-form { display: flex; gap: 8px; align-items: center; }
-        .edit-form input, .edit-form select { padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; }
+        .credit-badge { background: #6366F1; color: white; padding: 6px 14px; border-radius: 50px; font-weight: 800; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; }
+        .plan-tag { padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        .plan-free { background: #E2E8F0; color: #475569; }
+        .plan-creator { background: #DCFCE7; color: #166534; }
+        .plan-agency { background: #FEF3C7; color: #92400E; }
+        
+        .edit-form { display: flex; gap: 12px; align-items: center; }
+        .edit-form input, .edit-form select { padding: 10px 14px; border: 1.5px solid #E2E8F0; border-radius: 10px; font-size: 0.95rem; font-weight: 600; color: #0F172A; transition: border-color 0.2s; }
+        .edit-form input:focus, .edit-form select:focus { outline: none; border-color: #6366F1; }
+        .update-btn { background: #0F172A; color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+        .update-btn:hover { background: #6366F1; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
     </style>
 </head>
-<body>
-    <div class="sidebar">
-        <div class="logo">
+<body class="admin-container">
+
+    <!-- Modern Side Navigation -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-logo">
             <img src="/static/img/logo.png" alt="VidInsight Logo">
         </div>
         <nav>
-            <a href="/admin/analyses"><i class="fa-solid fa-chart-line"></i> Analiz Talepleri</a>
-            <a href="/admin/users" class="active"><i class="fa-solid fa-users"></i> Kullanıcılar</a>
-            <a href="/" style="margin-top: auto; color: #ef4444;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Çıkış Yap</a>
+            <a href="/admin/analyses">
+                <i class="fa-solid fa-chart-pie"></i> Analiz Talepleri
+            </a>
+            <a href="/admin/users" class="active">
+                <i class="fa-solid fa-users-gear"></i> Kullanıcı Yönetimi
+            </a>
+            <a href="/admin/download_db">
+                <i class="fa-solid fa-database"></i> Veritabanı Yedeği
+            </a>
+            <a href="/admin/logout" class="logout-link">
+                <i class="fa-solid fa-power-off"></i> Çıkış Yap
+            </a>
         </nav>
-    </div>
+    </aside>
 
-    <main class="content">
-        <div class="admin-main">
-            <div class="admin-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                <div>
-                    <h1>Kullanıcı Yönetimi</h1>
-                    <p>Sistemdeki tüm kayıtlı kullanıcılar ve kredi durumları.</p>
+    <!-- Main Content Area -->
+    <main class="admin-content">
+        <header class="admin-header-flex">
+            <div>
+                <h1>Kullanıcı Yönetimi</h1>
+                <p>Platformdaki üyelerin paketlerini, kredilerini ve erişim seviyelerini yönetin.</p>
+            </div>
+            <div class="admin-stats">
+                <div class="admin-card" style="padding: 1rem 2rem; border-radius: 15px; text-align: center;">
+                    <div style="font-size: 0.8rem; color: #64748B; font-weight: 700;">TOPLAM ÜYE</div>
+                    <div style="font-size: 1.8rem; font-weight: 900; color: #6366F1;">{{ users|length }}</div>
                 </div>
             </div>
+        </header>
 
+        <section class="admin-card" style="padding: 0; overflow: hidden;">
             <table class="user-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Kullanıcı Bilgisi</th>
-                        <th>Mevcut Durum</th>
-                        <th>Hızlı İşlem (Kredi & Paket)</th>
+                        <th>BAŞLIK / ÜYE</th>
+                        <th>MEVCUT PAKET & KREDİ</th>
+                        <th>HIZLI İŞLEMLER</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for user in users %}
                     <tr>
-                        <td>#{{ user.id }}</td>
                         <td>
-                            <div style="font-weight: 700;">{{ user.full_name }}</div>
-                            <div style="font-size: 0.85rem; color: #64748b;">{{ user.username }} | {{ user.email }}</div>
+                            <div style="font-weight: 800; color: #0F172A; font-size: 1.05rem;">{{ user.full_name }}</div>
+                            <div style="font-size: 0.9rem; color: #64748B; margin-top: 2px;">{{ user.username }} • <span style="color: #6366F1;">{{ user.email }}</span></div>
                         </td>
                         <td>
-                            <span class="credit-badge">{{ user.credits }} Hak</span>
-                            <span class="plan-tag plan-{{ user.subscription_plan }}">{{ user.subscription_plan }}</span>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span class="credit-badge">
+                                    <i class="fa-solid fa-coins"></i> {{ user.credits }} Hak
+                                </span>
+                                <span class="plan-tag plan-{{ user.subscription_plan }}">
+                                    {{ user.subscription_plan }}
+                                </span>
+                            </div>
                         </td>
                         <td>
                             <form action="/admin/update_credits/{{ user.id }}" method="POST" class="edit-form">
-                                <input type="number" name="credits" value="{{ user.credits }}" style="width: 60px;" required>
-                                <select name="plan">
-                                    <option value="free" {% if user.subscription_plan == 'free' %}selected{% endif %}>Free</option>
-                                    <option value="creator" {% if user.subscription_plan == 'creator' %}selected{% endif %}>Creator</option>
-                                    <option value="agency" {% if user.subscription_plan == 'agency' %}selected{% endif %}>Agency</option>
-                                </select>
-                                <button type="submit" class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">
-                                    Güncelle
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label style="font-size: 0.7rem; font-weight: 800; color: #94A3B8; text-transform: uppercase;">Kredi</label>
+                                    <input type="number" name="credits" value="{{ user.credits }}" style="width: 80px;" required>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label style="font-size: 0.7rem; font-weight: 800; color: #94A3B8; text-transform: uppercase;">Abonelik</label>
+                                    <select name="plan">
+                                        <option value="free" {% if user.subscription_plan == 'free' %}selected{% endif %}>Free</option>
+                                        <option value="creator" {% if user.subscription_plan == 'creator' %}selected{% endif %}>Creator</option>
+                                        <option value="agency" {% if user.subscription_plan == 'agency' %}selected{% endif %}>Agency</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="update-btn" style="margin-top: 18px;">
+                                    <i class="fa-solid fa-save"></i> Güncelle
                                 </button>
                             </form>
                         </td>
@@ -82,7 +116,13 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </section>
+
+        <!-- DEBUG INFO (Bottom) -->
+        <div style="margin-top: 3rem; text-align: center; color: #CBD5E1; font-size: 0.8rem;">
+            VidInsight Control Panel v1.2.2 Professional Edition
         </div>
     </main>
+
 </body>
 </html>
