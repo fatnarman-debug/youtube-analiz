@@ -71,6 +71,49 @@ async def global_exception_handler(request: Request, exc: Exception):
         }
     )
 
+@app.get("/check-system")
+async def check_system():
+    import os, subprocess
+    results = {"status": "ok", "checks": {}}
+    
+    # 1. Kütüphane Kontrolleri
+    try:
+        import stripe
+        results["checks"]["stripe"] = "Yüklü ✅"
+    except Exception as e:
+        results["checks"]["stripe"] = f"HATA: {e} ❌"
+        
+    try:
+        import multipart
+        results["checks"]["python-multipart"] = "Yüklü ✅"
+    except Exception as e:
+        results["checks"]["python-multipart"] = f"HATA: {e} ❌ (Giriş/Kayıt için ŞART!)"
+
+    # 2. Veritabanı ve Yazma İzni
+    try:
+        from database import engine, DATABASE_URL
+        with engine.connect() as conn:
+            results["checks"]["db_connection"] = "Başarılı ✅"
+        results["checks"]["db_url"] = DATABASE_URL
+    except Exception as e:
+        results["checks"]["db_error"] = str(e)
+
+    # 3. Yazma Testi
+    try:
+        test_file = os.path.join(os.getcwd(), "write_test.tmp")
+        with open(test_file, "w") as f: f.write("test")
+        os.remove(test_file)
+        results["checks"]["write_permission_root"] = "Başarılı ✅"
+    except Exception as e:
+        results["checks"]["write_permission_root"] = f"HATA: {e} ❌"
+
+    results["env"] = {
+        "cwd": os.getcwd(),
+        "storage_root": os.getenv("STORAGE_ROOT", "Tanımsız"),
+        "stripe_key_set": bool(os.getenv("STRIPE_SECRET_KEY"))
+    }
+    return results
+
 # Setup Templates and Static Files
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
