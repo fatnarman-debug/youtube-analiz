@@ -355,7 +355,7 @@ async def logout():
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request, db: Session = Depends(get_db)):
     user = get_current_user(request, db)
-    if not user: return RedirectResponse(url="/giris")
+    if not user: return RedirectResponse(url="/giris", status_code=status.HTTP_303_SEE_OTHER)
     
     analyses = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.user_id == user.id).order_by(models.AnalysisRequest.id.desc()).all()
     
@@ -370,7 +370,7 @@ async def create_analysis(request: Request,
                           video_url: str = Form(...), 
                           db: Session = Depends(get_db)):
     user = get_current_user(request, db)
-    if not user: return RedirectResponse(url="/giris")
+    if not user: return RedirectResponse(url="/giris", status_code=status.HTTP_303_SEE_OTHER)
     
     if user.credits <= 0:
         # Dashboard'a hata mesajıyla dön
@@ -401,7 +401,7 @@ async def create_analysis(request: Request,
 @app.get("/download/{request_id}")
 async def download_report(request_id: int, request: Request, db: Session = Depends(get_db)):
     user = get_current_user(request, db)
-    if not user: return RedirectResponse(url="/giris")
+    if not user: return RedirectResponse(url="/giris", status_code=status.HTTP_303_SEE_OTHER)
     
     req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == request_id, models.AnalysisRequest.user_id == user.id).first()
     if not req or req.status != "completed" or not req.report_file_name:
