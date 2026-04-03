@@ -93,7 +93,8 @@
                     </div>
                     
                     <div style="display: flex; gap: 10px;">
-                        <form action="/admin/analyses/{{ req.id }}/generate_raw" method="POST" style="margin: 0;" onsubmit="return confirm('Bu işlem videodaki yorumları (max 1000 adet) çekecektir. Birkaç dakika sürebilir. Başlamak istiyor musunuz?');">
+                        <form action="/admin/analyses/{{ req.id }}/generate_raw" method="POST" style="margin: 0; display: flex; gap: 8px; align-items: center;" onsubmit="return confirm('Bu işlem videodaki yorumları çekecektir. Belirttiğiniz limite göre zaman alabilir. Başlamak istiyor musunuz?');">
+                            <input type="number" name="max_comments" value="1000" min="100" max="20000" step="100" style="padding: 7px 10px; width: 85px; border-radius: 8px; border: 1px solid #C7D2FE; font-size: 0.85rem; font-weight: 600; color: #3730A3; outline: none; background: white;" title="Maksimum Çekilecek Yorum">
                             <button type="submit" style="background: #312E81; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: transform 0.2s;">
                                 <i class="fa-solid fa-cloud-arrow-down"></i> {{ "Yeniden Çek" if req.raw_exists else "Asistanı Başlat" }}
                             </button>
