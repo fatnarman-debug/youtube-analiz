@@ -1,9 +1,9 @@
-# Backend & API
 fastapi
 uvicorn
 sqlalchemy
 jinja2
 python-multipart
-python-jose[cryptography]
-passlib[bcrypt]
 stripe
+passlib[bcrypt]
+python-jose[cryptography]
+python-dotenv
