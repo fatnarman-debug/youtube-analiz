@@ -3,7 +3,6 @@ import re
 import pandas as pd
 from googleapiclient.discovery import build
 from textblob import TextBlob
-import datetime
 
 def get_youtube_client():
     api_key = os.getenv("YOUTUBE_API_KEY")
@@ -12,34 +11,34 @@ def get_youtube_client():
     return build('youtube', 'v3', developerKey=api_key)
 
 def extract_video_id(url: str):
-    """Farklı YouTube link yapılarından Video ID'sini çıkarır."""
     pattern = r'(?:v=|\/)([0-9A-Za-z_-]{11}).*'
     match = re.search(pattern, url)
     if match:
         return match.group(1)
-    
-    # Kısaltılmış youtu.be formatı için
     if "youtu.be/" in url:
         return url.split("youtu.be/")[1][:11]
     return None
 
-def find_profanity(text: str):
-    """Küfür tespit eden yardımcı fonksiyon (Kelime bazlı \b regex kullanılır)."""
-    # En fazla kullanılanlar eklendi (\b ile kelime içi geçişler filtrelendi, örn: "tamamı" kelimesini yakalamaz)
-    bad_words = ["amk", "aq", "sg", "siktir", "oç", "piç", "yavşak", "pezevenk", "göt", "sik", "sikicem", "ibne", "orospu", "yarrak"]
+def extract_profanity(text: str):
+    bad_words = ["amk", "aq", "sg", "siktir", "oç", "piç", "piçi", "piçler", "yavşak", "pezevenk", "göt", "götveren", "götüm", "sik", "sikicem", "ibne", "orospu", "yarrak", "mal", "namussuz"]
     pattern = r'\b(' + '|'.join(bad_words) + r')\b'
-    # re.IGNORECASE ile büyük/küçük harf duyarsız arama
-    if re.search(pattern, str(text), re.IGNORECASE):
-        return True
-    return False
+    matches = re.findall(pattern, str(text), re.IGNORECASE)
+    return list(set(m.lower() for m in matches)) if matches else []
 
-def find_suggestion_criticism(text: str):
-    """Öneri ve eleştiri içeren kelimeleri arar."""
-    keywords = ["bence", "tavsiye", "öneri", "keşke", "düzelt", "daha net", "eleştiri", "olmamış", "berbat", "harika"]
-    pattern = r'\b(' + '|'.join(keywords) + r')\b'
-    if re.search(pattern, str(text), re.IGNORECASE):
-        return True
-    return False
+def get_feedback_type(text: str):
+    suggestions = ["bence", "tavsiye", "öneri", "keşke", "daha net", "harika", "katılıyorum", "iyi olur"]
+    criticisms = ["düzelt", "eleştiri", "olmamış", "berbat", "kötü", "yalan", "taraf", "satılmış"]
+    
+    s_pattern = r'\b(' + '|'.join(suggestions) + r')\b'
+    c_pattern = r'\b(' + '|'.join(criticisms) + r')\b'
+    
+    if re.search(s_pattern, str(text), re.IGNORECASE): return 'öneri'
+    if re.search(c_pattern, str(text), re.IGNORECASE): return 'eleştiri'
+    return None
+
+def format_percentage(part, whole):
+    if whole == 0: return "0%"
+    return f"{round((part / whole) * 100, 1)}%"
 
 def fetch_and_generate_raw_report(video_url: str, output_path: str, max_comments: int = 1000):
     video_id = extract_video_id(video_url)
@@ -67,26 +66,27 @@ def fetch_and_generate_raw_report(video_url: str, output_path: str, max_comments
                 date = comment["publishedAt"]
                 likes = comment["likeCount"]
 
-                # Basit duygu analizi (TextBlob İngilizce ağırlıklı çalışır, demo amaçlı ekleniyor)
                 analysis = TextBlob(text)
                 polarity = analysis.sentiment.polarity
                 if polarity > 0.1:
-                    sentiment = "Pozitif"
+                    sentiment = "olumlu"
                 elif polarity < -0.1:
-                    sentiment = "Negatif"
+                    sentiment = "olumsuz"
                 else:
-                    sentiment = "Nötr"
+                    sentiment = "notr"
+
+                kufurler = extract_profanity(text)
 
                 comments_data.append({
-                    "Yazar": author,
-                    "Yorum": text,
-                    "Tarih": date[:10], # Sadece YYYY-MM-DD
-                    "Beğeni": int(likes),
-                    "Sistem Tahmini": sentiment,
-                    "Polarity Skoru": round(polarity, 2)
+                    "kullanici": author,
+                    "yorum": text,
+                    "begeni_sayisi": int(likes),
+                    "duygu": sentiment,
+                    "tarih": date[:10],
+                    "_kufur_listesi": kufurler,
+                    "_feedback_type": get_feedback_type(text)
                 })
 
-            # Bir sonraki sayfaya geç
             request = youtube.commentThreads().list_next(request, response)
             
     except Exception as e:
@@ -95,63 +95,72 @@ def fetch_and_generate_raw_report(video_url: str, output_path: str, max_comments
     if not comments_data:
         raise Exception("Hiç yorum bulunamadı veya videonun yorumları kapalı.")
 
-    # 1. Ana Pandas DataFrame (Tum Yorumlar)
     df = pd.DataFrame(comments_data)
     
-    # Kufur tespiti sütunu (Geçici olarak veride işaretle)
-    df['is_profane'] = df['Yorum'].apply(find_profanity)
-    df['is_feedback'] = df['Yorum'].apply(find_suggestion_criticism)
-
-    # 2. Istatistikler 
     total_comments = len(df)
-    avg_likes = df['Beğeni'].mean()
-    sentiment_counts = df['Sistem Tahmini'].value_counts().to_dict()
-    profane_counts = int(df['is_profane'].sum()) # Type cast to native Python int
+    total_likes = df['begeni_sayisi'].sum()
+    avg_likes = total_likes / total_comments if total_comments > 0 else 0
     
+    sentiment_counts = df['duygu'].value_counts().to_dict()
+    olumlu_count = sentiment_counts.get('olumlu', 0)
+    olumsuz_count = sentiment_counts.get('olumsuz', 0)
+    notr_count = sentiment_counts.get('notr', 0)
+    
+    profane_total = df['_kufur_listesi'].apply(lambda x: len(x) > 0).sum()
+
     stats_data = [
-        {"Metrik": "Toplam Çekilen Yorum", "Değer": total_comments},
-        {"Metrik": "Ortalama Beğeni", "Değer": round(avg_likes, 2)},
-        {"Metrik": "Küfürlü/Riskli Yorum Sayısı", "Değer": profane_counts},
-        {"Metrik": "Pozitif Yorum", "Değer": sentiment_counts.get('Pozitif', 0)},
-        {"Metrik": "Negatif Yorum", "Değer": sentiment_counts.get('Negatif', 0)},
-        {"Metrik": "Nötr Yorum", "Değer": sentiment_counts.get('Nötr', 0)},
+        {"Metrik": "Toplam Yorum", "Sayı": int(total_comments), "Yüzde": "100%"},
+        {"Metrik": "Olumlu Yorum", "Sayı": int(olumlu_count), "Yüzde": format_percentage(olumlu_count, total_comments)},
+        {"Metrik": "Olumsuz Yorum", "Sayı": int(olumsuz_count), "Yüzde": format_percentage(olumsuz_count, total_comments)},
+        {"Metrik": "Nötr Yorum", "Sayı": int(notr_count), "Yüzde": format_percentage(notr_count, total_comments)},
+        {"Metrik": "Küfür İçeren", "Sayı": int(profane_total), "Yüzde": format_percentage(profane_total, total_comments)},
+        {"Metrik": "Ortalama Beğeni", "Sayı": round(avg_likes, 1), "Yüzde": "-"},
+        {"Metrik": "Toplam Beğeni", "Sayı": int(total_likes), "Yüzde": "-"}
     ]
     df_stats = pd.DataFrame(stats_data)
 
-    # 3. Kufur Iceren Yorumlar (is_profane filtresi)
-    df_profane = df[df['is_profane'] == True].drop(columns=['is_profane', 'is_feedback'])
+    df_profane_full = df[df['_kufur_listesi'].apply(len) > 0].copy()
+    if len(df_profane_full) > 0:
+        df_profane_full['kufur_kelimeleri'] = df_profane_full['_kufur_listesi'].astype(str)
+        df_profane = df_profane_full[['kullanici', 'yorum', 'kufur_kelimeleri', 'begeni_sayisi']]
+    else:
+        df_profane_empty = pd.DataFrame([{"kullanici": "-", "yorum": "-", "kufur_kelimeleri": "[]", "begeni_sayisi": 0}])
+        df_profane = df_profane_empty[['kullanici', 'yorum', 'kufur_kelimeleri', 'begeni_sayisi']]
+
+    df_top_liked = df.sort_values(by='begeni_sayisi', ascending=False).head(100)
+    df_top_liked = df_top_liked[['kullanici', 'yorum', 'begeni_sayisi', 'duygu', 'tarih']]
+
+    df_sentiment_dist = df.groupby('duygu').agg(
+        yorum_sayisi=('yorum', 'count'),
+        toplam_begeni=('begeni_sayisi', 'sum')
+    ).reset_index()
+
+    sugg_list = df[df['_feedback_type'] == 'öneri']['yorum'].value_counts().reset_index()
+    crit_list = df[df['_feedback_type'] == 'eleştiri']['yorum'].value_counts().reset_index()
     
-    # 4. En Begilen Yorumlar
-    df_top_liked = df.sort_values(by='Beğeni', ascending=False).head(100).drop(columns=['is_profane', 'is_feedback'])
+    sugg_list.columns = ['Öneri', 'Tekrar Sayısı']
+    crit_list.columns = ['Eleştiri', 'Tekrar Sayısı']
     
-    # 5. Oneri_Elestiri_Ozeti
-    df_feedback = df[df['is_feedback'] == True].drop(columns=['is_profane', 'is_feedback'])
+    # Çok uzun olanları formatı bozmaması için sınırla
+    if not sugg_list.empty:
+        sugg_list['Öneri'] = sugg_list['Öneri'].apply(lambda x: x[:100] + '...' if len(str(x)) > 100 else x)
+    if not crit_list.empty:
+        crit_list['Eleştiri'] = crit_list['Eleştiri'].apply(lambda x: x[:100] + '...' if len(str(x)) > 100 else x)
+    
+    df_feedback_summary = pd.concat([sugg_list, crit_list], axis=1)
 
-    # 6. Duygu Dagilimi
-    df_sentiment_dist = df['Sistem Tahmini'].value_counts().reset_index()
-    df_sentiment_dist.columns = ['Duygu Sınıfı', 'Yorum Sayısı']
-    df_sentiment_dist['Yüzde Nitelik (%)'] = round((df_sentiment_dist['Yorum Sayısı'] / total_comments) * 100, 2)
+    df_main = df[['kullanici', 'yorum', 'begeni_sayisi', 'duygu', 'tarih']]
 
-    # Temizleme (Ana tablodan geçici sütunları at)
-    df_main = df.drop(columns=['is_profane', 'is_feedback'])
-
-    # Pandas ile çok sekmeli (Multi-sheet) Excel Oluşturma
     with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
         df_main.to_excel(writer, sheet_name='Tum Yorumlar', index=False)
         df_stats.to_excel(writer, sheet_name='Istatistikler', index=False)
-        
-        # Eğer kufur iceren yoksa bos tablo atmasi bile guzel durur
-        if len(df_profane) > 0:
-            df_profane.to_excel(writer, sheet_name='Kufur Iceren Yorumlar', index=False)
-        else:
-            pd.DataFrame({"Mesaj": ["Küfür içeren yorum tespit edilmedi."]}).to_excel(writer, sheet_name='Kufur Iceren Yorumlar', index=False)
-            
+        df_profane.to_excel(writer, sheet_name='Kufur Iceren Yorumlar', index=False)
         df_top_liked.to_excel(writer, sheet_name='En Begilen Yorumlar', index=False)
         
-        if len(df_feedback) > 0:
-            df_feedback.to_excel(writer, sheet_name='Oneri_Elestiri_Ozeti', index=False)
+        if len(df_feedback_summary) > 0:
+            df_feedback_summary.to_excel(writer, sheet_name='Oneri_Elestiri_Ozeti', index=False)
         else:
-            pd.DataFrame({"Mesaj": ["Öneri/Eleştiri kelimesi taşıyan yorum bulunamadı."]}).to_excel(writer, sheet_name='Oneri_Elestiri_Ozeti', index=False)
+            pd.DataFrame(columns=['Öneri', 'Tekrar Sayısı', 'Eleştiri', 'Tekrar Sayısı']).to_excel(writer, sheet_name='Oneri_Elestiri_Ozeti', index=False)
             
         df_sentiment_dist.to_excel(writer, sheet_name='Duygu_Dagilimi', index=False)
     
