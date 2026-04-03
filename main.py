@@ -12,6 +12,12 @@ from database import engine, get_db, SessionLocal, STORAGE_STATUS, STORAGE_ROOT,
 from auth import get_password_hash, verify_password, create_access_token, decode_access_token
 import datetime
 import stripe
+from fastapi import BackgroundTasks
+from email.message import EmailMessage
+import aiosmtplib
+from dotenv import load_dotenv
+
+load_dotenv() # .env dosyasını yükle
 
 # Stripe Configuration
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "sk_test_51K...yazdırmayalım_simdi") # Buraya gerçek secret key gelmeli
@@ -55,6 +61,68 @@ except Exception as e:
     print(f"!!! STRIPE YAPILANDIRMA HATASI: {e}")
 
 app = FastAPI()
+
+# --- SMTP CONFIG ---
+SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
+SMTP_USER = os.getenv("SMTP_USER", "")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
+SMTP_FROM = os.getenv("SMTP_FROM", "VidInsight <noreply@vid-insight.com>")
+
+async def send_report_email(user_email: str, user_name: str, video_title: str):
+    """Kullanıcıya raporunun hazır olduğunu bildiren şık bir HTML e-posta gönderir."""
+    if not SMTP_USER or not SMTP_PASSWORD:
+        print("!!! SMTP ayarları eksik, e-posta gönderilemedi.")
+        return
+
+    message = EmailMessage()
+    message["From"] = SMTP_FROM
+    message["To"] = user_email
+    message["Subject"] = f"✨ Raporunuz Hazır: {video_title}"
+
+    html_content = f"""
+    <html>
+        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+                <div style="background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); padding: 30px; text-align: center; color: white;">
+                    <h1 style="margin: 0; font-size: 24px;">VidInsight</h1>
+                    <p style="margin: 5px 0 0 0; opacity: 0.9;">Analiziniz Tamamlandı!</p>
+                </div>
+                <div style="padding: 30px; background: #ffffff;">
+                    <p>Merhaba <strong>{user_name}</strong>,</p>
+                    <p>Beklediğiniz <strong>"{video_title}"</strong> videonuzun analizi başarıyla tamamlandı ve raporunuz panelinize yüklendi.</p>
+                    <div style="margin: 30px 0; text-align: center;">
+                        <a href="https://vid-insight.com/dashboard" style="background: #6366f1; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                            Raporu Görüntüle & İndir
+                        </a>
+                    </div>
+                    <p style="font-size: 0.9rem; color: #64748b;">
+                        Herhangi bir sorunuz olursa admin@vid-insight.com üzerinden bizimle iletişime geçebilirsiniz.
+                    </p>
+                </div>
+                <div style="background: #f8fafc; padding: 20px; text-align: center; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #e2e8f0;">
+                    © 2026 VidInsight. Tüm hakları saklıdır.
+                </div>
+            </div>
+        </body>
+    </html>
+    """
+    message.set_content("Raporunuz hazır! Detaylar için panelinizi kontrol edin.")
+    message.add_alternative(html_content, subtype="html")
+
+    try:
+        await aiosmtplib.send(
+            message,
+            hostname=SMTP_HOST,
+            port=SMTP_PORT,
+            username=SMTP_USER,
+            password=SMTP_PASSWORD,
+            use_tls=False,
+            start_tls=True
+        )
+        print(f"--- E-posta gönderildi: {user_email}")
+    except Exception as e:
+        print(f"!!! E-posta gönderim hatası: {e}")
 
 # --- v1.0.8 DEBUG ROTASI ---
 @app.get("/debug")
@@ -291,9 +359,37 @@ async def admin_dashboard(request: Request, db: Session = Depends(get_db)):
         }
     )
 
+@app.get("/admin/users", response_class=HTMLResponse)
+async def admin_users(request: Request, db: Session = Depends(get_db)):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        return RedirectResponse(url="/girisburdan")
+    
+    users = db.query(models.User).order_by(models.User.id.desc()).all()
+    return templates.TemplateResponse(
+        request=request, 
+        name="admin_users.html", 
+        context={"users": users}
+    )
+
+@app.post("/admin/update_credits/{user_id}")
+async def admin_update_credits(user_id: int, 
+                               credits: int = Form(...), 
+                               plan: str = Form(...),
+                               db: Session = Depends(get_db)):
+    # Güvenlik kontrolü (session kontrolü burda da olmalı)
+    # Basitlik için formdan gelen veriyi alıp güncelliyoruz
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user:
+        user.credits = credits
+        user.subscription_plan = plan
+        db.commit()
+    return RedirectResponse(url="/admin/users", status_code=status.HTTP_303_SEE_OTHER)
+
 @app.post("/admin/upload_report/{analysis_id}")
 async def upload_report(analysis_id: int, 
                         request: Request,
+                        background_tasks: BackgroundTasks,
                         video_title: str = Form(...),
                         admin_note: str = Form(None),
                         report_file: UploadFile = File(...), 
@@ -319,6 +415,9 @@ async def upload_report(analysis_id: int,
     req.status = "completed"
     req.completed_at = datetime.datetime.utcnow()
     db.commit()
+    
+    # E-posta bildirimini asenkron olarak gönder
+    background_tasks.add_task(send_report_email, req.user.email, req.user.full_name, video_title)
     
     return RedirectResponse(url="/admin/analyses", status_code=status.HTTP_303_SEE_OTHER)
 

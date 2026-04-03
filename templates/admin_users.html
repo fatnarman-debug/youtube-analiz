@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Yönetimi | VidInsight Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-main { padding: 30px; max-width: 1200px; margin: 0 auto; }
+        .user-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .user-table th, .user-table td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .user-table th { background: #f8fafc; font-weight: 600; color: #64748b; font-size: 0.85rem; text-transform: uppercase; }
+        .user-table tr:hover { background: #f1f5f9; }
+        .credit-badge { background: #6366f1; color: white; padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; }
+        .plan-tag { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+        .plan-free { background: #e2e8f0; color: #475569; }
+        .plan-agency { background: #fef3c7; color: #92400e; }
+        .plan-creator { background: #dcfce7; color: #15803d; }
+        
+        .edit-form { display: flex; gap: 8px; align-items: center; }
+        .edit-form input, .edit-form select { padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="/static/img/logo.png" alt="VidInsight Logo">
+        </div>
+        <nav>
+            <a href="/admin/analyses"><i class="fa-solid fa-chart-line"></i> Analiz Talepleri</a>
+            <a href="/admin/users" class="active"><i class="fa-solid fa-users"></i> Kullanıcılar</a>
+            <a href="/" style="margin-top: auto; color: #ef4444;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Çıkış Yap</a>
+        </nav>
+    </div>
+
+    <main class="content">
+        <div class="admin-main">
+            <div class="admin-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <div>
+                    <h1>Kullanıcı Yönetimi</h1>
+                    <p>Sistemdeki tüm kayıtlı kullanıcılar ve kredi durumları.</p>
+                </div>
+            </div>
+
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Kullanıcı Bilgisi</th>
+                        <th>Mevcut Durum</th>
+                        <th>Hızlı İşlem (Kredi & Paket)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>#{{ user.id }}</td>
+                        <td>
+                            <div style="font-weight: 700;">{{ user.full_name }}</div>
+                            <div style="font-size: 0.85rem; color: #64748b;">{{ user.username }} | {{ user.email }}</div>
+                        </td>
+                        <td>
+                            <span class="credit-badge">{{ user.credits }} Hak</span>
+                            <span class="plan-tag plan-{{ user.subscription_plan }}">{{ user.subscription_plan }}</span>
+                        </td>
+                        <td>
+                            <form action="/admin/update_credits/{{ user.id }}" method="POST" class="edit-form">
+                                <input type="number" name="credits" value="{{ user.credits }}" style="width: 60px;" required>
+                                <select name="plan">
+                                    <option value="free" {% if user.subscription_plan == 'free' %}selected{% endif %}>Free</option>
+                                    <option value="creator" {% if user.subscription_plan == 'creator' %}selected{% endif %}>Creator</option>
+                                    <option value="agency" {% if user.subscription_plan == 'agency' %}selected{% endif %}>Agency</option>
+                                </select>
+                                <button type="submit" class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">
+                                    Güncelle
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

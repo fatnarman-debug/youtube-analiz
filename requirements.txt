@@ -7,3 +7,4 @@ stripe
 passlib[bcrypt]
 python-jose[cryptography]
 python-dotenv
+aiosmtplib
