@@ -88,7 +88,7 @@ else:
 
 # Hardcoded Admin
 ADMIN_CREDENTIALS = {
-    "username": "hadibaslayalım",
+    "username": "hadibaslayalim",
     "password": "12345678qw.ASX"
 }
 ADMIN_SESSION_NAME = "vidinsight_admin_session"
