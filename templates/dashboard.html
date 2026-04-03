@@ -120,9 +120,21 @@
         </div>
         {% endif %}
 
+        {% if user.credits <= 0 %}
+        <div style="background: linear-gradient(135deg, rgba(220,38,38,0.15) 0%, rgba(245,158,11,0.15) 100%); border: 1px solid rgba(245,158,11,0.3); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; text-align: center;">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1rem;"></i>
+            <h2 style="margin: 0 0 0.5rem 0; font-size: 1.4rem;">Analiz Hakkınız Tükendi</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Yeni analizler yapabilmek için bir paket satın alın. Hemen yükseltin ve kesintisiz devam edin!</p>
+            <a href="/#fiyatlandirma" class="btn-primary" style="font-size: 1.1rem; padding: 0.8rem 2.5rem; background: linear-gradient(135deg, var(--accent) 0%, #d97706 100%); border: none; text-decoration: none; display: inline-block; border-radius: 10px; font-weight: 700; box-shadow: 0 5px 20px rgba(245,158,11,0.3);">
+                <i class="fa-solid fa-rocket"></i> Paket Satın Al
+            </a>
+        </div>
+        {% endif %}
+
         <div class="analysis-section">
             <div class="submit-card glass-card" id="submit">
                 <h3>Analiz Talebi</h3>
+                {% if user.credits > 0 %}
                 <p>Analiz edilmesini istediğiniz YouTube video linkini aşağıya ekleyin.</p>
                 <form action="/analyze" method="POST">
                     <div class="input-group">
@@ -136,6 +148,12 @@
                         * Talebiniz admin ekibimize iletilecek ve raporunuz en kısa sürede buraya yüklenecektir.
                     </p>
                 </form>
+                {% else %}
+                <p style="color: var(--text-muted);">Analiz hakkınız bulunmuyor. Lütfen bir paket satın alarak devam edin.</p>
+                <a href="/#fiyatlandirma" class="btn-primary w-100" style="text-align: center; text-decoration: none; display: block; background: linear-gradient(135deg, var(--accent) 0%, #d97706 100%); border: none;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Paketleri İncele
+                </a>
+                {% endif %}
             </div>
 
             <div class="reports-card glass-card">

@@ -36,7 +36,8 @@ REPORTS_DIR = Path(STORAGE_ROOT) / "reports"
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
 # Veritabani URL'si
-DB_FILE = os.path.join(STORAGE_ROOT, "vidinsight.db")
+# DIKKAT: Bu ismi asla degistirmeyin, aksi takdirde veriler sifirlanir!
+DB_FILE = os.path.join(STORAGE_ROOT, "vidinsight_saas.db")
 DATABASE_URL = f"sqlite:///{DB_FILE}"
 SQLALCHEMY_DATABASE_URL = DATABASE_URL
 
