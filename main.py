@@ -438,6 +438,11 @@ async def admin_dashboard(request: Request, user_id: int = None, db: Session = D
         
     analyses = query.order_by(models.AnalysisRequest.id.desc()).all()
     
+    # Check if raw report exists for each request
+    for req in analyses:
+        raw_path = os.path.join(STORAGE_ROOT, f"raw_analysis_{req.id}.xlsx")
+        req.raw_exists = os.path.exists(raw_path)
+    
     from database import SQLALCHEMY_DATABASE_URL, IS_PREVIOUSLY_PERSISTENT
     return templates.TemplateResponse(
         request=request, 
@@ -463,6 +468,42 @@ async def admin_users(request: Request, db: Session = Depends(get_db)):
         name="admin_users.html", 
         context={"users": users}
     )
+
+from youtube_service import fetch_and_generate_raw_report
+
+def bg_generate_raw_report(req_id: int, video_url: str):
+    try:
+        raw_path = os.path.join(STORAGE_ROOT, f"raw_analysis_{req_id}.xlsx")
+        print(f"--- [START] Yorum çekme başlatıldı: İstek {req_id} ---")
+        fetch_and_generate_raw_report(video_url, raw_path)
+        print(f"--- [SUCCESS] Yorum çekme tamamlandı: İstek {req_id} ---")
+    except Exception as e:
+        print(f"!!! [ERROR] {req_id} için yorum çekilemedi: {e}")
+
+@app.post("/admin/analyses/{analysis_id}/generate_raw")
+async def admin_generate_raw(analysis_id: int, request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated": raise HTTPException(status_code=401)
+    
+    req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == analysis_id).first()
+    if req:
+        # Eğer varsa eskisini sil, yenisini oluştur
+        raw_path = os.path.join(STORAGE_ROOT, f"raw_analysis_{analysis_id}.xlsx")
+        if os.path.exists(raw_path):
+            os.remove(raw_path)
+        background_tasks.add_task(bg_generate_raw_report, analysis_id, req.video_url)
+        
+    return RedirectResponse(url="/admin/analyses", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.get("/admin/download_raw/{analysis_id}")
+async def admin_download_raw(analysis_id: int, request: Request):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated": raise HTTPException(status_code=401)
+    
+    raw_path = os.path.join(STORAGE_ROOT, f"raw_analysis_{analysis_id}.xlsx")
+    if os.path.exists(raw_path):
+        return FileResponse(path=raw_path, filename=f"ham_veriler_{analysis_id}.xlsx", media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    raise HTTPException(status_code=404, detail="Ham veri dosyası henüz hazır değil veya oluşturulamadı.")
 
 @app.post("/admin/update_credits/{user_id}")
 async def admin_update_credits(user_id: int, request: Request, credits: int = Form(...), plan: str = Form(...), db: Session = Depends(get_db)):

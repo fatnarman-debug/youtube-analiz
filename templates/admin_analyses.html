@@ -86,6 +86,28 @@
                     </div>
                 </div>
 
+                <div style="margin-bottom: 25px; padding: 15px; background: #EEF2FF; border-radius: 10px; border: 1px dashed #A5B4FC; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 800; font-size: 0.95rem; color: #3730A3;">🤖 Otomatik Yorum Çekimi</div>
+                        <div style="font-size: 0.8rem; color: #4F46E5; margin-top: 2px;">Videodaki popüler yorumları çekip Excel (Ham Rapor) oluşturur.</div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <form action="/admin/analyses/{{ req.id }}/generate_raw" method="POST" style="margin: 0;" onsubmit="return confirm('Bu işlem videodaki yorumları (max 1000 adet) çekecektir. Birkaç dakika sürebilir. Başlamak istiyor musunuz?');">
+                            <button type="submit" style="background: #312E81; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: transform 0.2s;">
+                                <i class="fa-solid fa-cloud-arrow-down"></i> {{ "Yeniden Çek" if req.raw_exists else "Asistanı Başlat" }}
+                            </button>
+                        </form>
+                        
+                        {% if req.raw_exists %}
+                        <a href="/admin/download_raw/{{ req.id }}" style="background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; transition: transform 0.2s;">
+                            <i class="fa-solid fa-file-excel"></i> Ham Veriyi İndir
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Final Rapor Yükleme Alanı -->
                 <form action="/admin/upload_report/{{ req.id }}" method="POST" enctype="multipart/form-data" class="upload-form">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
                         <div>

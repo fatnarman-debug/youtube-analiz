@@ -8,3 +8,7 @@ passlib[bcrypt]
 python-jose[cryptography]
 python-dotenv
 aiosmtplib
+google-api-python-client
+pandas
+openpyxl
+textblob
