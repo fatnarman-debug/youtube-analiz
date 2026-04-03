@@ -56,63 +56,38 @@ except Exception as e:
 
 app = FastAPI()
 
+# --- v1.0.6 GÜNCELLEME ETİKETİ VE TEŞHİS ---
+@app.get("/debug")
+async def debug_system():
+    import os
+    return {
+        "versiyon": "v1.0.6-final-check",
+        "durum": "aktif",
+        "veritabanı_yolu": str(DATABASE_URL),
+        "yazma_izni": os.access(STORAGE_ROOT, os.W_OK) if os.path.exists(STORAGE_ROOT) else "dizin_yok",
+        "çalışma_dizini": os.getcwd()
+    }
+
 # --- GLOBAL HATA YAKALAYICI (DEBUG) ---
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     import traceback
     error_detail = traceback.format_exc()
-    print(f"!!! GLOBAL HATA: {error_detail}")
+    print(f"!!! GLOBAL HATA YAKALANDI: {error_detail}")
     return JSONResponse(
         status_code=500,
         content={
-            "detail": "Sunucu tarafında global bir hata oluştu.",
-            "error": str(exc),
-            "traceback": error_detail
+            "hata": str(exc),
+            "detay": "Sunucu-taraflı bir hata oluştu.",
+            "traceback": error_detail,
+            "v": "1.0.6"
         }
     )
 
 @app.get("/check-system")
 async def check_system():
-    import os, subprocess
-    results = {"status": "ok", "checks": {}}
-    
-    # 1. Kütüphane Kontrolleri
-    try:
-        import stripe
-        results["checks"]["stripe"] = "Yüklü ✅"
-    except Exception as e:
-        results["checks"]["stripe"] = f"HATA: {e} ❌"
-        
-    try:
-        import multipart
-        results["checks"]["python-multipart"] = "Yüklü ✅"
-    except Exception as e:
-        results["checks"]["python-multipart"] = f"HATA: {e} ❌ (Giriş/Kayıt için ŞART!)"
-
-    # 2. Veritabanı ve Yazma İzni
-    try:
-        from database import engine, DATABASE_URL
-        with engine.connect() as conn:
-            results["checks"]["db_connection"] = "Başarılı ✅"
-        results["checks"]["db_url"] = DATABASE_URL
-    except Exception as e:
-        results["checks"]["db_error"] = str(e)
-
-    # 3. Yazma Testi
-    try:
-        test_file = os.path.join(os.getcwd(), "write_test.tmp")
-        with open(test_file, "w") as f: f.write("test")
-        os.remove(test_file)
-        results["checks"]["write_permission_root"] = "Başarılı ✅"
-    except Exception as e:
-        results["checks"]["write_permission_root"] = f"HATA: {e} ❌"
-
-    results["env"] = {
-        "cwd": os.getcwd(),
-        "storage_root": os.getenv("STORAGE_ROOT", "Tanımsız"),
-        "stripe_key_set": bool(os.getenv("STRIPE_SECRET_KEY"))
-    }
-    return results
+    # Eski teşhis rotasını da koru
+    return await debug_system()
 
 # Setup Templates and Static Files
 if STATIC_DIR.exists():
