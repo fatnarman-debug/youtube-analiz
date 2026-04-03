@@ -169,11 +169,26 @@ def check_and_renew_credits(user: models.User, db: Session):
                 user.last_renewal_date = now
                 db.commit()
 
+@app.get("/debug")
+async def debug_system():
+    import os
+    return {
+        "v": "1.0.5-debug",
+        "db": DATABASE_URL,
+        "writable": os.access(STORAGE_ROOT, os.W_OK) if os.path.exists(STORAGE_ROOT) else "no_storage",
+        "env": "live"
+    }
+
 # --- PUBLIC ROUTES ---
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
     user = get_current_user(request, db)
-    return templates.TemplateResponse(request=request, name="index.html", context={"user": user})
+    # Header'a versiyon ekleyerek testi kolaylaştırıyoruz
+    return templates.TemplateResponse(
+        request=request, 
+        name="index.html", 
+        context={"user": user, "v": "1.0.5-debug"}
+    )
 
 @app.get("/giris", response_class=HTMLResponse)
 async def user_login_get(request: Request, error: str = None, success: bool = False):
