@@ -8,7 +8,7 @@ import os
 import shutil
 import models
 import traceback
-from database import engine, get_db, SessionLocal, STORAGE_STATUS, STORAGE_ROOT, REPORTS_DIR
+from database import engine, get_db, SessionLocal, STORAGE_STATUS, STORAGE_ROOT, REPORTS_DIR, DATABASE_URL
 from auth import get_password_hash, verify_password, create_access_token, decode_access_token
 import datetime
 import stripe
@@ -56,39 +56,26 @@ except Exception as e:
 
 app = FastAPI()
 
-# --- v1.0.7 KESIN GUNCELLEME ETİKETİ VE TEŞHİS ---
-# BU KOD CALISIYORSA LOGIN 198. SATIRDA OLMALIDIR
+# --- v1.0.8 DEBUG ROTASI ---
 @app.get("/debug")
 async def debug_system():
-    import os
     return {
-        "versiyon": "v1.0.7-final-check",
+        "versiyon": "v1.0.8",
         "durum": "aktif",
-        "veritabanı_yolu": str(DATABASE_URL),
-        "yazma_izni": os.access(STORAGE_ROOT, os.W_OK) if os.path.exists(STORAGE_ROOT) else "dizin_yok",
-        "mesaj": "Sistem basariyla guncellendi!"
+        "veritabani": DATABASE_URL,
+        "storage": STORAGE_ROOT,
+        "yazma_izni": os.access(STORAGE_ROOT, os.W_OK) if os.path.exists(STORAGE_ROOT) else False
     }
 
-# --- GLOBAL HATA YAKALAYICI (DEBUG) ---
+# --- GLOBAL HATA YAKALAYICI ---
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    import traceback
     error_detail = traceback.format_exc()
-    print(f"!!! GLOBAL HATA YAKALANDI: {error_detail}")
+    print(f"!!! GLOBAL HATA: {error_detail}")
     return JSONResponse(
         status_code=500,
-        content={
-            "hata": str(exc),
-            "detay": "Sunucu-taraflı bir hata oluştu.",
-            "traceback": error_detail,
-            "v": "1.0.6"
-        }
+        content={"hata": str(exc), "traceback": error_detail, "v": "1.0.8"}
     )
-
-@app.get("/check-system")
-async def check_system():
-    # Eski teşhis rotasını da koru
-    return await debug_system()
 
 # Setup Templates and Static Files
 if STATIC_DIR.exists():
@@ -145,25 +132,14 @@ def check_and_renew_credits(user: models.User, db: Session):
                 user.last_renewal_date = now
                 db.commit()
 
-@app.get("/debug")
-async def debug_system():
-    import os
-    return {
-        "v": "1.0.5-debug",
-        "db": DATABASE_URL,
-        "writable": os.access(STORAGE_ROOT, os.W_OK) if os.path.exists(STORAGE_ROOT) else "no_storage",
-        "env": "live"
-    }
-
 # --- PUBLIC ROUTES ---
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
     user = get_current_user(request, db)
-    # Header'a versiyon ekleyerek testi kolaylaştırıyoruz
     return templates.TemplateResponse(
         request=request, 
         name="index.html", 
-        context={"user": user, "v": "1.0.5-debug"}
+        context={"user": user}
     )
 
 @app.get("/giris", response_class=HTMLResponse)

@@ -1,71 +1,65 @@
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
 import os
 from pathlib import Path
 from datetime import datetime
 
-# Merkezi Depolama Yapılandırması (/app/storage)
-# Coolify'da bu yola bir Volume Mount bağlanmalıdır (Destination: /app/storage).
-# Bu klasör hem sqlite dosyasını hem de yüklenen raporları barındıracaktır.
+# ============================================================
+# VidInsight v1.0.8 - Temiz Veritabani Yapilandirmasi
+# ============================================================
+print("[VidInsight v1.0.8] Veritabani yapilandirmasi basliyor...")
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-DATABASE_PATH = os.getenv("DATABASE_PATH")
+# Yazilabilir bir dizin bul
+# Oncelik: /app/storage (Coolify volume) > ./storage (lokal) > /tmp (son care)
+STORAGE_ROOT = None
+for candidate in ["/app/storage", os.path.join(os.getcwd(), "storage"), "/tmp"]:
+    try:
+        os.makedirs(candidate, exist_ok=True)
+        test_path = os.path.join(candidate, ".write_test")
+        with open(test_path, "w") as f:
+            f.write("ok")
+        os.remove(test_path)
+        STORAGE_ROOT = candidate
+        print(f"[v1.0.8] Yazilabilir dizin bulundu: {candidate}")
+        break
+    except Exception as e:
+        print(f"[v1.0.8] Dizin yazilabilir degil: {candidate} ({e})")
+        continue
 
-SQLALCHEMY_DATABASE_URL = None
-STORAGE_ROOT = Path("/app/storage")
+if not STORAGE_ROOT:
+    STORAGE_ROOT = "/tmp"
+    print("[v1.0.8] UYARI: /tmp son care olarak kullaniliyor!")
 
-# Eğer /app/storage yoksa (yerel geliştirme) yerel bir klasör kullan
-if not os.path.exists("/app/storage"):
-    STORAGE_ROOT = Path(__file__).resolve().parent / "storage"
-
-# Klasörleri oluştur
-REPORTS_DIR = STORAGE_ROOT / "reports"
+# Raporlar dizini
+REPORTS_DIR = Path(STORAGE_ROOT) / "reports"
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
-if DATABASE_URL:
-    SQLALCHEMY_DATABASE_URL = DATABASE_URL
-elif DATABASE_PATH:
-    SQLALCHEMY_DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
-else:
-    # Varsayılan SQLite yolu
-    DB_FILE = STORAGE_ROOT / "vidinsight.db"
-    SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_FILE}"
+# Veritabani URL'si
+DB_FILE = os.path.join(STORAGE_ROOT, "vidinsight.db")
+DATABASE_URL = f"sqlite:///{DB_FILE}"
+SQLALCHEMY_DATABASE_URL = DATABASE_URL
 
-# Kalıcılık (Persistence) Takibi
-HEARTBEAT_FILE = STORAGE_ROOT / "persistence_heartbeat.txt"
-IS_PREVIOUSLY_PERSISTENT = HEARTBEAT_FILE.exists()
+print(f"[v1.0.8] Veritabani dosyasi: {DB_FILE}")
 
-if not IS_PREVIOUSLY_PERSISTENT:
-    try:
-        with open(HEARTBEAT_FILE, "w") as f:
-            f.write(f"Created at: {datetime.now()}")
-    except:
-        pass
-
-# UI için durum etiketleri
-if IS_PREVIOUSLY_PERSISTENT:
-    STORAGE_STATUS = "KESIN KALICI ✅ (Disk Bagli)"
-else:
-    STORAGE_STATUS = "ILK KURULUM / TEST ⏳ (Veriler ilk restartta kontrol edilecek)"
-
-print(f"{'='*60}")
-print(f"VERITABANI DURUMU:")
-print(f"  - Kok Dizin: {STORAGE_ROOT}")
-print(f"  - Durum: {STORAGE_STATUS}")
-print(f"{'='*60}")
-
-# PERSISTENT STORAGE (COOLIFY VOLUME) KONTROLÜ
-STORAGE_ROOT = "/app/storage"
-if not os.path.exists(STORAGE_ROOT):
-    STORAGE_ROOT = os.path.join(os.getcwd(), "storage")
-    os.makedirs(STORAGE_ROOT, exist_ok=True)
-
-# YAZMA IZNI OLAN DIZINE TASIMA
-DATABASE_URL = f"sqlite:///{os.path.join(STORAGE_ROOT, 'vidinsight_final_v3.db')}"
+# SQLAlchemy Engine
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+# Kalicilik takibi
+HEARTBEAT_FILE = os.path.join(STORAGE_ROOT, "heartbeat.txt")
+IS_PREVIOUSLY_PERSISTENT = os.path.exists(HEARTBEAT_FILE)
+STORAGE_STATUS = "KALICI (Disk Bagli)" if IS_PREVIOUSLY_PERSISTENT else "ILK KURULUM"
+
+try:
+    with open(HEARTBEAT_FILE, "w") as f:
+        f.write(f"v1.0.8 - {datetime.now()}")
+except:
+    pass
+
+print(f"[v1.0.8] Depolama durumu: {STORAGE_STATUS}")
+print(f"[v1.0.8] Veritabani yapilandirmasi tamamlandi.")
 
 def get_db():
     db = SessionLocal()
