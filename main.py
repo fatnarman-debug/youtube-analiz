@@ -237,7 +237,10 @@ def get_current_user(request: Request, db: Session):
     payload = decode_access_token(token)
     if not payload: return None
     username = payload.get("sub")
-    return db.query(models.User).filter(models.User.username == username).first()
+    user = db.query(models.User).filter(models.User.username == username).first()
+    if user and not user.is_active:
+        return None
+    return user
 
 def check_and_renew_credits(user: models.User, db: Session):
     """Aylık kredi yenileme ve sıfırlama mantığı (Lazy Renewal)"""
@@ -288,6 +291,9 @@ async def user_login_post(request: Request, email: str = Form(...), password: st
     user = db.query(models.User).filter((models.User.email == email) | (models.User.username == email)).first()
     if not user or not verify_password(password, user.password_hash):
         return templates.TemplateResponse(request=request, name="user_login.html", context={"error": "Geçersiz bilgiler."})
+    
+    if not user.is_active:
+        return templates.TemplateResponse(request=request, name="user_login.html", context={"error": "Hesabınız yönetici tarafından pasife alınmıştır."})
     
     token = create_access_token(data={"sub": user.username})
     response = RedirectResponse(url="/dashboard", status_code=status.HTTP_303_SEE_OTHER)
@@ -421,18 +427,24 @@ async def admin_login_post(username: str = Form(...), password: str = Form(...))
     return RedirectResponse(url="/girisburdan?error=1", status_code=status.HTTP_303_SEE_OTHER)
 
 @app.get("/admin/analyses", response_class=HTMLResponse)
-async def admin_dashboard(request: Request, db: Session = Depends(get_db)):
+async def admin_dashboard(request: Request, user_id: int = None, db: Session = Depends(get_db)):
     session = request.cookies.get(ADMIN_SESSION_NAME)
     if session != "authenticated":
         return RedirectResponse(url="/girisburdan")
     
-    analyses = db.query(models.AnalysisRequest).order_by(models.AnalysisRequest.id.desc()).all()
+    query = db.query(models.AnalysisRequest)
+    if user_id:
+        query = query.filter(models.AnalysisRequest.user_id == user_id)
+        
+    analyses = query.order_by(models.AnalysisRequest.id.desc()).all()
+    
     from database import SQLALCHEMY_DATABASE_URL, IS_PREVIOUSLY_PERSISTENT
     return templates.TemplateResponse(
         request=request, 
         name="admin_analyses.html", 
         context={
             "analyses": analyses,
+            "filter_user_id": user_id,
             "storage_status": STORAGE_STATUS,
             "is_persistent": IS_PREVIOUSLY_PERSISTENT,
             "db_url": str(SQLALCHEMY_DATABASE_URL)
@@ -453,16 +465,42 @@ async def admin_users(request: Request, db: Session = Depends(get_db)):
     )
 
 @app.post("/admin/update_credits/{user_id}")
-async def admin_update_credits(user_id: int, 
-                               credits: int = Form(...), 
-                               plan: str = Form(...),
-                               db: Session = Depends(get_db)):
-    # Güvenlik kontrolü (session kontrolü burda da olmalı)
-    # Basitlik için formdan gelen veriyi alıp güncelliyoruz
+async def admin_update_credits(user_id: int, request: Request, credits: int = Form(...), plan: str = Form(...), db: Session = Depends(get_db)):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        raise HTTPException(status_code=401)
+    
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if user:
         user.credits = credits
         user.subscription_plan = plan
+        db.commit()
+    return RedirectResponse(url="/admin/users", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.post("/admin/user/{user_id}/toggle_status")
+async def admin_toggle_user_status(user_id: int, request: Request, db: Session = Depends(get_db)):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        raise HTTPException(status_code=401)
+        
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user:
+        user.is_active = not user.is_active
+        db.commit()
+    return RedirectResponse(url="/admin/users", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.post("/admin/user/{user_id}/delete")
+async def admin_delete_user(user_id: int, request: Request, db: Session = Depends(get_db)):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        raise HTTPException(status_code=401)
+        
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user:
+        # Önce kullanıcının tüm analiz taleplerini sil (Constraint hatası almamak için)
+        db.query(models.AnalysisRequest).filter(models.AnalysisRequest.user_id == user_id).delete()
+        # Kullanıcıyı sil
+        db.delete(user)
         db.commit()
     return RedirectResponse(url="/admin/users", status_code=status.HTTP_303_SEE_OTHER)
 

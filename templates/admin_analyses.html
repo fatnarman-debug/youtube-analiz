@@ -56,6 +56,18 @@
             </div>
         </header>
 
+        {% if filter_user_id %}
+        <div style="background: #E0E7FF; border-left: 4px solid #6366F1; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <i class="fa-solid fa-filter" style="color: #4F46E5; margin-right: 8px;"></i>
+                <span style="color: #3730A3; font-weight: 600;">Sadece belirli bir kullanıcının (ID: {{ filter_user_id }}) analizleri listeleniyor.</span>
+            </div>
+            <a href="/admin/analyses" style="background: #4F46E5; color: white; padding: 6px 15px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 700;">
+                <i class="fa-solid fa-xmark"></i> Filtreyi Temizle
+            </a>
+        </div>
+        {% endif %}
+
         <section class="admin-job-list">
             {% for req in analyses %}
             <div class="admin-card analysis-card">
