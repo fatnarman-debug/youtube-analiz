@@ -104,6 +104,41 @@ SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM = os.getenv("SMTP_FROM", "VidInsight <noreply@vid-insight.com>")
 
+async def _send_email(message: EmailMessage):
+    """STARTTLS ile dener, başarısız olursa düz TLS ile tekrar dener."""
+    if not SMTP_USER or not SMTP_PASSWORD:
+        print("!!! SMTP ayarları eksik, e-posta gönderilemedi.")
+        return
+    try:
+        # Önce STARTTLS (587) ile dene
+        await aiosmtplib.send(
+            message,
+            hostname=SMTP_HOST,
+            port=SMTP_PORT,
+            username=SMTP_USER,
+            password=SMTP_PASSWORD,
+            use_tls=False,
+            start_tls=True,
+            timeout=15
+        )
+        print(f"--- E-posta gönderildi (STARTTLS): {message['To']}")
+    except Exception as e1:
+        print(f"!!! STARTTLS hatası: {e1} — TLS (465) ile tekrar deneniyor...")
+        try:
+            # Yedek: Port 465 SSL ile dene
+            await aiosmtplib.send(
+                message,
+                hostname=SMTP_HOST,
+                port=465,
+                username=SMTP_USER,
+                password=SMTP_PASSWORD,
+                use_tls=True,
+                timeout=15
+            )
+            print(f"--- E-posta gönderildi (SSL/465): {message['To']}")
+        except Exception as e2:
+            print(f"!!! E-posta gönderilemedi (her iki yöntem de başarısız): {e2}")
+
 async def send_report_email(user_email: str, user_name: str, video_title: str):
     """Kullanıcıya raporunun hazır olduğunu bildiren şık bir HTML e-posta gönderir."""
     if not SMTP_USER or not SMTP_PASSWORD:
@@ -145,19 +180,7 @@ async def send_report_email(user_email: str, user_name: str, video_title: str):
     message.set_content("Raporunuz hazır! Detaylar için panelinizi kontrol edin.")
     message.add_alternative(html_content, subtype="html")
 
-    try:
-        await aiosmtplib.send(
-            message,
-            hostname=SMTP_HOST,
-            port=SMTP_PORT,
-            username=SMTP_USER,
-            password=SMTP_PASSWORD,
-            use_tls=False,
-            start_tls=True
-        )
-        print(f"--- E-posta gönderildi: {user_email}")
-    except Exception as e:
-        print(f"!!! E-posta gönderim hatası: {e}")
+    await _send_email(message)
 
 async def send_welcome_email(user_email: str, user_name: str):
     """Yeni üyelere hoş geldin e-postası gönderir."""
@@ -190,10 +213,7 @@ async def send_welcome_email(user_email: str, user_name: str):
     """
     message.set_content("VidInsight'a Hoş Geldiniz! Hemen başlayın.")
     message.add_alternative(html_content, subtype="html")
-    try:
-        await aiosmtplib.send(message, hostname=SMTP_HOST, port=SMTP_PORT, username=SMTP_USER, password=SMTP_PASSWORD, use_tls=False, start_tls=True)
-        print(f"--- Hoş geldin e-postası gönderildi: {user_email}")
-    except: pass
+    await _send_email(message)
 
 async def send_analysis_received_email(user_email: str, user_name: str, video_url: str):
     """Analiz talebi alındığında kullanıcıya onay e-postası gönderir."""
@@ -223,9 +243,7 @@ async def send_analysis_received_email(user_email: str, user_name: str, video_ur
     """
     message.set_content("Videonuzu aldık, analiz başlıyor!")
     message.add_alternative(html_content, subtype="html")
-    try:
-        await aiosmtplib.send(message, hostname=SMTP_HOST, port=SMTP_PORT, username=SMTP_USER, password=SMTP_PASSWORD, use_tls=False, start_tls=True)
-    except: pass
+    await _send_email(message)
 
 # --- v1.0.8 DEBUG ROTASI ---
 @app.get("/debug")
