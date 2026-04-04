@@ -367,7 +367,7 @@ async def signup_post(request: Request,
             full_name=full_name,
             password_hash=get_password_hash(password)
         )
-        new_user.credits = 1
+        new_user.credits = 0
         new_user.subscription_plan = "free"
         new_user.last_renewal_date = datetime.datetime.utcnow()
 
