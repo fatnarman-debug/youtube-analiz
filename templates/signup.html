@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kaydol | VidInsight</title>
+    <title>{{ t(request, 'signup_page_title') }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -55,30 +55,30 @@
         <div class="auth-card glass-card">
             <div class="auth-header">
                 <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo"></a>
-                <h2>{{ t(request, 'signup_title') }}ın</h2>
-                <p>Profesyonel analiz araçlarını kullanmak için hemen ücretsiz hesap oluşturun.</p>
+                <h2>{{ t(request, 'signup_title') }}</h2>
+                <p>{{ t(request, 'signup_desc') }}</p>
             </div>
 
             {% if error %}
             <div class="error-msg">
-                <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
+                <i class="fa-solid fa-circle-exclamation"></i> {{ t(request, error) }}
             </div>
             {% endif %}
 
             <form action="/kayit" method="POST">
                 <div class="input-group">
                     <label for="fullName">{{ t(request, 'label_fullname') }}</label>
-                    <input type="text" id="fullName" name="full_name" placeholder="Ad Soyad" required>
+                    <input type="text" id="fullName" name="full_name" placeholder="{{ t(request, 'signup_ph_fullname') }}" required>
                 </div>
 
                 <div class="input-group">
                     <label for="username">{{ t(request, 'label_username') }}</label>
-                    <input type="text" id="username" name="username" placeholder="kullanici_adi" required>
+                    <input type="text" id="username" name="username" placeholder="{{ t(request, 'signup_ph_username') }}" required>
                 </div>
 
                 <div class="input-group">
                     <label for="email">{{ t(request, 'label_email') }}</label>
-                    <input type="email" id="email" name="email" placeholder="ornek@mail.com" required>
+                    <input type="email" id="email" name="email" placeholder="{{ t(request, 'modal_ph_email') }}" required>
                 </div>
                 
                 <div class="input-group">
@@ -86,7 +86,7 @@
                     <input type="password" id="password" name="password" placeholder="••••••••" required>
                 </div>
 
-                <button type="submit" class="btn-primary w-100">Kayıt Ol</button>
+                <button type="submit" class="btn-primary w-100">{{ t(request, 'signup_btn_reg') }}</button>
             </form>
 
             <div class="auth-footer">

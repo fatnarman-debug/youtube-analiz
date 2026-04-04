@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VidInsight | Profesyonel YouTube Yorum Analiz Sistemi</title>
+    <title>{{ t(request, 'site_title') }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     <!-- FontAwesome for Icons -->
@@ -120,56 +120,56 @@
         <div class="pricing-grid">
             <!-- Paket 1 -->
             <div class="pricing-card glass-card">
-                <div class="pkg-header">Single</div>
-                <div class="pkg-price">€5<span>/Tek Video</span></div>
-                <p class="pkg-desc">Sadece belli bir videonun genel tepkilerini görmek isteyenler için idealdir.</p>
+                <div class="pkg-header">{{ t(request, 'pkg_single_name') }}</div>
+                <div class="pkg-price">{{ t(request, 'pkg_single_price') }}<span>{{ t(request, 'pkg_single_sub') }}</span></div>
+                <p class="pkg-desc">{{ t(request, 'pkg_single_desc') }}</p>
                 <ul class="pkg-features">
-                    <li><i class="fa-solid fa-check text-yellow"></i> 1 Video Analizi</li>
-                    <li><i class="fa-solid fa-check text-yellow"></i> Excel Raporu Çıktısı</li>
-                    <li><i class="fa-solid fa-check text-yellow"></i> Duygu Analizi</li>
-                    <li><i class="fa-solid fa-check text-yellow"></i> Küfür ve Soru Filtresi</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_single_feat1') }}</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_single_feat2') }}</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_single_feat3') }}</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_single_feat4') }}</li>
                 </ul>
                 {% if user %}
-                <a href="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y?client_reference_id={{ user.id }}" class="btn-primary w-100" style="text-align: center; text-decoration: none;">Satın Al - 5€</a>
+                <a href="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y?client_reference_id={{ user.id }}" class="btn-primary w-100" style="text-align: center; text-decoration: none;">{{ t(request, 'pkg_buy') }} - 5€</a>
                 {% else %}
-                <button class="btn-primary w-100 open-modal-btn" data-package="Single (1 Video)" data-link="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y">Satın Al - 5€</button>
+                <button class="btn-primary w-100 open-modal-btn" data-package="{{ t(request, 'pkg_single_name') }} (1 Video)" data-link="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y">{{ t(request, 'pkg_buy') }} - 5€</button>
                 {% endif %}
             </div>
 
             <!-- Paket 2 -->
             <div class="pricing-card glass-card popular">
-                <div class="popular-badge">En Çok Tercih Edilen</div>
+                <div class="popular-badge">{{ t(request, 'pkg_most_popular') }}</div>
                 <div class="pkg-header">Creator</div>
-                <div class="pkg-price">€15<span>/Aylık</span></div>
-                <p class="pkg-desc">Düzenli içerik üreten YouTuber'lar için aylık olarak 5 videonun sürekli analizi.</p>
+                <div class="pkg-price">€15<span>{{ t(request, 'price_month') }}</span></div>
+                <p class="pkg-desc">{{ t(request, 'pkg_creator_desc') }}</p>
                 <ul class="pkg-features">
-                    <li><i class="fa-solid fa-check text-yellow"></i> Ayda 5 Video Analizi</li>
-                    <li><i class="fa-solid fa-check text-yellow"></i> Tüm Rapor Çıktıları</li>
-                    <li><i class="fa-solid fa-check text-yellow"></i> Gelişmiş Şikayet Takibi</li>
-                    <li><i class="fa-solid fa-check text-yellow"></i> Öncelikli Analiz Sırası</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_creator_feat1') }}</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_creator_feat2') }}</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_creator_feat3') }}</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_creator_feat4') }}</li>
                 </ul>
                 {% if user %}
-                <a href="https://buy.stripe.com/14AaEXavEbBA6Rj7nYcZa0z?client_reference_id={{ user.id }}" class="btn-primary w-100" style="text-align: center; text-decoration: none;">Abone Ol - 15€/Ay</a>
+                <a href="https://buy.stripe.com/14AaEXavEbBA6Rj7nYcZa0z?client_reference_id={{ user.id }}" class="btn-primary w-100" style="text-align: center; text-decoration: none;">{{ t(request, 'pkg_subscribe') }} - 15€{{ t(request, 'price_month') }}</a>
                 {% else %}
-                <button class="btn-primary w-100 open-modal-btn" data-package="Creator (5 Video/Aylık)" data-link="https://buy.stripe.com/14AaEXavEbBA6Rj7nYcZa0z">Abone Ol - 15€/Ay</button>
+                <button class="btn-primary w-100 open-modal-btn" data-package="Creator (5 Video{{ t(request, 'price_month') }})" data-link="https://buy.stripe.com/14AaEXavEbBA6Rj7nYcZa0z">{{ t(request, 'pkg_subscribe') }} - 15€{{ t(request, 'price_month') }}</button>
                 {% endif %}
             </div>
 
             <!-- Paket 3 -->
             <div class="pricing-card glass-card">
                 <div class="pkg-header">Agency</div>
-                <div class="pkg-price">€20<span>/Aylık</span></div>
-                <p class="pkg-desc">Profesyonel iş yapan kanallar veya markalar için büyük analiz kapasitesi.</p>
+                <div class="pkg-price">€20<span>{{ t(request, 'price_month') }}</span></div>
+                <p class="pkg-desc">{{ t(request, 'pkg_agency_desc') }}</p>
                 <ul class="pkg-features">
-                    <li><i class="fa-solid fa-check text-yellow"></i> Ayda 10 Video Analizi</li>
-                    <li><i class="fa-solid fa-check text-yellow"></i> Derinlemesine Detaylar</li>
-                    <li><i class="fa-solid fa-check text-yellow"></i> Toplu E-Tablo Aktarımı</li>
-                    <li><i class="fa-solid fa-check text-yellow"></i> Özel Destek Hattı</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_agency_feat1') }}</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_agency_feat2') }}</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_agency_feat3') }}</li>
+                    <li><i class="fa-solid fa-check text-yellow"></i> {{ t(request, 'pkg_agency_feat4') }}</li>
                 </ul>
                 {% if user %}
-                <a href="https://buy.stripe.com/7sYcN5fPY5dc0sV5fQcZa0A?client_reference_id={{ user.id }}" class="btn-primary w-100" style="text-align: center; text-decoration: none;">Abone Ol - 20€/Ay</a>
+                <a href="https://buy.stripe.com/7sYcN5fPY5dc0sV5fQcZa0A?client_reference_id={{ user.id }}" class="btn-primary w-100" style="text-align: center; text-decoration: none;">{{ t(request, 'pkg_subscribe') }} - 20€{{ t(request, 'price_month') }}</a>
                 {% else %}
-                <button class="btn-primary w-100 open-modal-btn" data-package="Agency (10 Video/Aylık)" data-link="https://buy.stripe.com/7sYcN5fPY5dc0sV5fQcZa0A">Abone Ol - 20€/Ay</button>
+                <button class="btn-primary w-100 open-modal-btn" data-package="Agency (10 Video{{ t(request, 'price_month') }})" data-link="https://buy.stripe.com/7sYcN5fPY5dc0sV5fQcZa0A">{{ t(request, 'pkg_subscribe') }} - 20€{{ t(request, 'price_month') }}</button>
                 {% endif %}
             </div>
         </div>
@@ -180,18 +180,18 @@
         <div class="footer-content">
             <div class="footer-brand">
                 <img src="/static/img/logo.png" alt="VidInsight Logo" width="150" style="margin-bottom: 20px;">
-                <p>YouTube yorumlarınızı veriye ve stratejiye dönüştürmenin en akıllı yolu.</p>
+                <p>{{ t(request, 'footer_desc') }}</p>
             </div>
             <div class="footer-links">
-                <h4>Hızlı Menü</h4>
+                <h4>{{ t(request, 'footer_menu_title') }}</h4>
                 <ul>
                     <li><a href="#ozellikler">{{ t(request, 'nav_features') }}</a></li>
-                    <li><a href="#fiyatlandirma">Paketler</a></li>
+                    <li><a href="#fiyatlandirma">{{ t(request, 'footer_pkg_link') }}</a></li>
                 </ul>
             </div>
             <div class="footer-contact">
-                <h4>İletişim</h4>
-                <p>İletişim bilgilerimiz yakında eklenecektir.</p>
+                <h4>{{ t(request, 'footer_contact_title') }}</h4>
+                <p>{{ t(request, 'footer_contact_desc') }}</p>
             </div>
         </div>
         <div class="footer-bottom">
@@ -204,8 +204,8 @@
     <div class="modal-overlay" id="purchaseModal">
         <div class="modal glass-card">
             <button class="close-modal" id="closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
-            <h2>Siparişinizi Tamamlayın</h2>
-            <p id="selectedPackageText">Seçilen Paket: <strong>...</strong></p>
+            <h2>{{ t(request, 'modal_buy_title') }}</h2>
+            <p id="selectedPackageText">{{ t(request, 'modal_selected_pkg') }}: <strong>...</strong></p>
             
             <form id="purchaseForm" action="/submit_form" method="POST">
                 
@@ -213,35 +213,35 @@
                 <input type="hidden" name="paket_adi" id="hiddenPackageName" value="">
 
                 <div class="input-group">
-                    <label for="fullName">Adınız Soyadınız</label>
-                    <input type="text" id="fullName" name="Ad_Soyad" placeholder="Ad Soyad giriniz" required>
+                    <label for="fullName">{{ t(request, 'modal_label_fullname') }}</label>
+                    <input type="text" id="fullName" name="Ad_Soyad" placeholder="{{ t(request, 'modal_ph_fullname') }}" required>
                 </div>
                 
                 <div class="input-group">
-                    <label for="email">E-posta Adresiniz</label>
-                    <input type="email" id="email" name="Email" placeholder="ornek@mail.com" required>
+                    <label for="email">{{ t(request, 'modal_label_email') }}</label>
+                    <input type="email" id="email" name="Email" placeholder="{{ t(request, 'modal_ph_email') }}" required>
                 </div>
                 
                 <div class="input-group">
-                    <label for="youtubeLink">YouTube Kanal Linkiniz (veya Video Linkiniz)</label>
-                    <input type="url" id="youtubeLink" name="Youtube_Link" placeholder="https://youtube.com/..." required>
+                    <label for="youtubeLink">{{ t(request, 'modal_label_ytlink') }}</label>
+                    <input type="url" id="youtubeLink" name="Youtube_Link" placeholder="{{ t(request, 'modal_ph_ytlink') }}" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="description">Eklemek İstedikleriniz (Opsiyonel)</label>
-                    <textarea id="description" name="Aciklama" rows="3" placeholder="Analiz hakkında özel bir notunuz var mı?"></textarea>
+                    <label for="description">{{ t(request, 'modal_label_note') }}</label>
+                    <textarea id="description" name="Aciklama" rows="3" placeholder="{{ t(request, 'modal_ph_note') }}"></textarea>
                 </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn-primary w-100" id="submitBtn">
-                        Güvenli Ödeme Adımına Geç <i class="fa-solid fa-lock" style="margin-left:8px;"></i>
+                        {{ t(request, 'modal_btn_submit') }} <i class="fa-solid fa-lock" style="margin-left:8px;"></i>
                     </button>
                 </div>
             </form>
             
             <!-- Loading and Success Messages -->
             <div id="formStatus" class="form-status" style="display:none;">
-                <p class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Bilgileriniz iletiliyor, ödeme sistemine yönlendiriliyorsunuz...</p>
+                <p class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> {{ t(request, 'modal_status_loading') }}</p>
             </div>
             
         </div>

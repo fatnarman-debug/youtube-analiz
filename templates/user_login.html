@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Yap | VidInsight</title>
+    <title>{{ t(request, 'login_page_title') }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -65,26 +65,26 @@
         <div class="auth-card glass-card">
             <div class="auth-header">
                 <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo"></a>
-                <h2>Tekrar Hoş Geldiniz</h2>
-                <p>Analizlerinize erişmek için giriş yapın.</p>
+                <h2>{{ t(request, 'login_welcome') }}</h2>
+                <p>{{ t(request, 'login_desc') }}</p>
             </div>
 
             {% if error %}
             <div class="error-msg">
-                <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
+                <i class="fa-solid fa-circle-exclamation"></i> {{ t(request, error) }}
             </div>
             {% endif %}
 
             {% if success %}
             <div class="success-msg">
-                <i class="fa-solid fa-circle-check"></i> Kayıt başarılı! Lütfen giriş yapın.
+                <i class="fa-solid fa-circle-check"></i> {{ t(request, 'login_success_reg') }}
             </div>
             {% endif %}
 
             <form action="/giris" method="POST">
                 <div class="input-group">
-                    <label for="email">E-posta veya Kullanıcı Adı</label>
-                    <input type="text" id="email" name="email" placeholder="ornek@mail.com veya kullanıcı adı" required>
+                    <label for="email">{{ t(request, 'login_label_user_email') }}</label>
+                    <input type="text" id="email" name="email" placeholder="{{ t(request, 'login_ph_email') }}" required>
                 </div>
                 
                 <div class="input-group">

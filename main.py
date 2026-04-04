@@ -64,7 +64,6 @@ except Exception as e:
 
 app = FastAPI()
 
-@lru_cache()
 def load_translations():
     locales_dir = os.path.join(BASE_DIR, "locales")
     langs = {}
@@ -328,10 +327,10 @@ async def user_login_post(request: Request, email: str = Form(...), password: st
     # Email VEYA Username ile giriş
     user = db.query(models.User).filter((models.User.email == email) | (models.User.username == email)).first()
     if not user or not verify_password(password, user.password_hash):
-        return templates.TemplateResponse(request=request, name="user_login.html", context={"error": "Geçersiz bilgiler."})
+        return templates.TemplateResponse(request=request, name="user_login.html", context={"error": "err_invalid_creds"})
     
     if not user.is_active:
-        return templates.TemplateResponse(request=request, name="user_login.html", context={"error": "Hesabınız yönetici tarafından pasife alınmıştır."})
+        return templates.TemplateResponse(request=request, name="user_login.html", context={"error": "err_user_inactive"})
     
     token = create_access_token(data={"sub": user.username})
     response = RedirectResponse(url="/dashboard", status_code=status.HTTP_303_SEE_OTHER)
@@ -359,7 +358,7 @@ async def signup_post(request: Request,
         
         if user_exists:
             return templates.TemplateResponse(request=request, name="user_signup.html", context={
-                "request": request, "error": "Bu kullanıcı adı veya e-posta zaten kullanımda."
+                "request": request, "error": "err_user_exists"
             })
 
         new_user = models.User(
@@ -417,7 +416,7 @@ async def create_analysis(request: Request,
             "request": request, 
             "user": user, 
             "analyses": analyses,
-            "error": "Yetersiz kredi! Lütfen yeni bir paket satın alın."
+            "error": "err_insufficient_credits"
         })
 
     new_request = models.AnalysisRequest(
