@@ -1,5 +1,4 @@
 # Virtual Environment
-venv/
 ENV/
 env/
 
@@ -27,4 +26,3 @@ vidinsight.db
 
 # Storage
 storage/
-.env
