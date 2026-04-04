@@ -679,6 +679,55 @@ async def admin_logout():
     response.delete_cookie(ADMIN_SESSION_NAME)
     return response
 
+async def bg_send_mass_email(subject: str, content_html: str, user_list: list):
+    for u in user_list:
+        try:
+            message = EmailMessage()
+            message["From"] = SMTP_FROM
+            message["To"] = u.email
+            message["Subject"] = subject
+            
+            wrapped_html = f"""
+            <html>
+                <body style="font-family: sans-serif; line-height: 1.6; color: #333;">
+                    <div style="max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
+                        <div style="background: #0F172A; padding: 20px; text-align: center; color: white;">
+                            <h1 style="margin:0;">VidInsight</h1>
+                        </div>
+                        <div style="padding: 30px;">
+                            {content_html}
+                        </div>
+                    </div>
+                </body>
+            </html>
+            """
+            message.set_content("Lütfen HTML destekli bir e-posta istemcisi kullanın.")
+            message.add_alternative(wrapped_html, subtype="html")
+            await _send_email(message)
+        except Exception as e:
+            print(f"Toplu Mail Hatasi -> {u.email}: {e}")
+
+@app.get("/admin/marketing", response_class=HTMLResponse)
+async def admin_marketing_get(request: Request, db: Session = Depends(get_db)):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        return RedirectResponse(url="/girisburdan")
+    
+    user_count = db.query(models.User).filter(models.User.is_active == True).count()
+    return templates.TemplateResponse(request=request, name="admin_marketing.html", context={"user_count": user_count})
+
+@app.post("/admin/marketing/send")
+async def admin_marketing_post(request: Request, background_tasks: BackgroundTasks, subject: str = Form(...), content_html: str = Form(...), db: Session = Depends(get_db)):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated":
+        raise HTTPException(status_code=401)
+    
+    active_users = db.query(models.User).filter(models.User.is_active == True).all()
+    if active_users:
+        background_tasks.add_task(bg_send_mass_email, subject, content_html, active_users)
+        
+    return RedirectResponse(url="/admin/marketing?success=1", status_code=status.HTTP_303_SEE_OTHER)
+
 # --- STRIPE WEBHOOK ---
 @app.post("/stripe-webhook")
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):

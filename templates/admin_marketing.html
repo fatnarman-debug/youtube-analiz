@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-posta Pazarlama | VidInsight Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #F8FAFC; color: #0F172A; }
+        
+        .marketing-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: 700;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        .input-group input, .input-group textarea {
+            padding: 14px;
+            border: 1px solid #CBD5E1;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: white;
+            color: #0F172A;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #6366F1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .info-box {
+            background: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+            padding: 16px 20px;
+            border-radius: 8px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .info-box i {
+            color: #3B82F6;
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: #1E3A8A;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .btn-submit {
+            background: #0F172A;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            background: #6366F1;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(99, 102, 241, 0.5);
+        }
+    </style>
+</head>
+<body class="admin-container">
+
+    <!-- Modern Side Navigation -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-logo">
+            <img src="/static/img/logo.png" alt="VidInsight Logo">
+        </div>
+        <nav>
+            <a href="/admin/analyses">
+                <i class="fa-solid fa-chart-pie"></i> Analiz Talepleri
+            </a>
+            <a href="/admin/users">
+                <i class="fa-solid fa-users-gear"></i> Kullanıcı Yönetimi
+            </a>
+            <a href="/admin/marketing" class="active">
+                <i class="fa-solid fa-envelope-open-text"></i> E-posta Pazarlama
+            </a>
+            <a href="/admin/download_db">
+                <i class="fa-solid fa-database"></i> Veritabanı Yedeği
+            </a>
+            <a href="/admin/logout" class="logout-link">
+                <i class="fa-solid fa-power-off"></i> Çıkış Yap
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-content">
+        <header class="admin-header-flex">
+            <div>
+                <h1>E-posta Pazarlama</h1>
+                <p>Müşterilerinize yeni güncellemeleri, ürünleri veya kampanyaları duyurun.</p>
+            </div>
+            <div class="admin-stats">
+                <div class="admin-card" style="padding: 1rem 2rem; border-radius: 15px; text-align: center;">
+                    <div style="font-size: 0.8rem; color: #64748B; font-weight: 700;">HEDEF KİTLE (AKTİF)</div>
+                    <div style="font-size: 1.8rem; font-weight: 900; color: #10B981;">{{ user_count }} <i class="fa-solid fa-user"></i></div>
+                </div>
+            </div>
+        </header>
+
+        {% if request.query_params.get("success") %}
+        <div style="background: #D1FAE5; border: 1px solid #10B981; padding: 20px; border-radius: 12px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; color: #065F46;">
+            <i class="fa-solid fa-circle-check" style="font-size: 1.5rem;"></i>
+            <div>
+                <strong style="display: block; font-size: 1.1rem;">Harika! Kampanya Başlatıldı.</strong>
+                <span style="font-size: 0.95rem;">Mailler arka planda sırayla gönderiliyor. İşlemin tamamlanması kullanıcı sayısına göre zaman alabilir.</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <section class="admin-card">
+            <div class="info-box">
+                <i class="fa-solid fa-circle-info"></i>
+                <p>Göndereceğiniz bu içerikler VidInsight kurumsal şablonunun içine otomatik olarak yerleştirilecektir. (Sitenizin logosu ve üst barı hazır gelir.) Direkt metin veya isterseniz &lt;b&gt;kalın&lt;/b&gt; gibi temel HTML etiketleri kullanabilirsiniz.</p>
+            </div>
+
+            <form action="/admin/marketing/send" method="POST" class="marketing-form" onsubmit="return confirm('Tüm aktif kullanıcılara bu maili göndermek istediğinize emin misiniz? İşlem geri alınamaz.');">
+                
+                <div class="input-group">
+                    <label for="subject"><i class="fa-solid fa-pen"></i> E-posta Konusu (Subject)</label>
+                    <input type="text" id="subject" name="subject" placeholder="Örn: VidInsight'a Yeni Özellikler Eklendi!" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="content_html"><i class="fa-solid fa-code"></i> İçerik (HTML veya Düz Metin)</label>
+                    <textarea id="content_html" name="content_html" rows="12" placeholder="Değerli Kullanıcımız,&#10;&#10;Sizlere harika haberlerimiz var..." required></textarea>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-solid fa-paper-plane"></i> Kampanyayı Başlat ({{ user_count }} Kişiye Gönder)
+                    </button>
+                    <p style="color: #94A3B8; font-size: 0.8rem; margin-top: 10px; font-weight: 600;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Gönderim işlemi (send) butonuna basıldıktan sonra arka planda sırayla yapılacaktır. Beklerken sayfayı kapatabilirsiniz.
+                    </p>
+                </div>
+
+            </form>
+        </section>
+
+        <div style="margin-top: 3rem; text-align: center; color: #CBD5E1; font-size: 0.8rem;">
+            VidInsight Control Panel v1.2.2 Professional Edition
+        </div>
+    </main>
+
+</body>
+</html>
