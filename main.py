@@ -236,7 +236,7 @@ async def send_analysis_received_email(user_email: str, user_name: str, video_ur
                 <div style="padding: 30px;">
                     <p>Merhaba <strong>{user_name}</strong>,</p>
                     <p><strong>{video_url}</strong> adresli videonuz için analiz talebiniz başarıyla alındı.</p>
-                    <p>Ekibimiz (veya yapay zekamız) şu an yorumları tarıyor. Analiz tamamlandığında size tekrar haber vereceğiz.</p>
+                    <p>Ekibimiz şu an yorumları tarıyor. Analiz tamamlandığında size tekrar haber vereceğiz.</p>
                     <p>Güncel durumu panelinizden takip edebilirsiniz.</p>
                 </div>
             </div>
