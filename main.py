@@ -110,7 +110,7 @@ async def _send_email(message: EmailMessage):
         print("!!! SMTP ayarları eksik, e-posta gönderilemedi.")
         return
     try:
-        # Önce STARTTLS (587) ile dene
+        # Önce STARTTLS (587) ile dene - self-signed sertifika için validate_certs=False
         await aiosmtplib.send(
             message,
             hostname=SMTP_HOST,
@@ -119,6 +119,7 @@ async def _send_email(message: EmailMessage):
             password=SMTP_PASSWORD,
             use_tls=False,
             start_tls=True,
+            validate_certs=False,
             timeout=15
         )
         print(f"--- E-posta gönderildi (STARTTLS): {message['To']}")
@@ -133,6 +134,7 @@ async def _send_email(message: EmailMessage):
                 username=SMTP_USER,
                 password=SMTP_PASSWORD,
                 use_tls=True,
+                validate_certs=False,
                 timeout=15
             )
             print(f"--- E-posta gönderildi (SSL/465): {message['To']}")
