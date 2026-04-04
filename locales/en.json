@@ -142,5 +142,54 @@
   "err_invalid_creds": "Invalid credentials.",
   "err_user_inactive": "Your account has been deactivated by the administrator.",
   "err_user_exists": "This username or email is already in use.",
-  "err_insufficient_credits": "Insufficient credits! Please purchase a new plan."
+  "err_insufficient_credits": "Insufficient credits! Please purchase a new plan.",
+
+  "nav_faq": "FAQ",
+  "faq_section_title": "Frequently Asked Questions",
+  "faq_section_desc": "Find answers to your questions here.",
+
+  "faq_q1": "How long does an analysis take?",
+  "faq_a1": "Fetching and analyzing video comments usually takes 15-30 minutes. You will receive an email notification once completed.",
+
+  "faq_q2": "Which languages do you support for comments?",
+  "faq_a2": "Our platform supports multiple languages, predominantly English and Turkish.",
+
+  "faq_q3": "In what format is my report delivered?",
+  "faq_a3": "Analyses are delivered as a detailed multi-sheet Excel (.xlsx) file, containing sentiment distribution, top-liked comments, criticisms, and suggestions.",
+
+  "faq_q4": "What is the difference between a one-time package and a subscription?",
+  "faq_a4": "With a one-time package, you purchase the right to analyze 1 video. With a subscription, you get a monthly-renewing balance of analysis credits.",
+
+  "faq_q5": "How does the credit system work?",
+  "faq_a5": "Each package purchase loads analysis credits to your account. One credit is deducted per video analysis request.",
+
+  "faq_q6": "How many comments can be fetched?",
+  "faq_a6": "By default, the first 1,000 comments of a video are analyzed. This limit can be increased upon request.",
+
+  "faq_q7": "What happens if a YouTube API quota or access issue occurs?",
+  "faq_a7": "In such a case, the analysis process is restarted and you will be notified by email. Your credit will not be deducted.",
+
+  "faq_q8": "How will I be notified when my analysis is complete?",
+  "faq_a8": "An automatic notification email is sent to the address you provided during registration when your analysis is completed.",
+
+  "faq_q9": "How many times can I download my report?",
+  "faq_a9": "Your report is stored indefinitely in the 'Past Analyses' section of your dashboard and can be downloaded as many times as you like.",
+
+  "faq_q10": "Can videos with disabled comments be analyzed?",
+  "faq_a10": "Videos with disabled or restricted comments cannot be returned by the YouTube API and therefore cannot be analyzed.",
+
+  "faq_q11": "Can I cancel my subscription at any time?",
+  "faq_a11": "Yes, you can cancel your subscription at any time. After cancellation, your service continues until the end of the current billing period.",
+
+  "faq_q12": "Can I use it for multiple YouTube channels?",
+  "faq_a12": "Yes, you can add links to videos from different channels one by one. You can analyze unlimited channels as long as your credit balance allows.",
+
+  "faq_q13": "Is my data secure?",
+  "faq_a13": "Yes. All uploaded reports are stored on encrypted servers and are exclusive to your account. They are never shared with third parties.",
+
+  "faq_q14": "Can multiple people use the Agency package?",
+  "faq_a14": "The Agency package operates under a single account; however, you can analyze videos from multiple clients through this account.",
+
+  "faq_q15": "Can I get an invoice/receipt?",
+  "faq_a15": "Since payments are processed through the Stripe infrastructure, an invoice/receipt is automatically sent to your email."
 }

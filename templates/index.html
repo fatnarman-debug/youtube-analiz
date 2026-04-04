@@ -19,6 +19,7 @@
         <ul class="nav-links">
             <li><a href="#ozellikler">{{ t(request, 'nav_features') }}</a></li>
             <li><a href="#fiyatlandirma">{{ t(request, 'nav_pricing') }}</a></li>
+            <li><a href="#sss">{{ t(request, 'nav_faq') }}</a></li>
             <li><a href="/giris">{{ t(request, 'nav_login') }}</a></li>
         </ul>
         
@@ -177,6 +178,28 @@
         </div>
     </section>
 
+    <!-- FAQ Section -->
+    <section id="sss" class="faq-section">
+        <div class="section-title">
+            <h2>{{ t(request, 'faq_section_title') }}</h2>
+            <p>{{ t(request, 'faq_section_desc') }}</p>
+        </div>
+        <div class="faq-list">
+            {% set faq_keys = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] %}
+            {% for i in faq_keys %}
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" onclick="toggleFaq(this)">
+                    <span>{{ t(request, 'faq_q' ~ i) }}</span>
+                    <i class="fa-solid fa-plus faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>{{ t(request, 'faq_a' ~ i) }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer id="iletisim">
         <div class="footer-content">
@@ -189,6 +212,7 @@
                 <ul>
                     <li><a href="#ozellikler">{{ t(request, 'nav_features') }}</a></li>
                     <li><a href="#fiyatlandirma">{{ t(request, 'footer_pkg_link') }}</a></li>
+                    <li><a href="#sss">{{ t(request, 'nav_faq') }}</a></li>
                 </ul>
             </div>
             <div class="footer-contact">
@@ -249,9 +273,48 @@
         </div>
     </div>
 
+    <!-- FAQ JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type":"Question","name":"{{ t(request, 'faq_q1') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a1') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q2') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a2') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q3') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a3') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q4') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a4') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q5') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a5') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q6') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a6') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q7') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a7') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q8') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a8') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q9') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a9') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q10') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a10') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q11') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a11') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q12') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a12') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q13') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a13') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q14') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a14') }}"}},
+        {"@type":"Question","name":"{{ t(request, 'faq_q15') }}","acceptedAnswer":{"@type":"Answer","text":"{{ t(request, 'faq_a15') }}"}}
+      ]
+    }
+    </script>
+
     <!-- Footer Script (Now in static/js/script.js) -->
     <script>
         const CURRENT_USER_ID = "{{ user.id if user else '' }}";
+
+        function toggleFaq(btn) {
+            const item = btn.closest('.faq-item');
+            const isOpen = item.classList.contains('open');
+            // Diğerlerini kapat
+            document.querySelectorAll('.faq-item.open').forEach(el => {
+                el.classList.remove('open');
+                el.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+            });
+            if (!isOpen) {
+                item.classList.add('open');
+                btn.setAttribute('aria-expanded', 'true');
+            }
+        }
     </script>
     <script src="/static/js/script.js"></script>
 </body>

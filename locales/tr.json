@@ -142,5 +142,54 @@
   "err_invalid_creds": "Geçersiz bilgiler.",
   "err_user_inactive": "Hesabınız yönetici tarafından pasife alınmıştır.",
   "err_user_exists": "Bu kullanıcı adı veya e-posta zaten kullanımda.",
-  "err_insufficient_credits": "Yetersiz kredi! Lütfen yeni bir paket satın alın."
+  "err_insufficient_credits": "Yetersiz kredi! Lütfen yeni bir paket satın alın.",
+
+  "nav_faq": "Sık Sorulanlar",
+  "faq_section_title": "Sıkça Sorulan Sorular",
+  "faq_section_desc": "Aklınızdaki soruların cevaplarını burada bulabilirsiniz.",
+
+  "faq_q1": "Bir analiz ne kadar sürer?",
+  "faq_a1": "Video yorumlarını çekip analiz etme işlemi genellikle 15-30 dakika içinde tamamlanır. Tamamlandığında e-posta ile bildirim gönderilir.",
+
+  "faq_q2": "Hangi dillerdeki yorumları analiz edebilirsiniz?",
+  "faq_a2": "Platformumuz başta Türkçe ve İngilizce olmak üzere birden fazla dili desteklemektedir.",
+
+  "faq_q3": "Raporum hangi formatta teslim edilir?",
+  "faq_a3": "Analizler, birden fazla sekme içeren detaylı bir Excel (.xlsx) dosyası olarak teslim edilir. İçinde duygu dağılımı, en beğenilen yorumlar, eleştiriler ve öneriler yer alır.",
+
+  "faq_q4": "Tek seferlik paket ile abonelik arasındaki fark nedir?",
+  "faq_a4": "Tek seferlik pakette 1 video analizi hakkı satın alırsınız. Abonelik paketlerinde ise aylık yenilenen video analizi hakkından faydalanırsınız.",
+
+  "faq_q5": "Kredi sistemi nasıl çalışır?",
+  "faq_a5": "Her paket satın alımında hesabınıza analiz kredisi yüklenir. Her video analizi talebinde 1 kredi düşülür.",
+
+  "faq_q6": "Yorumlar kaç adede kadar çekilebilir?",
+  "faq_a6": "Varsayılan olarak videodaki ilk 1.000 yorum analiz edilir. Ek taleple bu rakam artırılabilir.",
+
+  "faq_q7": "YouTube API kotası veya erişim sorunu yaşandığında ne olur?",
+  "faq_a7": "Böyle bir durumda analiz işlemi yeniden başlatılır ve sizi e-posta ile bilgilendiririz. Krediniz düşülmez.",
+
+  "faq_q8": "Analizim tamamlandığında nasıl haberdar olurum?",
+  "faq_a8": "Kayıt olurken belirttiğiniz e-posta adresine, analiz tamamlandığında otomatik bir bildirim maili gönderilir.",
+
+  "faq_q9": "Raporumu kaç kez indirebilirim?",
+  "faq_a9": "Raporunuz panelinizdeki 'Geçmiş Analizler' bölümünde süresiz olarak saklanır, istediğiniz kadar indirebilirsiniz.",
+
+  "faq_q10": "Yorumları kapalı olan videolar analiz edilebilir mi?",
+  "faq_a10": "Yorumları kapalı veya kısıtlı videolar YouTube API tarafından döndürülmediği için analiz edilemez.",
+
+  "faq_q11": "Aboneliğimi istediğim zaman iptal edebilir miyim?",
+  "faq_a11": "Evet, aboneliğinizi dilediğiniz zaman iptal edebilirsiniz. İptal sonrası mevcut dönemin sonuna kadar hizmetiniz devam eder.",
+
+  "faq_q12": "Birden fazla YouTube kanalı için kullanabilir miyim?",
+  "faq_a12": "Evet, farklı kanallara ait videoların linklerini sırayla ekleyebilirsiniz. Kredi bakiyeniz elverdiği sürece sınırsız kanal analizi yapılır.",
+
+  "faq_q13": "Verilerim güvende mi?",
+  "faq_a13": "Evet. Yüklediğimiz tüm raporlar şifreli sunucularda saklanır ve yalnızca hesabınıza özeldir. Üçüncü taraflarla kesinlikle paylaşılmaz.",
+
+  "faq_q14": "Agency paketini birden fazla kişi kullanabilir mi?",
+  "faq_a14": "Agency paketi tek hesap üzerinden çalışır; ancak birden fazla müşterinizin videolarını bu hesap üzerinden analiz ettirebilirsiniz.",
+
+  "faq_q15": "Fatura/makbuz alabilir miyim?",
+  "faq_a15": "Stripe altyapısı üzerinden ödeme yapıldığı için otomatik olarak fatura/makbuz e-postanıza iletilir."
 }
