@@ -27,3 +27,4 @@ vidinsight.db
 
 # Storage
 storage/
+.env
