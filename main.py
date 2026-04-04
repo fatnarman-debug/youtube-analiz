@@ -419,9 +419,20 @@ async def create_analysis(request: Request,
             "error": "err_insufficient_credits"
         })
 
+    # Dinamik Başlık Çekme İşlemi
+    fetched_title = "İşleniyor..."
+    try:
+        import youtube_service
+        title = youtube_service.get_video_title(video_url)
+        if title:
+            fetched_title = title
+    except Exception as e:
+        pass
+
     new_request = models.AnalysisRequest(
         user_id=user.id,
         video_url=video_url,
+        video_title=fetched_title,
         status="pending"
     )
     # KREDİ DÜŞÜR

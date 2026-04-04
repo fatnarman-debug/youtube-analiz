@@ -19,6 +19,20 @@ def extract_video_id(url: str):
         return url.split("youtu.be/")[1][:11]
     return None
 
+def get_video_title(video_url: str) -> str:
+    video_id = extract_video_id(video_url)
+    if not video_id: return None
+    try:
+        youtube = get_youtube_client()
+        request = youtube.videos().list(part="snippet", id=video_id)
+        response = request.execute()
+        if response.get("items"):
+            return response["items"][0]["snippet"]["title"]
+    except Exception:
+        pass
+    return None
+
+
 def extract_profanity(text: str):
     bad_words = ["amk", "aq", "sg", "siktir", "oç", "piç", "piçi", "piçler", "yavşak", "pezevenk", "göt", "götveren", "götüm", "sik", "sikicem", "ibne", "orospu", "yarrak", "mal", "namussuz"]
     pattern = r'\b(' + '|'.join(bad_words) + r')\b'
