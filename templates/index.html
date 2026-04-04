@@ -22,11 +22,13 @@
             <li><a href="/giris">{{ t(request, 'nav_login') }}</a></li>
         </ul>
         
-        <div style="margin-left: 15px; display: inline-flex; align-items: center;">
-            <a href="?lang=tr" style="text-decoration:none; font-size:1.2rem; cursor:pointer;" title="Türkçe">🇹🇷</a>
-            <a href="?lang=en" style="text-decoration:none; font-size:1.2rem; margin-left:8px; cursor:pointer;" title="English">🇬🇧</a>
+        <div class="nav-actions">
+            <div class="lang-flags">
+                <a href="?lang=tr" title="Türkçe">🇹🇷</a>
+                <a href="?lang=en" title="English">🇬🇧</a>
+            </div>
+            <a href="/kayit" class="btn-primary nav-btn">{{ t(request, 'nav_register') }}</a>
         </div>
-        <a href="/kayit" class="btn-primary nav-btn">{{ t(request, 'nav_register') }}</a>
     </nav>
 
     <!-- Hero Section -->
