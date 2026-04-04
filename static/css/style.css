@@ -512,12 +512,29 @@ footer {
     .nav-actions { width: 100%; justify-content: space-between; }
     .nav-btn { width: auto; font-size: 0.85rem; padding: 0.6rem 1rem; }
     
-    /* Mockup Mobile Fix */
-    .mockup-body { padding: 1.5rem; }
-    .stat-row { gap: 1rem; }
-    .stat-box { padding: 0.8rem 1rem; gap: 1rem; }
-    .stat-box i { font-size: 1.5rem; }
-    .stat-box span { font-size: 1.2rem; }
+    /* Mockup Mobile Widget Redesign */
+    .mockup-body { padding: 1.2rem; }
+    .stat-row { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 0.8rem; 
+    }
+    .stat-box { 
+        flex-direction: column; 
+        justify-content: center;
+        text-align: center;
+        padding: 1.2rem 0.5rem; 
+        gap: 0.5rem; 
+    }
+    .stat-box:nth-child(3) {
+        grid-column: span 2;
+        flex-direction: row;
+        padding: 1rem;
+        gap: 1rem;
+    }
+    .stat-box i { font-size: 1.6rem; }
+    .stat-box span { font-size: 1.3rem; line-height: 1.2; }
+    .stat-box small { font-size: 0.7rem; letter-spacing: 0.5px; }
     
     .pricing { padding: 4rem 4%; }
     .pricing-card { padding: 2.5rem 1.5rem; }
