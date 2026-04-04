@@ -94,15 +94,15 @@
             <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo" id="nav-logo"></a>
         </div>
         <div class="nav-links">
-            <a href="/cikis" class="btn-secondary">Çıkış Yap <i class="fa-solid fa-right-from-bracket"></i></a>
+            <a href="/cikis" class="btn-secondary">{{ t(request, 'db_logout') }} <i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
     </nav>
 
     <div class="dashboard-container">
         <div class="db-header">
             <div class="user-welcome">
-                <h1>Merhaba, {{ user.full_name }}</h1>
-                <p>Yeni bir analiz talebi oluşturmak ister misiniz?</p>
+                <h1>{{ t(request, 'db_welcome') }}, {{ user.full_name }}</h1>
+                <p>{{ t(request, 'db_subtitle') }}</p>
             </div>
             <div class="db-actions" style="display: flex; gap: 1.5rem; align-items: center;">
                 <div class="credit-badge">
@@ -123,8 +123,8 @@
         {% if user.credits <= 0 %}
         <div style="background: linear-gradient(135deg, rgba(220,38,38,0.15) 0%, rgba(245,158,11,0.15) 100%); border: 1px solid rgba(245,158,11,0.3); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; text-align: center;">
             <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1rem;"></i>
-            <h2 style="margin: 0 0 0.5rem 0; font-size: 1.4rem;">Analiz Hakkınız Tükendi</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Yeni analizler yapabilmek için bir paket satın alın. Hemen yükseltin ve kesintisiz devam edin!</p>
+            <h2 style="margin: 0 0 0.5rem 0; font-size: 1.4rem;">{{ t(request, 'db_no_credit_title') }}</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">{{ t(request, 'db_no_credit_desc') }}</p>
             <a href="/#fiyatlandirma" class="btn-primary" style="font-size: 1.1rem; padding: 0.8rem 2.5rem; background: linear-gradient(135deg, var(--accent) 0%, #d97706 100%); border: none; text-decoration: none; display: inline-block; border-radius: 10px; font-weight: 700; box-shadow: 0 5px 20px rgba(245,158,11,0.3);">
                 <i class="fa-solid fa-rocket"></i> Paket Satın Al
             </a>
@@ -133,16 +133,16 @@
 
         <div class="analysis-section">
             <div class="submit-card glass-card" id="submit">
-                <h3>Analiz Talebi</h3>
+                <h3>{{ t(request, 'db_analysis_req') }}</h3>
                 {% if user.credits > 0 %}
-                <p>Analiz edilmesini istediğiniz YouTube video linkini aşağıya ekleyin.</p>
+                <p>{{ t(request, 'db_analysis_desc') }}</p>
                 <form action="/analyze" method="POST">
                     <div class="input-group">
-                        <label for="videoUrl">YouTube Video URL</label>
+                        <label for="videoUrl">{{ t(request, 'db_video_lbl') }}</label>
                         <input type="url" id="videoUrl" name="video_url" placeholder="https://www.youtube.com/watch?v=..." required>
                     </div>
                     <button type="submit" class="btn-primary w-100">
-                        Talep Oluştur <i class="fa-solid fa-paper-plane"></i>
+                        {{ t(request, 'db_create_req') }} <i class="fa-solid fa-paper-plane"></i>
                     </button>
                     <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">
                         * Talebiniz admin ekibimize iletilecek ve raporunuz en kısa sürede buraya yüklenecektir.
@@ -157,7 +157,7 @@
             </div>
 
             <div class="reports-card glass-card">
-                <h3>Taleplerim & Raporlar</h3>
+                <h3>Taleplerim & {{ t(request, 'db_col_report') }}lar</h3>
                 {% if not analyses %}
                 <p style="color: var(--text-muted); text-align: center; padding: 2rem;">Henüz bir analiz talebiniz bulunmuyor.</p>
                 {% else %}
@@ -165,8 +165,8 @@
                     <table class="reports-table">
                         <thead>
                             <tr>
-                                <th>Video / Detay</th>
-                                <th>Durum</th>
+                                <th>{{ t(request, 'db_col_video') }} / Detay</th>
+                                <th>{{ t(request, 'db_col_status') }}</th>
                                 <th>Tarih</th>
                                 <th>Dosya</th>
                             </tr>
@@ -189,7 +189,7 @@
                                 <td>
                                     {% if req.status == 'completed' %}
                                     <a href="/download/{{ req.id }}" class="btn-primary btn-sm" style="background: #10b981; border: none;">
-                                        <i class="fa-solid fa-download"></i> Raporu İndir
+                                        <i class="fa-solid fa-download"></i> {{ t(request, 'db_col_report') }}u {{ t(request, 'db_btn_download') }}
                                     </a>
                                     {% else %}
                                     <span style="color:var(--text-muted); font-size:0.8rem;">Hazırlanıyor...</span>

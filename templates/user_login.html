@@ -88,15 +88,15 @@
                 </div>
                 
                 <div class="input-group">
-                    <label for="password">Şifre</label>
+                    <label for="password">{{ t(request, 'label_password') }}</label>
                     <input type="password" id="password" name="password" placeholder="••••••••" required>
                 </div>
 
-                <button type="submit" class="btn-primary w-100">Giriş Yap</button>
+                <button type="submit" class="btn-primary w-100">{{ t(request, 'btn_login') }}</button>
             </form>
 
             <div class="auth-footer">
-                Hesabınız yok mu? <a href="/kayit">Hemen Kaydolun</a>
+                {{ t(request, 'no_account') }} <a href="/kayit">{{ t(request, 'btn_signup') }}un</a>
             </div>
         </div>
     </div>

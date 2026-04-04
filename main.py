@@ -16,6 +16,8 @@ from fastapi import BackgroundTasks
 from email.message import EmailMessage
 import aiosmtplib
 from dotenv import load_dotenv
+import json
+from functools import lru_cache
 
 load_dotenv() # .env dosyasını yükle
 
@@ -61,6 +63,40 @@ except Exception as e:
     print(f"!!! STRIPE YAPILANDIRMA HATASI: {e}")
 
 app = FastAPI()
+
+@lru_cache()
+def load_translations():
+    locales_dir = os.path.join(BASE_DIR, "locales")
+    langs = {}
+    if os.path.exists(locales_dir):
+        for f in os.listdir(locales_dir):
+            if f.endswith(".json"):
+                lang_code = f.replace(".json", "")
+                with open(os.path.join(locales_dir, f), "r", encoding="utf-8") as file:
+                    langs[lang_code] = json.load(file)
+    return langs
+
+def get_locale(request: Request):
+    lang = request.query_params.get("lang")
+    if lang in ["tr", "en", "es", "de"]:
+        return lang
+    lang_cookie = request.cookies.get("locale")
+    if lang_cookie in ["tr", "en", "es", "de"]:
+        return lang_cookie
+    return "tr"
+
+def t(request: Request, key: str):
+    lang = get_locale(request)
+    translations = load_translations()
+    return translations.get(lang, {}).get(key, translations.get("tr", {}).get(key, key))
+
+@app.middleware("http")
+async def lang_middleware(request: Request, call_next):
+    lang = request.query_params.get("lang")
+    response = await call_next(request)
+    if lang in ["tr", "en", "es", "de"]:
+        response.set_cookie(key="locale", value=lang, max_age=31536000)
+    return response
 
 # --- SMTP CONFIG ---
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
@@ -219,6 +255,8 @@ if STATIC_DIR.exists():
 
 if TEMPLATES_DIR.exists():
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+    templates.env.globals["t"] = t
+    templates.env.globals["get_locale"] = get_locale
 else:
     templates = None
 

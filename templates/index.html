@@ -17,22 +17,27 @@
             <img src="/static/img/logo.png" alt="VidInsight Logo" id="nav-logo">
         </div>
         <ul class="nav-links">
-            <li><a href="#ozellikler">Özellikler</a></li>
-            <li><a href="#fiyatlandirma">Fiyatlandırma</a></li>
-            <li><a href="/giris">Giriş Yap</a></li>
+            <li><a href="#ozellikler">{{ t(request, 'nav_features') }}</a></li>
+            <li><a href="#fiyatlandirma">{{ t(request, 'nav_pricing') }}</a></li>
+            <li><a href="/giris">{{ t(request, 'nav_login') }}</a></li>
         </ul>
-        <a href="/kayit" class="btn-primary nav-btn">Ücretsiz Kaydol</a>
+        
+        <div style="margin-left: 15px; display: inline-flex; align-items: center;">
+            <a href="?lang=tr" style="text-decoration:none; font-size:1.2rem; cursor:pointer;" title="Türkçe">🇹🇷</a>
+            <a href="?lang=en" style="text-decoration:none; font-size:1.2rem; margin-left:8px; cursor:pointer;" title="English">🇬🇧</a>
+        </div>
+        <a href="/kayit" class="btn-primary nav-btn">{{ t(request, 'nav_register') }}</a>
     </nav>
 
     <!-- Hero Section -->
     <header class="hero">
         <div class="hero-content">
-            <div class="hero-badge">Yapay Zeka Destekli</div>
-            <h1>YouTube Yorumlarınızı <br><span class="highlight">Veriye Dönüştürün</span></h1>
-            <p>Onlarca videodaki binlerce yorumu saniyeler içinde analiz edin. Gizli küfürleri yakalayın, izleyici sorularını derleyin ve kanalınızı hızla büyütün.</p>
+            <div class="hero-badge">{{ t(request, 'hero_badge') }}</div>
+            <h1>{{ t(request, 'hero_title_1') }} <br><span class="highlight">{{ t(request, 'hero_title_span') }}</span></h1>
+            <p>{{ t(request, 'hero_desc') }}</p>
             <div class="hero-actions">
-                <a href="#fiyatlandirma" class="btn-primary">Paketleri İncele</a>
-                <a href="#ozellikler" class="btn-secondary">Neden Biz? <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="#fiyatlandirma" class="btn-primary">{{ t(request, 'hero_btn_plan') }}</a>
+                <a href="#ozellikler" class="btn-secondary">{{ t(request, 'hero_btn_why') }} <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
         <div class="hero-visual">
@@ -48,21 +53,21 @@
                             <i class="fa-solid fa-smile text-green"></i>
                             <div>
                                 <span>%76</span>
-                                <small>Olumlu</small>
+                                <small>{{ t(request, 'stat_positive') }}</small>
                             </div>
                         </div>
                         <div class="stat-box">
                             <i class="fa-solid fa-circle-question text-yellow"></i>
                             <div>
                                 <span>142</span>
-                                <small>Soru</small>
+                                <small>{{ t(request, 'stat_question') }}</small>
                             </div>
                         </div>
                         <div class="stat-box">
                             <i class="fa-solid fa-ban text-red"></i>
                             <div>
                                 <span>3</span>
-                                <small>Küfür</small>
+                                <small>{{ t(request, 'stat_swear') }}</small>
                             </div>
                         </div>
                     </div>
@@ -74,33 +79,33 @@
     <!-- Özellikler (Neden VidInsight?) -->
     <section id="ozellikler" class="features">
         <div class="section-title">
-            <h2>Neden VidInsight?</h2>
-            <p>İzleyicilerinizin söylediklerinin çok ötesini görün.</p>
+            <h2>{{ t(request, 'feat_title') }}</h2>
+            <p>{{ t(request, 'feat_desc') }}</p>
         </div>
         
         <div class="feature-grid">
             <div class="feature-card glass-card">
                 <div class="icon-box"><i class="fa-solid fa-chart-pie"></i></div>
-                <h3>Gelişmiş Duygu Analizi</h3>
-                <p>Kullanıcıların genel eğilimini (olumlu/olumsuz) yüzdesel olarak raporlayarak kitlenizi anlayın.</p>
+                <h3>{{ t(request, 'feat_1_title') }}</h3>
+                <p>{{ t(request, 'feat_1_desc') }}</p>
             </div>
             
             <div class="feature-card glass-card">
                 <div class="icon-box"><i class="fa-solid fa-filter"></i></div>
-                <h3>Akıllı Küfür Filtresi</h3>
-                <p>Gizlenmiş veya ek almış (s*k, g.ö.t vb.) küfür/hakaret barındıran yorumları tam isabetle yakalayın.</p>
+                <h3>{{ t(request, 'feat_2_title') }}</h3>
+                <p>{{ t(request, 'feat_2_desc') }}</p>
             </div>
             
             <div class="feature-card glass-card">
                 <div class="icon-box"><i class="fa-solid fa-lightbulb"></i></div>
-                <h3>Öneri ve Eleştiri Ayrışımı</h3>
-                <p>Takipçilerinizin sizden neler beklediğini veya neyi sevmediğini özet listeler halinde çıkarın.</p>
+                <h3>{{ t(request, 'feat_3_title') }}</h3>
+                <p>{{ t(request, 'feat_3_desc') }}</p>
             </div>
             
             <div class="feature-card glass-card">
                 <div class="icon-box"><i class="fa-solid fa-clipboard-question"></i></div>
-                <h3>Soru Yakalama Kalıpları</h3>
-                <p>Gelen yorumlar arasındaki soruları derleyip tek bir Excel sekmesinde cevaplamaya hazır hale getirin.</p>
+                <h3>{{ t(request, 'feat_4_title') }}</h3>
+                <p>{{ t(request, 'feat_4_desc') }}</p>
             </div>
         </div>
     </section>
@@ -108,8 +113,8 @@
     <!-- Fiyatlandırma -->
     <section id="fiyatlandirma" class="pricing">
         <div class="section-title">
-            <h2>İhtiyacınıza Uygun Paketler</h2>
-            <p>Hemen işinize yarayacak basit ve anlaşılır fiyatlandırma planları.</p>
+            <h2>{{ t(request, 'price_title') }}</h2>
+            <p>{{ t(request, 'price_desc') }}</p>
         </div>
         
         <div class="pricing-grid">
@@ -180,7 +185,7 @@
             <div class="footer-links">
                 <h4>Hızlı Menü</h4>
                 <ul>
-                    <li><a href="#ozellikler">Özellikler</a></li>
+                    <li><a href="#ozellikler">{{ t(request, 'nav_features') }}</a></li>
                     <li><a href="#fiyatlandirma">Paketler</a></li>
                 </ul>
             </div>
@@ -190,7 +195,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 VidInsight. Tüm hakları saklıdır.</p>
+            <p>&copy; 2026 VidInsight. {{ t(request, 'footer_rights') }}</p>
         </div>
     </footer>
 
