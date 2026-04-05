@@ -101,14 +101,14 @@ a { text-decoration: none; color: inherit; }
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.4rem 5%;
+    padding: 0.6rem 5%;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
     transition: all 0.3s;
-    background: #0f172a; /* Sabit Koyu Lacivert Arka Plan */
+    background: #0f172a; /* Sabit Koyu Lacivert Arka Plain */
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
@@ -154,9 +154,11 @@ a { text-decoration: none; color: inherit; }
 
 /* Constrain Logo Size */
 #nav-logo {
-    height: 90px; /* NavBar boyutu - OLABİLDİĞİNCE BÜYÜK */
+    height: 75px; /* Belirtilen 322x75 boyutuna uygun yükseklik */
     width: auto;
+    max-width: 330px;
     display: block;
+    object-fit: contain;
     margin-right: 20px;
 }
 
