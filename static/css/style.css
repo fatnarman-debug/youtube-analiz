@@ -102,12 +102,13 @@ a { text-decoration: none; color: inherit; }
     justify-content: space-between;
     align-items: center;
     padding: 1rem 5%;
-    position: sticky;
+    position: fixed;
+    width: 100%;
     top: 0;
-    background: var(--header-bg);
-    backdrop-filter: blur(12px);
     z-index: 1000;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s;
+    background: #0f172a; /* Sabit Koyu Lacivert Arka Plan */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .nav-links {
@@ -162,11 +163,29 @@ a { text-decoration: none; color: inherit; }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 6rem 5% 8rem;
+    padding: 8rem 5% 6rem;
     gap: 4rem;
     position: relative;
-    background: #F8FAFC; /* Hafif gri (Off-white) */
+    background: #F8FAFC; 
     color: var(--text-dark);
+}
+
+/* Single Column Centered Hero */
+.hero.hero-centered {
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    padding: 10rem 5% 6rem;
+}
+
+.hero.hero-centered .hero-content {
+    max-width: 900px;
+}
+
+.hero.hero-centered .hero-visual {
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 400px;
 }
 
 .hero-content { flex: 1; }
