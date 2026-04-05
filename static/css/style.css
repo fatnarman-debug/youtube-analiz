@@ -463,7 +463,7 @@ footer {
     margin-bottom: 3rem;
 }
 .footer-brand { flex: 2; min-width: 250px; }
-.footer-brand p { color: var(--text-muted); max-width: 300px; }
+.footer-brand p { color: #FFFFFF; max-width: 300px; font-weight: 500; }
 .footer-brand img {
     height: 55px; /* Footer'da biraz daha küçük tutalım */
     width: auto;
@@ -473,9 +473,9 @@ footer {
 .footer-links h4, .footer-contact h4 { margin-bottom: 1.5rem; color: white; font-size: 1.2rem; }
 .footer-links ul { list-style: none; }
 .footer-links li { margin-bottom: 0.8rem; }
-.footer-links a { color: var(--text-muted); transition: color 0.2s; }
+.footer-links a { color: #FFFFFF; transition: color 0.2s; font-weight: 500; }
 .footer-links a:hover { color: var(--accent); }
-.footer-contact p { color: var(--text-muted); }
+.footer-contact p { color: #FFFFFF; font-weight: 500; }
 
 /* Social Icons */
 .social-icons {
@@ -492,7 +492,7 @@ footer {
     justify-content: center;
     border: 1px solid var(--glass-border);
     transition: all 0.3s ease;
-    color: var(--text-muted);
+    color: #FFFFFF;
 }
 .social-link:hover {
     transform: translateY(-3px);
@@ -508,8 +508,9 @@ footer {
     text-align: center;
     padding-top: 2rem;
     border-top: 1px solid rgba(255,255,255,0.05);
-    color: #64748B;
+    color: #FFFFFF;
     font-size: 0.9rem;
+    font-weight: 500;
 }
 
 /* Responsive Breakpoints */
