@@ -94,9 +94,24 @@
   "pkg_creator_feat4": "Priority Analysis Queue",
   "pkg_agency_feat1": "10 Video Analyses per Month",
   "pkg_agency_feat2": "In-depth Details",
-  "pkg_agency_feat3": "Bulk Spreadsheet Export",
-  "pkg_agency_feat4": "Dedicated Support Line",
-  "pkg_buy": "Buy",
+  "pkg_agency_feat3": "Excel Export",
+  "pkg_agency_feat4": "Free Support",
+  
+  "pkg_ent_name": "Enterprise",
+  "pkg_ent_price": "€50",
+  "pkg_ent_sub": "/mo",
+  "pkg_ent_desc": "Special package for companies doing large scale video analysis.",
+  "pkg_ent_feat1": "50 Video Analysis",
+  "pkg_ent_feat2": "Priority Engine",
+  "pkg_ent_feat3": "Excel Export",
+  "pkg_ent_feat4": "Corporate Support",
+  "pkg_ent_buy": "Subscribe - €50/mo",
+  
+  "table_pkg_col_name": "Package",
+  "table_pkg_col_feat": "Features",
+  "table_pkg_col_price": "Pricing",
+  
+  "footer_title": "VidInsight",
   "pkg_subscribe": "Subscribe",
   "pkg_most_popular": "Most Popular",
   

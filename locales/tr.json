@@ -94,9 +94,24 @@
   "pkg_creator_feat4": "Öncelikli Analiz Sırası",
   "pkg_agency_feat1": "Ayda 10 Video Analizi",
   "pkg_agency_feat2": "Derinlemesine Detaylar",
-  "pkg_agency_feat3": "Toplu E-Tablo Aktarımı",
-  "pkg_agency_feat4": "Özel Destek Hattı",
-  "pkg_buy": "Satın Al",
+  "pkg_agency_feat3": "Excel İhracatı",
+  "pkg_agency_feat4": "Ücretsiz Destek",
+  
+  "pkg_ent_name": "Enterprise",
+  "pkg_ent_price": "€50",
+  "pkg_ent_sub": "/ay",
+  "pkg_ent_desc": "Büyük çaplı ve çok yoğun video analizi yapan şirketler için özel paket.",
+  "pkg_ent_feat1": "50 Video Analizi",
+  "pkg_ent_feat2": "Öncelikli Analiz",
+  "pkg_ent_feat3": "Excel İhracatı",
+  "pkg_ent_feat4": "Kurumsal Destek",
+  "pkg_ent_buy": "Hemen Başla - 50€/ay",
+  
+  "table_pkg_col_name": "Paket Adı",
+  "table_pkg_col_feat": "Özellikler",
+  "table_pkg_col_price": "Fiyatlandırma",
+  
+  "footer_title": "VidInsight",
   "pkg_subscribe": "Abone Ol",
   "pkg_most_popular": "En Çok Tercih Edilen",
   

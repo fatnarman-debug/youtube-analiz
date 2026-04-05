@@ -768,9 +768,13 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                 user.credits = 5
                 user.subscription_plan = "creator"
                 user.last_renewal_date = datetime.datetime.utcnow()
-            elif amount_total <= 20:
+            elif amount_total <= 25:
                 user.credits = 10
                 user.subscription_plan = "agency"
+                user.last_renewal_date = datetime.datetime.utcnow()
+            else:
+                user.credits = 50
+                user.subscription_plan = "enterprise"
                 user.last_renewal_date = datetime.datetime.utcnow()
                 
             db.commit()
