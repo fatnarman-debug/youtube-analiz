@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale(request) }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t(request, 'privacy_title') }} | VidInsight</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .privacy-container {
+            max-width: 900px;
+            margin: 120px auto 60px;
+            padding: 40px;
+            line-height: 1.8;
+        }
+        .privacy-content h2 {
+            margin-top: 30px;
+            color: var(--accent);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+        .privacy-content p, .privacy-content li {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+        .privacy-content ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        .last-updated {
+            font-style: italic;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            display: block;
+        }
+        .back-home {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-home:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo" id="nav-logo"></a>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="btn-secondary">{{ t(request, 'nav_features') }}</a>
+        </div>
+    </nav>
+
+    <div class="privacy-container glass-card">
+        <a href="/" class="back-home"><i class="fa-solid fa-arrow-left"></i> Anasayfa</a>
+        <h1>{{ t(request, 'privacy_title') }}</h1>
+        <span class="last-updated">{{ t(request, 'privacy_last_updated') }}</span>
+
+        <div class="privacy-content">
+            {% if get_locale(request) == 'tr' %}
+            <h2>1. Veri Sorumlusu</h2>
+            <p>VidInsight ("biz", "tarafımız"), kullanıcılarımızın gizliliğine önem vermektedir. Bu politika, hizmetlerimizi kullandığınızda verilerinizin nasıl toplandığını, işlendiğini ve korunduğunu açıklar.</p>
+
+            <h2>2. Toplanan Veriler</h2>
+            <p>Hizmetimizi sağlamak için aşağıdaki verileri topluyoruz:</p>
+            <ul>
+                <li><strong>Hesap Bilgileri:</strong> Ad-soyad, e-posta adresi, kullanıcı adı.</li>
+                <li><strong>YouTube Verileri:</strong> Analiz talebi gönderdiğiniz videoların halka açık yorumları (YouTube API aracılığıyla).</li>
+                <li><strong>Ödeme Verileri:</strong> Ödemeleriniz Stripe üzerinden güvenli bir şekilde işlenir. Kart bilgileriniz sunucularımızda saklanmaz.</li>
+            </ul>
+
+            <h2>3. Verilerin Kullanım Amacı</h2>
+            <p>Toplanan veriler şu amaçlarla kullanılır:</p>
+            <ul>
+                <li>YouTube yorumlarının duygu analizi ve raporlanması.</li>
+                <li>Hizmet kalitesinin artırılması ve kullanıcı deneyiminin iyileştirilmesi.</li>
+                <li>Faturalandırma ve müşteri destek süreçlerinin yönetilmesi.</li>
+                <li>Yasal yükümlülüklere uyum sağlanması.</li>
+            </ul>
+
+            <h2>4. KVKK / GDPR Uyumu</h2>
+            <p>VidInsight, Türkiye'deki 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve Avrupa Birliği Genel Veri Koruma Yönetmeliği (GDPR) çerçevesinde veri işleme faaliyetlerini sürdürmektedir. Verileriniz şifreli sunucularda güvenle saklanır ve izniniz olmadan üçüncü taraflarla paylaşılmaz.</p>
+
+            <h2>5. Çerezler</h2>
+            <p>Web sitemizde dil tercihlerinizi ve oturum bilgilerinizi hatırlamak için temel çerezler kullanılmaktadır.</p>
+
+            <h2>6. İletişim</h2>
+            <p>Gizlilik haklarınızla ilgili sorularınız için <strong>admin@vid-insight.com</strong> adresinden bize ulaşabilirsiniz.</p>
+            {% else %}
+            <h2>1. Data Controller</h2>
+            <p>VidInsight ("we", "us", "our") values the privacy of our users. This policy explains how your data is collected, processed, and protected when you use our services.</p>
+
+            <h2>2. Data Collected</h2>
+            <p>We collect the following data to provide our service:</p>
+            <ul>
+                <li><strong>Account Information:</strong> Full name, email address, username.</li>
+                <li><strong>YouTube Data:</strong> Public comments of videos you request analysis for (via YouTube API).</li>
+                <li><strong>Payment Data:</strong> Your payments are processed securely via Stripe. Your card information is not stored on our servers.</li>
+            </ul>
+
+            <h2>3. Purpose of Data Use</h2>
+            <p>The collected data is used for the following purposes:</p>
+            <ul>
+                <li>Sentiment analysis and reporting of YouTube comments.</li>
+                <li>Improving service quality and user experience.</li>
+                <li>Managing billing and customer support processes.</li>
+                <li>Ensuring compliance with legal obligations.</li>
+            </ul>
+
+            <h2>4. KVKK / GDPR Compliance</h2>
+            <p>VidInsight conducts data processing activities within the framework of the Personal Data Protection Law (KVKK) No. 6698 in Turkey and the General Data Protection Regulation (GDPR) of the European Union. Your data is stored securely on encrypted servers and is never shared with third parties without your consent.</p>
+
+            <h2>5. Cookies</h2>
+            <p>Our website uses essential cookies to remember your language preferences and session information.</p>
+
+            <h2>6. Contact</h2>
+            <p>For questions regarding your privacy rights, you can reach us at <strong>admin@vid-insight.com</strong>.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">
+        &copy; 2026 VidInsight. {{ t(request, 'footer_rights') }}
+    </footer>
+</body>
+</html>

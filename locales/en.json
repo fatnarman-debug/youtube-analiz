@@ -217,5 +217,10 @@
   "faq_a14": "The Agency package operates under a single account; however, you can analyze videos from multiple clients through this account.",
 
   "faq_q15": "Can I get an invoice/receipt?",
-  "faq_a15": "Since payments are processed through the Stripe infrastructure, an invoice/receipt is automatically sent to your email."
+  "faq_a15": "Since payments are processed through the Stripe infrastructure, an invoice/receipt is automatically sent to your email.",
+  "footer_privacy": "Privacy Policy",
+  "footer_social_title": "Social Media",
+  "footer_kvkk_note": "VidInsight uses Stripe for payment processing. Your data is protected in compliance with KVKK and GDPR.",
+  "privacy_title": "Privacy Policy and Terms of Use",
+  "privacy_last_updated": "Last Updated: April 5, 2026"
 }

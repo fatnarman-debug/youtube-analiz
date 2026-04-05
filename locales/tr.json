@@ -217,5 +217,10 @@
   "faq_a14": "Agency paketi tek hesap üzerinden çalışır; ancak birden fazla müşterinizin videolarını bu hesap üzerinden analiz ettirebilirsiniz.",
 
   "faq_q15": "Fatura/makbuz alabilir miyim?",
-  "faq_a15": "Stripe altyapısı üzerinden ödeme yapıldığı için otomatik olarak fatura/makbuz e-postanıza iletilir."
+  "faq_a15": "Stripe altyapısı üzerinden ödeme yapıldığı için otomatik olarak fatura/makbuz e-postanıza iletilir.",
+  "footer_privacy": "Gizlilik Politikası",
+  "footer_social_title": "Sosyal Medya",
+  "footer_kvkk_note": "VidInsight, ödeme işlemleri için Stripe altyapısını kullanır. Verileriniz KVKK ve GDPR uyumlu şekilde korunmaktadır.",
+  "privacy_title": "Gizlilik Politikası ve Kullanım Şartları",
+  "privacy_last_updated": "Son Güncelleme: 11 Nisan 2026"
 }

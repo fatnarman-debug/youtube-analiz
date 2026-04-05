@@ -338,6 +338,10 @@ async def home(request: Request, db: Session = Depends(get_db)):
         context={"user": user}
     )
 
+@app.get("/gizlilik-politikasi", response_class=HTMLResponse)
+async def privacy_policy(request: Request):
+    return templates.TemplateResponse(request=request, name="privacy.html", context={})
+
 @app.get("/giris", response_class=HTMLResponse)
 async def user_login_get(request: Request, error: str = None, success: bool = False):
     return templates.TemplateResponse(request=request, name="user_login.html", context={"error": error, "success": success})
