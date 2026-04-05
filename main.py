@@ -91,10 +91,16 @@ def get_locale(request: Request):
         return lang_cookie
     return "tr"
 
-def t(request: Request, key: str):
+def t(request: Request, key: str, default: str = None):
     lang = get_locale(request)
     translations = load_translations()
-    return translations.get(lang, {}).get(key, translations.get("tr", {}).get(key, key))
+    # 1. Choose language, 2. if not found, choose 'tr', 3. if not found, choose 'default', 4. if not found, return 'key'
+    result = translations.get(lang, {}).get(key)
+    if result is None:
+        result = translations.get("tr", {}).get(key)
+    if result is None:
+        result = default if default is not None else key
+    return result
 
 @app.middleware("http")
 async def lang_middleware(request: Request, call_next):
