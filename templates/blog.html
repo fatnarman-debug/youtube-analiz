@@ -31,7 +31,7 @@
 <body>
     <nav class="navbar">
         <div class="logo">
-            <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo"></a>
+            <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo" id="nav-logo"></a>
         </div>
         <ul class="nav-links">
             <li><a href="/#ozellikler">{{ t(request, 'nav_features') }}</a></li>
@@ -49,10 +49,32 @@
         </div>
     </nav>
 
-    <header class="blog-hero">
-        <div class="hero-badge">BİLGİ MERKEZİ</div>
-        <h1>{{ t(request, 'blog_title') }}</h1>
-        <p style="max-width: 600px; margin: 20px auto; color: var(--text-muted);">YouTube kanalınızı büyütmek ve topluluğunuzla daha iyi bağ kurmak için ipuçları, stratejiler ve güncellemeler.</p>
+    <header class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">BİLGİ MERKEZİ</div>
+            <h1>{{ t(request, 'blog_title') }}</h1>
+            <p>{{ t(request, 'blog_hero_desc', 'YouTube kanalınızı büyütmek ve topluluğunuzla daha iyi bağ kurmak için ipuçları, stratejiler ve güncellemeler.') }}</p>
+            <div class="hero-actions">
+                <a href="/blog" class="btn-primary">{{ t(request, 'blog_read_all', 'Tüm Yazıları Gör') }}</a>
+                <a href="/" class="btn-secondary">{{ t(request, 'blog_back_home', 'Anasayfa') }} <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="glass-card mockup">
+                <div class="mockup-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                </div>
+                <div class="mockup-body">
+                    <div style="padding: 20px; text-align: center;">
+                        <i class="fa-solid fa-newspaper" style="font-size: 4rem; color: var(--accent); margin-bottom: 20px; opacity: 0.8;"></i>
+                        <h4 style="color: var(--text-dark); margin-bottom: 10px;">VidInsight Dergi</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">En yeni stratejiler burada.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
     <section class="blog-grid-container">

@@ -26,7 +26,7 @@
 <body>
     <nav class="navbar">
         <div class="logo">
-            <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo"></a>
+            <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo" id="nav-logo"></a>
         </div>
         <ul class="nav-links">
             <li><a href="/#ozellikler">{{ t(request, 'nav_features') }}</a></li>
@@ -45,12 +45,27 @@
     </nav>
 
     <main>
-        <article class="blog-post">
-            <header class="blog-post-header">
-                <a href="/blog" class="back-to-blog"><i class="fa-solid fa-arrow-left"></i> Blog'a Dön</a>
-                <div class="blog-post-date">{{ post.created_at.strftime('%d %B %Y') }}</div>
-                <h1 class="blog-post-title">{{ post.title }}</h1>
-            </header>
+        <header class="hero">
+        <div class="hero-content" style="max-width: 700px;">
+            <a href="/blog" class="back-to-blog"><i class="fa-solid fa-arrow-left"></i> Blog'a Dön</a>
+            <div class="blog-post-date">{{ post.created_at.strftime('%d %B %Y') }}</div>
+            <h1 class="blog-post-title" style="margin-bottom: 20px;">{{ post.title }}</h1>
+            <p style="color: var(--text-muted); font-weight: 600;">{{ post.content|striptags|truncate(120) }}</p>
+        </div>
+        <div class="hero-visual">
+            <div class="glass-card mockup" style="min-height: 250px; display: flex; align-items: center; justify-content: center;">
+                <div class="mockup-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                </div>
+                <div class="mockup-body" style="text-align: center; padding: 30px;">
+                    <i class="fa-solid fa-book-open" style="font-size: 3.5rem; color: var(--accent); opacity: 0.8;"></i>
+                    <p style="margin-top: 15px; font-size: 0.9rem; color: var(--text-muted);">Keyifli Okumalar</p>
+                </div>
+            </div>
+        </div>
+    </header>
 
             <div class="blog-post-content-wrapper">
                 <div class="blog-post-body">
