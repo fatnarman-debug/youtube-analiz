@@ -154,7 +154,7 @@ a { text-decoration: none; color: inherit; }
 
 /* Constrain Logo Size */
 #nav-logo {
-    height: 60px; /* NavBar boyutu */
+    height: 75px; /* NavBar boyutu - Daha Büyük */
     width: auto;
     display: block;
 }
