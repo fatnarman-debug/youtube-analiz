@@ -776,7 +776,8 @@ footer {
 }
 
 .pricing-col-name {
-    flex: 0 0 150px;
+    flex: 0 0 220px;
+    white-space: nowrap;
 }
 
 .pricing-col-feat {
