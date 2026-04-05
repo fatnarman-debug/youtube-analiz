@@ -9,16 +9,17 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .blog-post-header { padding: 100px 5% 40px; text-align: center; max-width: 900px; margin: 0 auto; }
-        .blog-post-date { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; font-weight: 600; }
-        .blog-post-title { font-size: 2.8rem; font-weight: 800; line-height: 1.2; color: white; margin-bottom: 40px; }
-        .blog-post-body { max-width: 800px; margin: 0 auto; padding: 40px 5% 80px; font-size: 1.1rem; line-height: 1.8; color: #cbd5e1; }
-        .blog-post-body h1, .blog-post-body h2, .blog-post-body h3 { color: white; margin-top: 2rem; margin-bottom: 1rem; }
-        .blog-post-body p { margin-bottom: 1.5rem; }
-        .blog-post-body a { color: var(--accent); text-decoration: underline; }
-        .blog-post-body blockquote { border-left: 4px solid var(--accent); padding-left: 20px; margin-left: 0; color: white; font-style: italic; background: rgba(99, 102, 241, 0.05); padding: 20px; border-radius: 0 12px 12px 0; }
-        .blog-post-body img { max-width: 100%; height: auto; border-radius: 16px; margin: 2rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .back-to-blog { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; font-weight: 600; margin-bottom: 40px; }
+        .blog-post-header { padding: 120px 5% 40px; text-align: center; max-width: 900px; margin: 0 auto; background: #0f172a; }
+        .blog-post-date { font-size: 0.95rem; color: #94a3b8; margin-bottom: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .blog-post-title { font-size: 3.2rem; font-weight: 800; line-height: 1.2; color: white; margin-bottom: 40px; }
+        .blog-post-content-wrapper { background: white; width: 100%; border-top: 1px solid #e2e8f0; }
+        .blog-post-body { max-width: 850px; margin: 0 auto; padding: 60px 5% 100px; font-size: 1.2rem; line-height: 1.8; color: #1e293b; }
+        .blog-post-body h1, .blog-post-body h2, .blog-post-body h3 { color: #0f172a; margin-top: 2.5rem; margin-bottom: 1.2rem; font-weight: 800; }
+        .blog-post-body p { margin-bottom: 1.8rem; font-weight: 500; }
+        .blog-post-body a { color: #6366f1; text-decoration: underline; font-weight: 700; }
+        .blog-post-body blockquote { border-left: 5px solid #6366f1; padding: 30px; margin: 2rem 0; color: #334155; font-style: italic; background: #f8fafc; border-radius: 0 16px 16px 0; font-size: 1.3rem; }
+        .blog-post-body img { max-width: 100%; height: auto; border-radius: 20px; margin: 2.5rem 0; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .back-to-blog { display: inline-flex; align-items: center; gap: 10px; color: #94a3b8; text-decoration: none; font-weight: 700; margin-bottom: 40px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
         .back-to-blog:hover { color: var(--accent); }
     </style>
 </head>
@@ -51,8 +52,10 @@
                 <h1 class="blog-post-title">{{ post.title }}</h1>
             </header>
 
-            <div class="blog-post-body">
-                {{ post.content|safe }}
+            <div class="blog-post-content-wrapper">
+                <div class="blog-post-body">
+                    {{ post.content|safe }}
+                </div>
             </div>
         </article>
     </main>
