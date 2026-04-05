@@ -4,8 +4,8 @@
   "nav_login": "Login",
   "nav_register": "Sign Up Free",
   "hero_badge": "AI Powered",
-  "hero_title_1": "Turn Your YouTube Comments Into",
-  "hero_title_span": "Actionable Data",
+  "hero_title_1": "Professional YouTube Comment Analysis Tool",
+  "hero_title_span": "Turn Comments into Insights",
   "hero_desc": "Analyze thousands of comments across dozens of videos in seconds. Catch hidden profanities, compile audience questions, and grow your channel rapidly.",
   "hero_btn_plan": "View Pricing",
   "hero_btn_why": "What You Gain?",
@@ -77,7 +77,7 @@
   "db_btn_download": "Download",
   "db_logout": "Logout",
   
-  "site_title": "VidInsight | Professional YouTube Comment Analysis System",
+  "site_title": "YouTube Comment Analysis Tool | Understand Your Audience with VidInsight",
   "pkg_single_name": "Single",
   "pkg_single_price": "€5",
   "pkg_single_sub": "/Single Video",
@@ -230,5 +230,6 @@
   "footer_social_title": "Social Media",
   "footer_kvkk_note": "VidInsight uses Stripe for payment processing. Your data is protected in compliance with KVKK and GDPR.",
   "privacy_title": "Privacy Policy and Terms of Use",
-  "privacy_last_updated": "Last Updated: April 5, 2026"
+  "privacy_last_updated": "Last Updated: April 5, 2026",
+  "meta_desc": "VidInsight is the most advanced YouTube comment analysis tool that analyzes thousands of comments in seconds. Understand your audience with sentiment analysis, profanity filters, and Excel reports."
 }

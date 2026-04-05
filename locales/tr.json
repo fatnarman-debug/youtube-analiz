@@ -4,8 +4,8 @@
   "nav_login": "Giriş Yap",
   "nav_register": "Ücretsiz Kaydol",
   "hero_badge": "Yapay Zeka Destekli",
-  "hero_title_1": "YouTube Yorumlarınızı",
-  "hero_title_span": "Veriye Dönüştürün",
+  "hero_title_1": "En Gelişmiş YouTube Yorum Analiz Sistemi",
+  "hero_title_span": "Yorumları Veriye Dönüştürün",
   "hero_desc": "Onlarca videodaki binlerce yorumu saniyeler içinde analiz edin. Gizli küfürleri yakalayın, izleyici sorularını derleyin ve kanalınızı hızla büyütün.",
   "hero_btn_plan": "Fiyatları Gör",
   "hero_btn_why": "Ne Kazanırsınız?",
@@ -77,7 +77,7 @@
   "db_btn_download": "İndir",
   "db_logout": "Çıkış Yap",
   
-  "site_title": "VidInsight | Profesyonel YouTube Yorum Analiz Sistemi",
+  "site_title": "YouTube Yorum Analiz Aracı | VidInsight Profesyonel Sistem",
   "pkg_single_name": "Single",
   "pkg_single_price": "€5",
   "pkg_single_sub": "/Tek Video",
@@ -230,5 +230,6 @@
   "footer_social_title": "Sosyal Medya",
   "footer_kvkk_note": "VidInsight, ödeme işlemleri için Stripe altyapısını kullanır. Verileriniz KVKK ve GDPR uyumlu şekilde korunmaktadır.",
   "privacy_title": "Gizlilik Politikası ve Kullanım Şartları",
-  "privacy_last_updated": "Son Güncelleme: 11 Nisan 2026"
+  "privacy_last_updated": "Son Güncelleme: 11 Nisan 2026",
+  "meta_desc": "VidInsight, binlerce YouTube yorumunu saniyeler içinde analiz eden en gelişmiş YouTube yorum analiz aracıdır. Duygu analizi, küfür filtresi ve Excel raporlama ile kitlenizi tanıyın."
 }
