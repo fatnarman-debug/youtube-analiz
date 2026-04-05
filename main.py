@@ -416,7 +416,7 @@ async def signup_post(request: Request,
         ).first()
         
         if user_exists:
-            return templates.TemplateResponse(request=request, name="user_signup.html", context={
+            return templates.TemplateResponse(request=request, name="signup.html", context={
                 "request": request, "error": "err_user_exists"
             })
 
