@@ -97,7 +97,8 @@
   "pkg_agency_feat3": "Excel İhracatı",
   "pkg_agency_feat4": "Ücretsiz Destek",
   
-  "pkg_ent_name": "Enterprise / 50 Kredi",
+  "pkg_ent_name": "Enterprise",
+  "pkg_ent_badge": "/ 50 Kredi",
   "pkg_ent_price": "€50",
   "pkg_ent_sub": "",
   "pkg_ent_desc": "Büyük çaplı ve çok yoğun video analizi yapan şirketler için özel paket.",

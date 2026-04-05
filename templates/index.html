@@ -186,7 +186,10 @@
             <!-- Paket 4: Enterprise -->
             <div class="pricing-row glass-card">
                 <div class="pricing-col-name">
-                    <h3 class="pkg-header">{{ t(request, 'pkg_ent_name') }}</h3>
+                    <h3 class="pkg-header">
+                        {{ t(request, 'pkg_ent_name') }}
+                        <span style="font-size: 0.6em; color: var(--text-muted); font-weight: normal; margin-left: 4px;">{{ t(request, 'pkg_ent_badge') }}</span>
+                    </h3>
                 </div>
                 <div class="pricing-col-feat">
                     <div class="feature-item"><i class="fa-solid fa-check text-yellow"></i> <span>{{ t(request, 'pkg_feat_video_50') }}</span></div>

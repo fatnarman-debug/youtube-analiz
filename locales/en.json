@@ -97,7 +97,8 @@
   "pkg_agency_feat3": "Excel Export",
   "pkg_agency_feat4": "Free Support",
   
-  "pkg_ent_name": "Enterprise / 50 Credits",
+  "pkg_ent_name": "Enterprise",
+  "pkg_ent_badge": "/ 50 Credits",
   "pkg_ent_price": "€50",
   "pkg_ent_sub": "",
   "pkg_ent_desc": "Special package for companies doing large scale video analysis.",
