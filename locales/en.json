@@ -105,10 +105,20 @@
   "pkg_ent_feat2": "Priority Engine",
   "pkg_ent_feat3": "Excel Export",
   "pkg_ent_feat4": "Corporate Support",
+  "pkg_buy": "Buy",
   "pkg_ent_buy": "Subscribe - €50/mo",
   
+  "pkg_feat_video_1": "1 Video Credit",
+  "pkg_feat_video_5": "5 Video Credits",
+  "pkg_feat_video_10": "10 Video Credits",
+  "pkg_feat_video_50": "50 Video Credits",
+  "pkg_feat_excel": "Excel Export",
+  "pkg_feat_ai": "All AI Features",
+  
   "table_pkg_col_name": "Package",
-  "table_pkg_col_feat": "Features",
+  "table_pkg_col_feat": "Credits",
+  "table_pkg_col_feat2": "Reporting",
+  "table_pkg_col_feat3": "Access",
   "table_pkg_col_price": "Pricing",
   
   "footer_title": "VidInsight",

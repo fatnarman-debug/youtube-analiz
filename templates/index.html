@@ -123,9 +123,11 @@
         
         <div class="pricing-table horizontal-pricing">
             <div class="pricing-table-header">
-                <div class="pricing-col-name">{{ t(request, 'table_pkg_col_name') }}</div>
-                <div class="pricing-col-feat">{{ t(request, 'table_pkg_col_feat') }}</div>
-                <div class="pricing-col-price" style="text-align: right;">{{ t(request, 'table_pkg_col_price') }}</div>
+                <div class="pricing-cell-header">{{ t(request, 'table_pkg_col_name') }}</div>
+                <div class="pricing-cell-header"><i class="fa-solid fa-video text-yellow" style="margin-right:8px;"></i>{{ t(request, 'table_pkg_col_feat') }}</div>
+                <div class="pricing-cell-header"><i class="fa-solid fa-file-excel text-yellow" style="margin-right:8px;"></i>{{ t(request, 'table_pkg_col_feat2') }}</div>
+                <div class="pricing-cell-header"><i class="fa-solid fa-robot text-yellow" style="margin-right:8px;"></i>{{ t(request, 'table_pkg_col_feat3') }}</div>
+                <div class="pricing-cell-header" style="text-align: right;">{{ t(request, 'table_pkg_col_price') }}</div>
             </div>
 
             <!-- Paket 1: Single -->
@@ -133,11 +135,9 @@
                 <div class="pricing-col-name">
                     <h3 class="pkg-header">{{ t(request, 'pkg_single_name') }}</h3>
                 </div>
-                <div class="pricing-col-feat">
-                    <div class="feature-item"><i class="fa-solid fa-video text-yellow"></i> <span>{{ t(request, 'pkg_single_feat1') }}</span></div>
-                    <div class="feature-item"><i class="fa-solid fa-file-excel text-yellow"></i> <span>{{ t(request, 'pkg_single_feat3') }}</span></div>
-                    <div class="feature-item"><i class="fa-solid fa-robot text-yellow"></i> <span>{{ t(request, 'pkg_single_feat2') }}</span></div>
-                </div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_video_1') }}</span></div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_excel') }}</span></div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_ai') }}</span></div>
                 <div class="pricing-col-price">
                     <div class="price-amount">{{ t(request, 'pkg_single_price') }}<span class="price-sub">{{ t(request, 'pkg_single_sub') }}</span></div>
                     {% if user %}
@@ -153,11 +153,9 @@
                 <div class="pricing-col-name">
                     <h3 class="pkg-header">Creator</h3>
                 </div>
-                <div class="pricing-col-feat">
-                    <div class="feature-item"><i class="fa-solid fa-video text-yellow"></i> <span>{{ t(request, 'pkg_creator_feat1') }}</span></div>
-                    <div class="feature-item"><i class="fa-solid fa-file-excel text-yellow"></i> <span>{{ t(request, 'pkg_creator_feat3') }}</span></div>
-                    <div class="feature-item"><i class="fa-solid fa-robot text-yellow"></i> <span>{{ t(request, 'pkg_creator_feat2') }}</span></div>
-                </div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_video_5') }}</span></div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_excel') }}</span></div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_ai') }}</span></div>
                 <div class="pricing-col-price">
                     <div class="price-amount">€15<span class="price-sub">{{ t(request, 'price_month') }}</span></div>
                     {% if user %}
@@ -174,11 +172,9 @@
                     <div class="popular-badge" style="position: static; margin-bottom: 5px; display: inline-block;">{{ t(request, 'pkg_most_popular') }}</div>
                     <h3 class="pkg-header">Agency</h3>
                 </div>
-                <div class="pricing-col-feat">
-                    <div class="feature-item"><i class="fa-solid fa-video text-yellow"></i> <span>{{ t(request, 'pkg_agency_feat1') }}</span></div>
-                    <div class="feature-item"><i class="fa-solid fa-file-excel text-yellow"></i> <span>{{ t(request, 'pkg_agency_feat3') }}</span></div>
-                    <div class="feature-item"><i class="fa-solid fa-robot text-yellow"></i> <span>{{ t(request, 'pkg_agency_feat2') }}</span></div>
-                </div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_video_10') }}</span></div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_excel') }}</span></div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_ai') }}</span></div>
                 <div class="pricing-col-price">
                     <div class="price-amount">€20<span class="price-sub">{{ t(request, 'price_month') }}</span></div>
                     {% if user %}
@@ -194,11 +190,9 @@
                 <div class="pricing-col-name">
                     <h3 class="pkg-header">{{ t(request, 'pkg_ent_name') }}</h3>
                 </div>
-                <div class="pricing-col-feat">
-                    <div class="feature-item"><i class="fa-solid fa-video text-yellow"></i> <span>{{ t(request, 'pkg_ent_feat1') }}</span></div>
-                    <div class="feature-item"><i class="fa-solid fa-file-excel text-yellow"></i> <span>{{ t(request, 'pkg_ent_feat3') }}</span></div>
-                    <div class="feature-item"><i class="fa-solid fa-robot text-yellow"></i> <span>{{ t(request, 'pkg_ent_feat2') }}</span></div>
-                </div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_video_50') }}</span></div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_excel') }}</span></div>
+                <div class="feature-item"><span>{{ t(request, 'pkg_feat_ai') }}</span></div>
                 <div class="pricing-col-price">
                     <div class="price-amount">{{ t(request, 'pkg_ent_price') }}<span class="price-sub">{{ t(request, 'pkg_ent_sub') }}</span></div>
                     {% if user %}

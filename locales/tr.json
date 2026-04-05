@@ -105,10 +105,20 @@
   "pkg_ent_feat2": "Öncelikli Analiz",
   "pkg_ent_feat3": "Excel İhracatı",
   "pkg_ent_feat4": "Kurumsal Destek",
+  "pkg_buy": "Satın Al",
   "pkg_ent_buy": "Hemen Başla - 50€/ay",
   
+  "pkg_feat_video_1": "1 Video Kredisi",
+  "pkg_feat_video_5": "5 Video Kredisi",
+  "pkg_feat_video_10": "10 Video Kredisi",
+  "pkg_feat_video_50": "50 Video Kredisi",
+  "pkg_feat_excel": "Excel İhracatı",
+  "pkg_feat_ai": "Tüm AI Özellikleri",
+  
   "table_pkg_col_name": "Paket Adı",
-  "table_pkg_col_feat": "Özellikler",
+  "table_pkg_col_feat": "Kredi",
+  "table_pkg_col_feat2": "Raporlama",
+  "table_pkg_col_feat3": "Erişim",
   "table_pkg_col_price": "Fiyatlandırma",
   
   "footer_title": "VidInsight",

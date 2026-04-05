@@ -755,7 +755,7 @@ footer {
 
 .pricing-table-header {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1.5fr;
     padding: 10px 40px;
     font-size: 0.9rem;
     font-weight: 700;
@@ -766,7 +766,7 @@ footer {
 
 .pricing-row {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1.5fr;
     align-items: center;
     background: var(--glass-bg);
     padding: 30px 40px;
@@ -799,11 +799,6 @@ footer {
     margin: 0;
 }
 
-.pricing-col-feat {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-}
 
 .feature-item {
     display: flex;
@@ -851,29 +846,26 @@ footer {
 }
 
 /* Fallback for Mobile Flow */
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     .pricing-table-header {
         display: none;
     }
     
     .pricing-row {
         grid-template-columns: 1fr;
-        gap: 25px;
-        padding: 25px;
-        text-align: center;
+        gap: 15px;
+        padding: 20px;
+        text-align: left;
     }
 
-    .pricing-col-feat {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-        padding: 20px 0;
-        border-top: 1px solid var(--glass-border);
-        border-bottom: 1px solid var(--glass-border);
+    .feature-item {
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
     .pricing-col-price {
         align-items: center;
+        margin-top: 10px;
     }
 }
 
