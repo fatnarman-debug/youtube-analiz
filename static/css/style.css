@@ -101,7 +101,7 @@ a { text-decoration: none; color: inherit; }
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 5%;
+    padding: 0.4rem 5%;
     position: fixed;
     top: 0;
     left: 0;
@@ -154,9 +154,10 @@ a { text-decoration: none; color: inherit; }
 
 /* Constrain Logo Size */
 #nav-logo {
-    height: 75px; /* NavBar boyutu - Daha Büyük */
+    height: 90px; /* NavBar boyutu - OLABİLDİĞİNCE BÜYÜK */
     width: auto;
     display: block;
+    margin-right: 20px;
 }
 
 /* Hero Section (Aydınlık Kalan Kısım) */
