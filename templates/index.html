@@ -135,9 +135,9 @@
                 <div class="pricing-col-action">
                     <div class="price-amount">{{ t(request, 'pkg_single_price') }}<span class="price-sub">{{ t(request, 'pkg_single_sub') }}</span></div>
                     {% if user %}
-                    <a href="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y?client_reference_id={{ user.id }}" class="btn-primary btn-pricing">{{ t(request, 'pkg_buy') }}</a>
+                    <a href="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y?client_reference_id={{ user.id }}" class="btn-primary btn-pricing">{{ t(request, 'pkg_cta_single') }}</a>
                     {% else %}
-                    <button class="btn-primary open-modal-btn btn-pricing" data-package="{{ t(request, 'pkg_single_name') }}" data-link="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y">{{ t(request, 'pkg_buy') }}</button>
+                    <button class="btn-primary open-modal-btn btn-pricing" data-package="{{ t(request, 'pkg_single_name') }}" data-link="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y">{{ t(request, 'pkg_cta_single') }}</button>
                     {% endif %}
                 </div>
             </div>
@@ -155,9 +155,9 @@
                 <div class="pricing-col-action">
                     <div class="price-amount">€15<span class="price-sub">{{ t(request, 'price_month') }}</span></div>
                     {% if user %}
-                    <a href="https://buy.stripe.com/14AaEXavEbBA6Rj7nYcZa0z?client_reference_id={{ user.id }}" class="btn-primary btn-pricing">{{ t(request, 'pkg_buy') }}</a>
+                    <a href="https://buy.stripe.com/14AaEXavEbBA6Rj7nYcZa0z?client_reference_id={{ user.id }}" class="btn-primary btn-pricing">{{ t(request, 'pkg_cta_creator') }}</a>
                     {% else %}
-                    <button class="btn-primary open-modal-btn btn-pricing" data-package="Creator" data-link="https://buy.stripe.com/14AaEXavEbBA6Rj7nYcZa0z">{{ t(request, 'pkg_buy') }}</button>
+                    <button class="btn-primary open-modal-btn btn-pricing" data-package="Creator" data-link="https://buy.stripe.com/14AaEXavEbBA6Rj7nYcZa0z">{{ t(request, 'pkg_cta_creator') }}</button>
                     {% endif %}
                 </div>
             </div>
@@ -176,9 +176,9 @@
                 <div class="pricing-col-action">
                     <div class="price-amount">€20<span class="price-sub">{{ t(request, 'price_month') }}</span></div>
                     {% if user %}
-                    <a href="https://buy.stripe.com/7sYcN5fPY5dc0sV5fQcZa0A?client_reference_id={{ user.id }}" class="btn-primary btn-pricing">{{ t(request, 'pkg_buy') }}</a>
+                    <a href="https://buy.stripe.com/7sYcN5fPY5dc0sV5fQcZa0A?client_reference_id={{ user.id }}" class="btn-primary btn-pricing">{{ t(request, 'pkg_cta_agency') }}</a>
                     {% else %}
-                    <button class="btn-primary open-modal-btn btn-pricing" data-package="Agency" data-link="https://buy.stripe.com/7sYcN5fPY5dc0sV5fQcZa0A">{{ t(request, 'pkg_buy') }}</button>
+                    <button class="btn-primary open-modal-btn btn-pricing" data-package="Agency" data-link="https://buy.stripe.com/7sYcN5fPY5dc0sV5fQcZa0A">{{ t(request, 'pkg_cta_agency') }}</button>
                     {% endif %}
                 </div>
             </div>
@@ -199,9 +199,9 @@
                 <div class="pricing-col-action">
                     <div class="price-amount">{{ t(request, 'pkg_ent_price') }}<span class="price-sub">{{ t(request, 'pkg_ent_sub') }}</span></div>
                     {% if user %}
-                    <a href="https://buy.stripe.com/5kQ7sLdHQbBA2B323EcZa0B?client_reference_id={{ user.id }}" class="btn-primary btn-pricing">{{ t(request, 'pkg_buy') }}</a>
+                    <a href="https://buy.stripe.com/5kQ7sLdHQbBA2B323EcZa0B?client_reference_id={{ user.id }}" class="btn-primary btn-pricing">{{ t(request, 'pkg_cta_ent') }}</a>
                     {% else %}
-                    <button class="btn-primary open-modal-btn btn-pricing" data-package="Enterprise" data-link="https://buy.stripe.com/5kQ7sLdHQbBA2B323EcZa0B">{{ t(request, 'pkg_buy') }}</button>
+                    <button class="btn-primary open-modal-btn btn-pricing" data-package="Enterprise" data-link="https://buy.stripe.com/5kQ7sLdHQbBA2B323EcZa0B">{{ t(request, 'pkg_cta_ent') }}</button>
                     {% endif %}
                 </div>
             </div>

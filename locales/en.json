@@ -8,7 +8,7 @@
   "hero_title_span": "Actionable Data",
   "hero_desc": "Analyze thousands of comments across dozens of videos in seconds. Catch hidden profanities, compile audience questions, and grow your channel rapidly.",
   "hero_btn_plan": "View Pricing",
-  "hero_btn_why": "Why Us?",
+  "hero_btn_why": "What You Gain?",
   
   "stat_positive": "Positive",
   "stat_question": "Questions",
@@ -107,6 +107,10 @@
   "pkg_ent_feat3": "Excel Export",
   "pkg_ent_feat4": "Corporate Support",
   "pkg_buy": "Buy",
+  "pkg_cta_single": "Analyze Now for 5€",
+  "pkg_cta_creator": "5 Video Analyses / mo — 15€",
+  "pkg_cta_agency": "10 Video Analyses / mo — 20€",
+  "pkg_cta_ent": "Get Started — 50€/mo",
   "pkg_ent_buy": "Subscribe - €50/mo",
   
   "pkg_feat_video_1": "1 Video Credit",

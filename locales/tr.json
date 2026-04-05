@@ -7,8 +7,8 @@
   "hero_title_1": "YouTube Yorumlarınızı",
   "hero_title_span": "Veriye Dönüştürün",
   "hero_desc": "Onlarca videodaki binlerce yorumu saniyeler içinde analiz edin. Gizli küfürleri yakalayın, izleyici sorularını derleyin ve kanalınızı hızla büyütün.",
-  "hero_btn_plan": "Paketleri İncele",
-  "hero_btn_why": "Neden Biz?",
+  "hero_btn_plan": "Fiyatları Gör",
+  "hero_btn_why": "Ne Kazanırsınız?",
   
   "stat_positive": "Olumlu",
   "stat_question": "Soru",
@@ -107,6 +107,10 @@
   "pkg_ent_feat3": "Excel İhracatı",
   "pkg_ent_feat4": "Kurumsal Destek",
   "pkg_buy": "Satın Al",
+  "pkg_cta_single": "5€'ya Hemen Analiz Et",
+  "pkg_cta_creator": "Aylık 5 Video Analizi — 15€",
+  "pkg_cta_agency": "Aylık 10 Video Analizi — 20€",
+  "pkg_cta_ent": "Hemen Başla — 50€/ay",
   "pkg_ent_buy": "Hemen Başla - 50€/ay",
   
   "pkg_feat_video_1": "1 Video Kredisi",
