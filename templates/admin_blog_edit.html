@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ t(request, 'meta_desc') }}">
+    <title>Yazı Düzenle | VidInsight Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #F8FAFC; color: #0F172A; }
+        .edit-container { max-width: 900px; margin: 0 auto; background: white; padding: 2rem; border-radius: 16px; border: 1px solid #E2E8F0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 700; color: #64748B; font-size: 0.85rem; text-transform: uppercase; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px 18px; border: 1.5px solid #E2E8F0; border-radius: 12px; font-size: 1rem; color: #0F172A; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #6366F1; }
+        .form-group textarea { min-height: 400px; font-family: 'Outfit', sans-serif; resize: vertical; }
+        .save-btn { background: #6366F1; color: white; border: none; padding: 12px 30px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 1rem; }
+        .save-btn:hover { background: #4F46E5; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
+        .back-btn { color: #64748B; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; font-weight: 600; margin-bottom: 1.5rem; }
+        .back-btn:hover { color: #0F172A; }
+        .publish-toggle { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .publish-toggle input { width: auto; cursor: pointer; }
+    </style>
+</head>
+<body class="admin-container">
+    <aside class="admin-sidebar">
+        <div class="sidebar-logo">
+            <img src="/static/img/logo.png" alt="VidInsight Logo">
+        </div>
+        <nav>
+            <a href="/admin/analyses"><i class="fa-solid fa-chart-pie"></i> Analiz Talepleri</a>
+            <a href="/admin/users"><i class="fa-solid fa-users-gear"></i> Kullanıcı Yönetimi</a>
+            <a href="/admin/blog" class="active"><i class="fa-solid fa-pen-nib"></i> Blog Yazıları</a>
+            <a href="/admin/marketing"><i class="fa-solid fa-envelope-open-text"></i> E-posta Pazarlama</a>
+            <a href="/admin/download_db"><i class="fa-solid fa-database"></i> Veritabanı Yedeği</a>
+            <a href="/admin/logout" class="logout-link"><i class="fa-solid fa-power-off"></i> Çıkış Yap</a>
+        </nav>
+    </aside>
+
+    <main class="admin-content">
+        <a href="/admin/blog" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Listeye Dön</a>
+        
+        <div class="edit-container">
+            <h1>{% if post %}Yazıyı Düzenle{% else %}Yeni Blog Yazısı{% endif %}</h1>
+            <p style="color: #64748B; margin-bottom: 2rem;">Yazı içeriğini HTML veya düz metin olarak buraya girebilirsiniz.</p>
+
+            <form action="/admin/blog/save" method="POST">
+                {% if post %}<input type="hidden" name="id" value="{{ post.id }}">{% endif %}
+                
+                <div class="form-group">
+                    <label>YAZI BAŞLIĞI</label>
+                    <input type="text" name="title" value="{{ post.title if post else '' }}" placeholder="İlgi çekici bir başlık girin..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>İÇERİK (HTML DESTEKLER)</label>
+                    <textarea name="content" placeholder="Yazı içeriğinizi burada paylaşın..." required>{{ post.content if post else '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="publish-toggle">
+                        <input type="checkbox" name="is_published" value="True" {% if not post or post.is_published %}checked{% endif %}>
+                        Bu yazıyı hemen yayınla
+                    </label>
+                </div>
+
+                <button type="submit" class="save-btn">
+                    <i class="fa-solid fa-save"></i> Yazıyı Kaydet
+                </button>
+            </form>
+        </div>
+
+        <div style="margin-top: 3rem; text-align: center; color: #CBD5E1; font-size: 0.8rem;">
+            VidInsight Control Panel v1.2.2 Professional Edition
+        </div>
+    </main>
+</body>
+</html>

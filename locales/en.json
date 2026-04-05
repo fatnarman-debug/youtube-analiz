@@ -1,6 +1,8 @@
 {
   "nav_features": "Features",
   "nav_pricing": "Pricing",
+  "nav_faq": "FAQ",
+  "nav_blog": "Blog",
   "nav_login": "Login",
   "nav_register": "Sign Up Free",
   "hero_badge": "AI Powered",
@@ -137,6 +139,7 @@
   "footer_desc": "The smartest way to turn your YouTube comments into data and strategy.",
   "footer_menu_title": "Quick Menu",
   "footer_pkg_link": "Plans",
+  "footer_blog": "Blog",
   "footer_contact_title": "Contact",
   "footer_contact_desc": "You can reach out to us for any questions or requests:",
   
@@ -178,7 +181,6 @@
   "err_user_exists": "This username or email is already in use.",
   "err_insufficient_credits": "Insufficient credits! Please purchase a new plan.",
 
-  "nav_faq": "FAQ",
   "faq_section_title": "Frequently Asked Questions",
   "faq_section_desc": "Find answers to your questions here.",
 
@@ -231,5 +233,8 @@
   "footer_kvkk_note": "VidInsight uses Stripe for payment processing. Your data is protected in compliance with KVKK and GDPR.",
   "privacy_title": "Privacy Policy and Terms of Use",
   "privacy_last_updated": "Last Updated: April 5, 2026",
-  "meta_desc": "VidInsight is the most advanced YouTube comment analysis tool that analyzes thousands of comments in seconds. Understand your audience with sentiment analysis, profanity filters, and Excel reports."
+  "meta_desc": "VidInsight is the most advanced YouTube comment analysis tool that analyzes thousands of comments in seconds. Understand your audience with sentiment analysis, profanity filters, and Excel reports.",
+  "blog_read_more": "Read More",
+  "blog_no_posts": "No posts have been shared yet.",
+  "blog_title": "VidInsight Blog"
 }

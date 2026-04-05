@@ -1,6 +1,8 @@
 {
   "nav_features": "Özellikler",
   "nav_pricing": "Fiyatlandırma",
+  "nav_faq": "Sık Sorulanlar",
+  "nav_blog": "Blog",
   "nav_login": "Giriş Yap",
   "nav_register": "Ücretsiz Kaydol",
   "hero_badge": "Yapay Zeka Destekli",
@@ -137,6 +139,7 @@
   "footer_desc": "YouTube yorumlarınızı veriye ve stratejiye dönüştürmenin en akıllı yolu.",
   "footer_menu_title": "Hızlı Menü",
   "footer_pkg_link": "Paketler",
+  "footer_blog": "Blog",
   "footer_contact_title": "İletişim",
   "footer_contact_desc": "Her türlü soru ve talebiniz için iletişime geçebilirsiniz:",
   
@@ -178,7 +181,6 @@
   "err_user_exists": "Bu kullanıcı adı veya e-posta zaten kullanımda.",
   "err_insufficient_credits": "Yetersiz kredi! Lütfen yeni bir paket satın alın.",
 
-  "nav_faq": "Sık Sorulanlar",
   "faq_section_title": "Sıkça Sorulan Sorular",
   "faq_section_desc": "Aklınızdaki soruların cevaplarını burada bulabilirsiniz.",
 
@@ -231,5 +233,8 @@
   "footer_kvkk_note": "VidInsight, ödeme işlemleri için Stripe altyapısını kullanır. Verileriniz KVKK ve GDPR uyumlu şekilde korunmaktadır.",
   "privacy_title": "Gizlilik Politikası ve Kullanım Şartları",
   "privacy_last_updated": "Son Güncelleme: 11 Nisan 2026",
-  "meta_desc": "VidInsight, binlerce YouTube yorumunu saniyeler içinde analiz eden en gelişmiş YouTube yorum analiz aracıdır. Duygu analizi, küfür filtresi ve Excel raporlama ile kitlenizi tanıyın."
+  "meta_desc": "VidInsight, binlerce YouTube yorumunu saniyeler içinde analiz eden en gelişmiş YouTube yorum analiz aracıdır. Duygu analizi, küfür filtresi ve Excel raporlama ile kitlenizi tanıyın.",
+  "blog_read_more": "Devamını Oku",
+  "blog_no_posts": "Henüz hiç yazı paylaşılmadı.",
+  "blog_title": "VidInsight Blog"
 }

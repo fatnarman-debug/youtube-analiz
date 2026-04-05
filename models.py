@@ -39,3 +39,12 @@ class Admin(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True)
     password_hash = Column(String(255))
+
+class BlogPost(Base):
+    __tablename__ = "blog_posts"
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255))
+    slug = Column(String(255), unique=True, index=True)
+    content = Column(Text)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    is_published = Column(Boolean, default=True)

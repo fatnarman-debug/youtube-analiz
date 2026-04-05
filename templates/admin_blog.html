@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ t(request, 'meta_desc') }}">
+    <title>Blog Yönetimi | VidInsight Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #F8FAFC; color: #0F172A; }
+        .blog-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 1.5rem; }
+        .blog-table th { background: #F1F5F9; color: #64748B; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; padding: 18px 24px; text-align: left; border-bottom: 2px solid #E2E8F0; }
+        .blog-table td { padding: 22px 24px; border-bottom: 1px solid #E2E8F0; vertical-align: middle; }
+        .status-tag { padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; }
+        .status-published { background: #DCFCE7; color: #166534; }
+        .status-draft { background: #FEE2E2; color: #991B1B; }
+        .add-btn { background: #6366F1; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .add-btn:hover { background: #4F46E5; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
+        .action-btn { padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.8rem; border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+        .edit-btn { background: #F1F5F9; color: #0F172A; }
+        .edit-btn:hover { background: #E2E8F0; }
+        .delete-btn { background: #FEE2E2; color: #991B1B; }
+        .delete-btn:hover { background: #FECACA; }
+    </style>
+</head>
+<body class="admin-container">
+    <aside class="admin-sidebar">
+        <div class="sidebar-logo">
+            <img src="/static/img/logo.png" alt="VidInsight Logo">
+        </div>
+        <nav>
+            <a href="/admin/analyses"><i class="fa-solid fa-chart-pie"></i> Analiz Talepleri</a>
+            <a href="/admin/users"><i class="fa-solid fa-users-gear"></i> Kullanıcı Yönetimi</a>
+            <a href="/admin/blog" class="active"><i class="fa-solid fa-pen-nib"></i> Blog Yazıları</a>
+            <a href="/admin/marketing"><i class="fa-solid fa-envelope-open-text"></i> E-posta Pazarlama</a>
+            <a href="/admin/download_db"><i class="fa-solid fa-database"></i> Veritabanı Yedeği</a>
+            <a href="/admin/logout" class="logout-link"><i class="fa-solid fa-power-off"></i> Çıkış Yap</a>
+        </nav>
+    </aside>
+
+    <main class="admin-content">
+        <header class="admin-header-flex">
+            <div>
+                <h1>Blog Yazıları</h1>
+                <p>Yeni yazılar ekleyin veya mevcut olanları düzenleyin.</p>
+            </div>
+            <a href="/admin/blog/new" class="add-btn"><i class="fa-solid fa-plus"></i> Yeni Yazı Ekle</a>
+        </header>
+
+        <section class="admin-card" style="padding: 0; overflow: hidden;">
+            <table class="blog-table">
+                <thead>
+                    <tr>
+                        <th>BAŞLIK</th>
+                        <th>TARİH</th>
+                        <th>DURUM</th>
+                        <th>İŞLEMLER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 800; color: #0F172A; font-size: 1.05rem;">{{ post.title }}</div>
+                            <div style="font-size: 0.8rem; color: #64748B;">/blog/{{ post.slug }}</div>
+                        </td>
+                        <td style="font-size: 0.9rem; color: #64748B;">{{ post.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                        <td>
+                            <span class="status-tag {% if post.is_published %}status-published{% else %}status-draft{% endif %}">
+                                {{ "YAYINDA" if post.is_published else "TASLAK" }}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <a href="/admin/blog/edit/{{ post.id }}" class="action-btn edit-btn"><i class="fa-solid fa-edit"></i> Düzenle</a>
+                                <form action="/admin/blog/delete/{{ post.id }}" method="POST" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                                    <button type="submit" class="action-btn delete-btn"><i class="fa-solid fa-trash"></i> Sil</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not posts %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px; color: #94A3B8;">Henüz hiç blog yazısı bulunmuyor.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+
+        <div style="margin-top: 3rem; text-align: center; color: #CBD5E1; font-size: 0.8rem;">
+            VidInsight Control Panel v1.2.2 Professional Edition
+        </div>
+    </main>
+</body>
+</html>
