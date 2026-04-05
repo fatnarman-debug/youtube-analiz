@@ -5,7 +5,8 @@
     --accent-hover: #D97706;
     --text-light: #F8FAFC; 
     --text-dark: #0F172A; /* Koyu Metin Rengi (Beyaz Bölümler İçin) */
-    --text-muted: #94A3B8;
+    --text-muted: #475569; /* Daha Belirgin Gri (Aydınlık Bölümler) */
+    --text-muted-light: #94A3B8; /* Hafif Gri (Karanlık Bölümler) */
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
     --card-bg: #1E293B;
@@ -52,11 +53,11 @@ body {
 /* Typography & Colors */
 h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; }
 h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; }
-h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; }
+h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; }
 .highlight { color: var(--accent); }
 .text-yellow { color: var(--accent); }
-.text-green { color: #10B981; }
-.text-red { color: #EF4444; }
+.text-green { color: #10B981; font-weight: 600; }
+.text-red { color: #EF4444; font-weight: 600; }
 a { text-decoration: none; color: inherit; }
 
 /* Buttons */
@@ -171,6 +172,7 @@ a { text-decoration: none; color: inherit; }
 .hero-content p {
     font-size: 1.2rem;
     color: var(--text-muted);
+    font-weight: 500;
     margin-bottom: 2.5rem;
     max-width: 550px;
 }
@@ -248,6 +250,7 @@ a { text-decoration: none; color: inherit; }
 .section-title p {
     color: var(--text-muted);
     font-size: 1.2rem;
+    font-weight: 500;
 }
 
 /* Features (Karanlık Mod'a Dönüş) */
@@ -284,7 +287,7 @@ a { text-decoration: none; color: inherit; }
     margin-bottom: 1.8rem;
 }
 .feature-card h3 { color: white; }
-.feature-card p { color: var(--text-muted); }
+.feature-card p { color: var(--text-muted-light); }
 
 /* Pricing */
 .pricing {
@@ -765,9 +768,10 @@ footer {
 }
 
 .faq-answer p {
-    color: var(--text-muted);
+    color: var(--text-muted-light);
     font-size: 1rem;
     line-height: 1.6;
+    font-weight: 500;
     margin: 0;
 }
 
