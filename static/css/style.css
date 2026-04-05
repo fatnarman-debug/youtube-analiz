@@ -4,8 +4,8 @@
     --accent: #F59E0B; /* VidInsight Sarısı */
     --accent-hover: #D97706;
     --text-light: #F8FAFC; 
-    --text-dark: #0F172A; /* Koyu Metin Rengi (Beyaz Bölümler İçin) */
-    --text-muted: #475569; /* Daha Belirgin Gri (Aydınlık Bölümler) */
+    --text-dark: #0F172A; /* Koyu Metin Rengi */
+    --text-muted: #1e293b; /* Çok Daha Belirgin Koyu Gri (Aydınlık Bölümler) */
     --text-muted-light: #94A3B8; /* Hafif Gri (Karanlık Bölümler) */
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
@@ -32,6 +32,8 @@ body {
     background-color: var(--primary);
     color: var(--text-light);
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Glassmorphism Utilities */
@@ -170,11 +172,12 @@ a { text-decoration: none; color: inherit; }
 .hero-content { flex: 1; }
 .hero-content h1 { color: var(--text-dark); }
 .hero-content p {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     color: var(--text-muted);
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 2.5rem;
     max-width: 550px;
+    line-height: 1.7;
 }
 .hero-badge {
     display: inline-block;
@@ -249,8 +252,8 @@ a { text-decoration: none; color: inherit; }
 }
 .section-title p {
     color: var(--text-muted);
-    font-size: 1.2rem;
-    font-weight: 500;
+    font-size: 1.25rem;
+    font-weight: 600;
 }
 
 /* Features (Karanlık Mod'a Dönüş) */
@@ -771,7 +774,7 @@ footer {
     color: var(--text-muted-light);
     font-size: 1rem;
     line-height: 1.6;
-    font-weight: 500;
+    font-weight: 600;
     margin: 0;
 }
 

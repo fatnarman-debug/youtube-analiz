@@ -19,14 +19,14 @@
   "feat_title": "Neden VidInsight?",
   "feat_desc": "İzleyicilerinizin söylediklerinin çok ötesini görün.",
   
-  "feat_1_title": "Gelişmiş Duygu Analizi",
-  "feat_1_desc": "Kullanıcıların genel eğilimini (olumlu/olumsuz) yüzdesel olarak raporlayarak kitlenizi anlayın.",
-  "feat_2_title": "Akıllı Küfür Filtresi",
+  "feat_1_title": "🧠 Gelişmiş Duygu Analizi",
+  "feat_1_desc": "İzleyicilerinizin genel eğilimini (olumlu/olumsuz) yüzdesel raporlarla görün ve kitlenizi anlayın.",
+  "feat_2_title": "🛡️ Akıllı Küfür Filtresi",
   "feat_2_desc": "Gizlenmiş veya ek almış küfür/hakaret barındıran yorumları tam isabetle yakalayın.",
-  "feat_3_title": "Öneri ve Eleştiri Ayrışımı",
+  "feat_3_title": "💡 Öneri ve Eleştiri Ayrışımı",
   "feat_3_desc": "Takipçilerinizin sizden neler beklediğini veya neyi sevmediğini özet listeler halinde çıkarın.",
-  "feat_4_title": "Soru Derleyici",
-  "feat_4_desc": "Bir sonraki Q&A videonuz veya ürün çekiminiz için size sorulan kritik soruları otomatik listeleyin.",
+  "feat_4_title": "❓ Soru Derleyici",
+  "feat_4_desc": "Bir sonraki Q&A videonuz için size sorulan kritik soruları otomatik listeleyin.",
   "feat_5_title": "Excel Çıktısı",
   "feat_5_desc": "Tüm analiz verilerini dilediğiniz zaman tek tıkla şık bir Excel (XLSX) dökümü olarak indirin.",
   "feat_6_title": "Sahte/Spam Engeli",
@@ -185,13 +185,13 @@
   "faq_section_desc": "Aklınızdaki soruların cevaplarını burada bulabilirsiniz.",
 
   "faq_q1": "Bir analiz ne kadar sürer?",
-  "faq_a1": "Video yorumlarını çekip analiz etme işlemi genellikle 15-30 dakika içinde tamamlanır. Tamamlandığında e-posta ile bildirim gönderilir.",
+  "faq_a1": "⌛ Video yorumlarını çekip analiz etme işlemi genellikle 15-30 dakika içinde tamamlanır. Tamamlandığında e-posta ile bildirim gönderilir.",
 
   "faq_q2": "Hangi dillerdeki yorumları analiz edebilirsiniz?",
   "faq_a2": "Platformumuz başta Türkçe ve İngilizce olmak üzere birden fazla dili desteklemektedir.",
 
   "faq_q3": "Raporum hangi formatta teslim edilir?",
-  "faq_a3": "Analizler, birden fazla sekme içeren detaylı bir Excel (.xlsx) dosyası olarak teslim edilir. İçinde duygu dağılımı, en beğenilen yorumlar, eleştiriler ve öneriler yer alır.",
+  "faq_a3": "📈 Analizler, birden fazla sekme içeren detaylı bir Excel (.xlsx) dosyası olarak teslim edilir. İçinde duygu dağılımı, en beğenilen yorumlar, eleştiriler ve öneriler yer alır.",
 
   "faq_q4": "Tek seferlik paket ile abonelik arasındaki fark nedir?",
   "faq_a4": "Tek seferlik pakette 1 video analizi hakkı satın alırsınız. Abonelik paketlerinde ise aylık yenilenen video analizi hakkından faydalanırsınız.",
