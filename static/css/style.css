@@ -103,8 +103,9 @@ a { text-decoration: none; color: inherit; }
     align-items: center;
     padding: 1rem 5%;
     position: fixed;
-    width: 100%;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
     transition: all 0.3s;
     background: #0f172a; /* Sabit Koyu Lacivert Arka Plan */
@@ -117,7 +118,7 @@ a { text-decoration: none; color: inherit; }
     gap: 2.5rem;
 }
 .nav-links a {
-    color: var(--text-dark);
+    color: var(--text-light); /* Beyaz Metin */
     font-weight: 600;
     transition: all 0.2s;
 }
