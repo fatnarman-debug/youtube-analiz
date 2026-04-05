@@ -353,7 +353,11 @@ async def privacy_policy(request: Request):
 async def blog_list(request: Request, db: Session = Depends(get_db)):
     posts = db.query(models.BlogPost).filter(models.BlogPost.is_published == True).order_by(models.BlogPost.created_at.desc()).all()
     user = get_current_user(request, db)
-    return templates.TemplateResponse(request=request, name="blog.html", context={"user": user, "posts": posts, "t": t})
+    return templates.TemplateResponse(
+        request=request, 
+        name="blog.html", 
+        context={"user": user, "posts": posts, "t": t}
+    )
 
 @app.get("/blog/{slug}", response_class=HTMLResponse)
 async def blog_detail(request: Request, slug: str, db: Session = Depends(get_db)):
@@ -361,7 +365,11 @@ async def blog_detail(request: Request, slug: str, db: Session = Depends(get_db)
     if not post:
         raise HTTPException(status_code=404)
     user = get_current_user(request, db)
-    return templates.TemplateResponse(request=request, name="blog_detail.html", context={"user": user, "post": post, "t": t})
+    return templates.TemplateResponse(
+        request=request, 
+        name="blog_detail.html", 
+        context={"user": user, "post": post, "t": t}
+    )
 
 @app.get("/giris", response_class=HTMLResponse)
 async def user_login_get(request: Request, error: str = None, success: bool = False):
@@ -568,14 +576,22 @@ async def admin_blog_list(request: Request, db: Session = Depends(get_db)):
     if session != "authenticated":
         return RedirectResponse(url="/girisburdan")
     posts = db.query(models.BlogPost).order_by(models.BlogPost.created_at.desc()).all()
-    return templates.TemplateResponse("admin_blog.html", {"request": request, "posts": posts})
+    return templates.TemplateResponse(
+        request=request, 
+        name="admin_blog.html", 
+        context={"posts": posts}
+    )
 
 @app.get("/admin/blog/new", response_class=HTMLResponse)
 async def admin_blog_new(request: Request):
     session = request.cookies.get(ADMIN_SESSION_NAME)
     if session != "authenticated":
         return RedirectResponse(url="/girisburdan")
-    return templates.TemplateResponse("admin_blog_edit.html", {"request": request, "post": None})
+    return templates.TemplateResponse(
+        request=request, 
+        name="admin_blog_edit.html", 
+        context={"post": None}
+    )
 
 @app.post("/admin/blog/save")
 async def admin_blog_save(request: Request, id: int = Form(None), title: str = Form(...), content: str = Form(...), is_published: bool = Form(False), db: Session = Depends(get_db)):
@@ -608,7 +624,11 @@ async def admin_blog_edit(id: int, request: Request, db: Session = Depends(get_d
     if session != "authenticated":
         return RedirectResponse(url="/girisburdan")
     post = db.query(models.BlogPost).filter(models.BlogPost.id == id).first()
-    return templates.TemplateResponse("admin_blog_edit.html", {"request": request, "post": post})
+    return templates.TemplateResponse(
+        request=request, 
+        name="admin_blog_edit.html", 
+        context={"post": post}
+    )
 
 @app.post("/admin/blog/delete/{id}")
 async def admin_blog_delete(id: int, request: Request, db: Session = Depends(get_db)):
