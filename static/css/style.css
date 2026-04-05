@@ -877,11 +877,36 @@ footer {
 }
 
 .btn-pricing {
-    padding: 12px 28px;
-    border-radius: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px;
+    border-radius: 12px;
     font-weight: 700;
-    min-width: 160px;
-    text-align: center;
+    min-width: 180px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    line-height: 1.2;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-pricing:hover {
+    transform: scale(1.05) translateY(-3px);
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+    border-color: rgba(245, 158, 11, 0.5);
+}
+
+.cta-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+    margin-bottom: 2px;
+}
+
+.cta-price {
+    font-size: 1.1rem;
+    font-weight: 800;
 }
 
 /* Fallback for Mobile Flow */
