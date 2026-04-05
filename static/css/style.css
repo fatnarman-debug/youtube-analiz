@@ -754,8 +754,8 @@ footer {
 }
 
 .pricing-table-header {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 1fr 1.5fr;
+    display: flex;
+    justify-content: space-between;
     padding: 10px 40px;
     font-size: 0.9rem;
     font-weight: 700;
@@ -765,14 +765,33 @@ footer {
 }
 
 .pricing-row {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 1fr 1.5fr;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     background: var(--glass-bg);
-    padding: 30px 40px;
+    padding: 20px 40px;
     border-radius: 16px;
     border: 1px solid var(--glass-border);
     transition: all 0.3s ease;
+}
+
+.pricing-col-name {
+    flex: 0 0 150px;
+}
+
+.pricing-col-feat {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.pricing-col-action {
+    flex: 0 0 250px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
 }
 
 .pricing-row:hover {
@@ -817,13 +836,6 @@ footer {
     color: #F59E0B; 
 }
 
-.pricing-col-price {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 12px;
-}
-
 .price-amount {
     font-size: 1.6rem;
     font-weight: 800;
@@ -834,7 +846,6 @@ footer {
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-muted);
-    margin-left: 5px;
 }
 
 .btn-pricing {
@@ -846,26 +857,31 @@ footer {
 }
 
 /* Fallback for Mobile Flow */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .pricing-table-header {
         display: none;
     }
     
     .pricing-row {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        padding: 20px;
-        text-align: left;
+        flex-direction: column;
+        gap: 20px;
+        padding: 30px;
+        text-align: center;
     }
 
-    .feature-item {
-        padding: 10px 0;
+    .pricing-col-feat {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px 0;
+        width: 100%;
+        border-top: 1px solid rgba(255,255,255,0.05);
         border-bottom: 1px solid rgba(255,255,255,0.05);
     }
-
-    .pricing-col-price {
-        align-items: center;
-        margin-top: 10px;
+    
+    .pricing-col-action {
+        flex-direction: column;
+        justify-content: center;
+        gap: 15px;
     }
 }
 
