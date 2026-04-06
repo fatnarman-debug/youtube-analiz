@@ -115,7 +115,7 @@ SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
-SMTP_FROM = os.getenv("SMTP_FROM", "VidInsight <noreply@vid-insight.com>")
+SMTP_FROM = os.getenv("SMTP_FROM", "noreply@vid-insight.com")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@vid-insight.com")
 
 async def _send_email(message: EmailMessage):
@@ -817,10 +817,19 @@ async def admin_test_email(request: Request, background_tasks: BackgroundTasks):
     session = request.cookies.get(ADMIN_SESSION_NAME)
     if session != "authenticated":
         return RedirectResponse(url="/girisburdan")
-    
-    # E-posta kuyruğu (admin@vid-insight.com adresine gider)
-    background_tasks.add_task(send_report_email, "admin@vid-insight.com", "Yönetici Testi", "SİSTEM TEST VİDEOSU")
-    return {"status": "ok", "message": "Test e-postası kuyruğa eklendi. Lütfen admin@vid-insight.com adresini kontrol edin."}
+
+    smtp_ok = bool(SMTP_USER and SMTP_PASSWORD)
+    background_tasks.add_task(send_report_email, ADMIN_EMAIL, "Yönetici Testi", "SİSTEM TEST VİDEOSU")
+    return {
+        "status": "ok",
+        "smtp_configured": smtp_ok,
+        "smtp_host": SMTP_HOST,
+        "smtp_port": SMTP_PORT,
+        "smtp_user": SMTP_USER,
+        "smtp_from": SMTP_FROM,
+        "admin_email": ADMIN_EMAIL,
+        "message": f"Test e-postası gönderildi → {ADMIN_EMAIL}"
+    }
 
 @app.post("/admin/upload_report/{analysis_id}")
 async def upload_report(analysis_id: int, 
