@@ -973,23 +973,50 @@ footer {
 }
 
 .pricing-col-name {
-    flex: 0 0 220px;
-    white-space: nowrap;
+    flex: 0 0 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pricing-col-name .pkg-header {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+}
+
+.pkg-credits {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.3px;
 }
 
 .pricing-col-feat {
     flex: 1;
-    display: flex;
-    justify-content: center;
-    gap: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px 18px;
+    padding: 0 24px;
+    align-content: center;
+}
+
+.feat-title {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .pricing-col-action {
-    flex: 0 0 250px;
+    flex: 0 0 230px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 20px;
+    gap: 16px;
 }
 
 .pricing-row:hover {
@@ -1008,14 +1035,6 @@ footer {
 .pricing-row.popular-row:hover {
     transform: scale(1.02) translateY(-2px);
 }
-
-.pricing-col-name .pkg-header {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: white;
-    margin: 0;
-}
-
 
 .feature-item {
     display: flex;
@@ -1086,44 +1105,52 @@ footer {
     }
 
     .horizontal-pricing {
-        gap: 10px;
+        gap: 8px;
     }
 
     .pricing-row {
         flex-direction: column;
         gap: 8px;
-        padding: 12px 14px;
+        padding: 12px 16px;
         text-align: center;
     }
 
+    /* Paket adı + kredi: ortalı, dikey */
     .pricing-col-name {
-        display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 8px;
-        flex-wrap: wrap;
+        gap: 3px;
+        width: 100%;
     }
 
     .pricing-col-name .pkg-header {
-        font-size: 1rem;
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: white;
         margin: 0;
     }
 
-    /* Özellikler: dikey yerine yatay, tek satırda */
-    .pricing-col-feat {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 6px 14px;
-        padding: 8px 0;
-        width: 100%;
-        border-top: 1px solid rgba(255,255,255,0.05);
-        border-bottom: 1px solid rgba(255,255,255,0.05);
+    .pkg-credits {
+        font-size: 0.8rem;
     }
 
-    .pricing-col-feat .feature-item {
-        font-size: 0.78rem;
+    /* Özellikler: 2×2 grid — yüksekliği yarıya indirir */
+    .pricing-col-feat {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px 10px;
+        padding: 8px 0;
+        width: 100%;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        text-align: left;
+    }
+
+    .feat-title {
+        font-size: 0.72rem;
+        color: #94a3b8;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     /* Fiyat + buton: yan yana */
@@ -1131,17 +1158,19 @@ footer {
         flex-direction: row;
         justify-content: center;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
+        width: 100%;
     }
 
     .price-amount {
-        font-size: 1.2rem;
+        font-size: 1.15rem;
         white-space: nowrap;
     }
 
     .btn-pricing {
-        padding: 8px 14px;
-        font-size: 0.82rem;
+        padding: 9px 18px;
+        font-size: 0.85rem;
+        white-space: nowrap;
     }
 }
 
