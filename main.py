@@ -116,6 +116,7 @@ SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM = os.getenv("SMTP_FROM", "VidInsight <noreply@vid-insight.com>")
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@vid-insight.com")
 
 async def _send_email(message: EmailMessage):
     """SMTP sunucusu üzerinden e-posta gönderir. Hata durumunda log tutar."""
@@ -262,6 +263,92 @@ async def send_analysis_received_email(user_email: str, user_name: str, video_ur
     message.set_content("Videonuzu aldık, analiz başlıyor!")
     message.add_alternative(html_content, subtype="html")
     await _send_email(message)
+
+async def send_admin_new_user_email(user_email: str, user_name: str):
+    """Admin'e yeni kullanıcı kaydı bildirimi gönderir."""
+    if not SMTP_USER or not SMTP_PASSWORD: return
+    message = EmailMessage()
+    message["From"] = SMTP_FROM
+    message["To"] = ADMIN_EMAIL
+    message["Subject"] = f"🆕 Yeni Kayıt: {user_name}"
+    html = f"""
+    <html><body style="font-family:sans-serif;color:#333;">
+    <div style="max-width:500px;margin:0 auto;border:1px solid #eee;border-radius:10px;overflow:hidden;">
+        <div style="background:#0F172A;padding:16px 20px;color:#F59E0B;font-size:1.1rem;font-weight:700;">VidInsight — Yeni Üye</div>
+        <div style="padding:20px;">
+            <p>Yeni bir kullanıcı kaydoldu:</p>
+            <table style="width:100%;border-collapse:collapse;">
+                <tr><td style="padding:6px 0;color:#666;">İsim</td><td style="font-weight:700;">{user_name}</td></tr>
+                <tr><td style="padding:6px 0;color:#666;">E-posta</td><td style="font-weight:700;">{user_email}</td></tr>
+            </table>
+        </div>
+    </div>
+    </body></html>
+    """
+    message.set_content(f"Yeni kayıt: {user_name} ({user_email})")
+    message.add_alternative(html, subtype="html")
+    await _send_email(message)
+
+async def send_purchase_confirmation_email(user_email: str, user_name: str, plan: str, credits: int, amount: float):
+    """Satın alma sonrası kullanıcıya onay ve admin'e bildirim gönderir."""
+    if not SMTP_USER or not SMTP_PASSWORD: return
+
+    # --- Kullanıcıya onay ---
+    user_msg = EmailMessage()
+    user_msg["From"] = SMTP_FROM
+    user_msg["To"] = user_email
+    user_msg["Subject"] = "✅ Ödemeniz Alındı — VidInsight"
+    user_html = f"""
+    <html><body style="font-family:sans-serif;color:#333;">
+    <div style="max-width:560px;margin:0 auto;border:1px solid #eee;border-radius:12px;overflow:hidden;">
+        <div style="background:#0F172A;padding:20px;text-align:center;">
+            <span style="color:#F59E0B;font-size:1.4rem;font-weight:800;">VidInsight</span>
+        </div>
+        <div style="padding:30px;">
+            <h2 style="color:#10b981;margin-top:0;">Ödemeniz Başarıyla Alındı! 🎉</h2>
+            <p>Merhaba <strong>{user_name}</strong>,</p>
+            <p><strong>{plan.upper()}</strong> paketiniz aktive edildi. Hesabınıza <strong>{credits} kredi</strong> tanımlandı.</p>
+            <div style="background:#f8fafc;border-radius:8px;padding:16px;margin:20px 0;">
+                <div style="font-size:0.85rem;color:#666;">Ödenen Tutar</div>
+                <div style="font-size:1.5rem;font-weight:800;color:#0F172A;">€{amount:.2f}</div>
+            </div>
+            <a href="https://vid-insight.com/dashboard"
+               style="display:inline-block;background:#F59E0B;color:#0F172A;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;">
+                Panele Git →
+            </a>
+            <p style="color:#999;font-size:0.8rem;margin-top:20px;">Teşekkür ederiz. Her türlü sorunuz için bize ulaşabilirsiniz.</p>
+        </div>
+    </div>
+    </body></html>
+    """
+    user_msg.set_content(f"Ödemeniz alındı. {credits} kredi hesabınıza tanımlandı.")
+    user_msg.add_alternative(user_html, subtype="html")
+    await _send_email(user_msg)
+
+    # --- Admin'e satın alma bildirimi ---
+    admin_msg = EmailMessage()
+    admin_msg["From"] = SMTP_FROM
+    admin_msg["To"] = ADMIN_EMAIL
+    admin_msg["Subject"] = f"💰 Yeni Satış: {plan.upper()} — {user_name}"
+    admin_html = f"""
+    <html><body style="font-family:sans-serif;color:#333;">
+    <div style="max-width:500px;margin:0 auto;border:1px solid #eee;border-radius:10px;overflow:hidden;">
+        <div style="background:#0F172A;padding:16px 20px;color:#F59E0B;font-size:1.1rem;font-weight:700;">VidInsight — Yeni Satış</div>
+        <div style="padding:20px;">
+            <table style="width:100%;border-collapse:collapse;">
+                <tr><td style="padding:6px 0;color:#666;">Kullanıcı</td><td style="font-weight:700;">{user_name}</td></tr>
+                <tr><td style="padding:6px 0;color:#666;">E-posta</td><td style="font-weight:700;">{user_email}</td></tr>
+                <tr><td style="padding:6px 0;color:#666;">Paket</td><td style="font-weight:700;">{plan.upper()}</td></tr>
+                <tr><td style="padding:6px 0;color:#666;">Kredi</td><td style="font-weight:700;">{credits}</td></tr>
+                <tr><td style="padding:6px 0;color:#666;">Tutar</td><td style="font-weight:700;color:#10b981;">€{amount:.2f}</td></tr>
+            </table>
+        </div>
+    </div>
+    </body></html>
+    """
+    admin_msg.set_content(f"Yeni satış: {user_name} | {plan.upper()} | €{amount:.2f}")
+    admin_msg.add_alternative(admin_html, subtype="html")
+    await _send_email(admin_msg)
 
 # --- v1.0.8 DEBUG ROTASI ---
 @app.get("/debug")
@@ -436,8 +523,9 @@ async def signup_post(request: Request,
         db.add(new_user)
         db.commit()
 
-        # Kayıt sonrası HOŞ GELDİN e-postası
+        # Kayıt sonrası HOŞ GELDİN e-postası + admin bildirimi
         background_tasks.add_task(send_welcome_email, email, full_name)
+        background_tasks.add_task(send_admin_new_user_email, email, full_name)
 
         return RedirectResponse(url="/giris?msg=success", status_code=status.HTTP_303_SEE_OTHER)
     except Exception as e:
@@ -841,7 +929,7 @@ async def admin_marketing_post(request: Request, background_tasks: BackgroundTas
 
 # --- STRIPE WEBHOOK ---
 @app.post("/stripe-webhook")
-async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
+async def stripe_webhook(request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature")
     
@@ -890,6 +978,10 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                 
             db.commit()
             print(f"Kredi tanımlandı: {user.email} -> {user.credits} hak.")
+            background_tasks.add_task(
+                send_purchase_confirmation_email,
+                user.email, user.full_name, user.subscription_plan, user.credits, amount_total
+            )
 
     return JSONResponse(content={"status": "success"})
 
