@@ -49,12 +49,12 @@
             padding: 5px 12px 5px 6px;
             font-size: 0.82rem;
             font-weight: 600;
-            color: var(--text-light);
+            color: #f8fafc;
         }
         .db-user-avatar {
             width: 26px; height: 26px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #d97706);
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             display: flex; align-items: center; justify-content: center;
             font-size: 0.7rem; font-weight: 800; color: #0f172a;
             flex-shrink: 0;
@@ -65,7 +65,7 @@
             border-radius: 8px;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-muted);
+            color: #94a3b8;
             font-size: 0.82rem;
             font-weight: 600;
             text-decoration: none;
@@ -79,7 +79,7 @@
         }
 
         /* ── Page ── */
-        body { background: var(--bg); min-height: 100vh; }
+        html, body { background: #0f172a; min-height: 100vh; color: #f8fafc; }
         .db-page {
             max-width: 1100px;
             margin: 0 auto;
@@ -102,7 +102,7 @@
             color: white;
         }
         .db-welcome p {
-            color: var(--text-muted);
+            color: #94a3b8;
             font-size: 0.9rem;
             margin: 0;
         }
@@ -163,12 +163,12 @@
         .no-credit-banner .icon { font-size: 1.8rem; flex-shrink: 0; }
         .no-credit-banner .text { flex: 1; min-width: 200px; }
         .no-credit-banner .text h3 { margin: 0 0 2px 0; font-size: 1rem; color: white; }
-        .no-credit-banner .text p { margin: 0; font-size: 0.82rem; color: var(--text-muted); }
+        .no-credit-banner .text p { margin: 0; font-size: 0.82rem; color: #94a3b8; }
         .no-credit-banner .cta { flex-shrink: 0; }
         .no-credit-banner .cta a {
             display: inline-flex; align-items: center; gap: 6px;
             padding: 10px 20px;
-            background: linear-gradient(135deg, var(--accent), #d97706);
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #0f172a;
             font-weight: 700;
             font-size: 0.88rem;
@@ -202,8 +202,8 @@
 
         /* ── Submit card ── */
         .submit-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 16px;
             padding: 1.5rem;
         }
@@ -214,7 +214,7 @@
             color: white;
         }
         .submit-card > p {
-            color: var(--text-muted);
+            color: #94a3b8;
             font-size: 0.85rem;
             margin: 0 0 1.2rem 0;
         }
@@ -223,7 +223,7 @@
             display: block;
             font-size: 0.8rem;
             font-weight: 600;
-            color: var(--text-muted);
+            color: #94a3b8;
             margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 0.4px;
@@ -241,18 +241,18 @@
             transition: border-color 0.2s;
             box-sizing: border-box;
         }
-        .input-group input:focus { border-color: var(--accent); }
+        .input-group input:focus { border-color: #f59e0b; }
         .input-group input::placeholder { color: rgba(255,255,255,0.25); }
         .submit-hint {
             margin-top: 8px;
             font-size: 0.75rem;
-            color: var(--text-muted);
+            color: #94a3b8;
         }
 
         /* ── Reports card ── */
         .reports-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 16px;
             padding: 1.5rem;
             overflow: hidden;
@@ -266,7 +266,7 @@
         .empty-state {
             text-align: center;
             padding: 2.5rem 1rem;
-            color: var(--text-muted);
+            color: #94a3b8;
             font-size: 0.9rem;
         }
         .empty-state i { font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 0.5rem; }
@@ -280,7 +280,7 @@
         .reports-table th {
             text-align: left;
             padding: 0 1rem 0.7rem;
-            color: var(--text-muted);
+            color: #94a3b8;
             font-weight: 700;
             text-transform: uppercase;
             font-size: 0.72rem;
@@ -299,14 +299,14 @@
         .video-title { font-weight: 600; color: white; margin-bottom: 2px; }
         .video-url {
             font-size: 0.75rem;
-            color: var(--text-muted);
+            color: #94a3b8;
             max-width: 220px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
         .video-url a { color: inherit; text-decoration: none; }
-        .video-url a:hover { color: var(--accent); }
+        .video-url a:hover { color: #f59e0b; }
 
         .status-badge {
             display: inline-flex; align-items: center; gap: 4px;
@@ -316,7 +316,7 @@
             font-weight: 700;
             white-space: nowrap;
         }
-        .status-pending { background: rgba(245,158,11,0.12); color: var(--accent); }
+        .status-pending { background: rgba(245,158,11,0.12); color: #f59e0b; }
         .status-completed { background: rgba(16,185,129,0.12); color: #10b981; }
 
         .btn-download {
@@ -343,9 +343,9 @@
         .analysis-card-item:last-child { border-bottom: none; }
         .ac-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 6px; }
         .ac-title { font-weight: 700; color: white; font-size: 0.9rem; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .ac-date { font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0; }
+        .ac-date { font-size: 0.75rem; color: #94a3b8; flex-shrink: 0; }
         .ac-footer { display: flex; align-items: center; justify-content: space-between; }
-        .ac-preparing { font-size: 0.75rem; color: var(--text-muted); font-style: italic; }
+        .ac-preparing { font-size: 0.75rem; color: #94a3b8; font-style: italic; }
 
         /* ── Responsive ── */
         @media (max-width: 768px) {
@@ -459,9 +459,9 @@
                     <p class="submit-hint">{{ t(request, 'db_req_info') }}</p>
                 </form>
                 {% else %}
-                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">{{ t(request, 'db_error_no_credit') }}</p>
+                <p style="color:#94a3b8; font-size:0.85rem; margin-bottom:1rem;">{{ t(request, 'db_error_no_credit') }}</p>
                 <a href="/#fiyatlandirma" class="btn-primary w-100"
-                    style="text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px; background:linear-gradient(135deg,var(--accent),#d97706); border:none;">
+                    style="text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px; background:linear-gradient(135deg,#f59e0b,#d97706); border:none;">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> {{ t(request, 'hero_btn_plan') }}
                 </a>
                 {% endif %}
@@ -508,7 +508,7 @@
                                         {% endif %}
                                     </span>
                                 </td>
-                                <td style="color:var(--text-muted); white-space:nowrap;">
+                                <td style="color:#94a3b8; white-space:nowrap;">
                                     {{ req.created_at.strftime('%d.%m.%Y') }}
                                 </td>
                                 <td>
@@ -517,7 +517,7 @@
                                         <i class="fa-solid fa-download"></i> {{ t(request, 'db_btn_download') }}
                                     </a>
                                     {% else %}
-                                    <span style="color:var(--text-muted); font-size:0.78rem;">{{ t(request, 'db_status_preparing') }}</span>
+                                    <span style="color:#94a3b8; font-size:0.78rem;">{{ t(request, 'db_status_preparing') }}</span>
                                     {% endif %}
                                 </td>
                             </tr>
