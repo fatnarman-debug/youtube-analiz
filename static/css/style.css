@@ -725,10 +725,10 @@ footer {
     .feature-grid { gap: 1rem; }
 
     /* Pricing */
-    .pricing { padding: 3rem 4%; }
-    .pricing-card { padding: 2rem 1.5rem; }
-    .pkg-price { font-size: 2.5rem; }
-    .pricing-row { padding: 18px 16px; gap: 12px; }
+    .pricing { padding: 2rem 4%; }
+    .pricing-card { padding: 1.2rem 1rem; }
+    .pkg-price { font-size: 2rem; }
+    .pricing-row { padding: 14px 12px; gap: 8px; }
     .pricing-col-feat { gap: 8px; padding: 12px 0; }
     .pricing-col-action { gap: 10px; }
     .btn-pricing { min-width: unset; width: 100%; padding: 10px 16px; }
@@ -1084,27 +1084,40 @@ footer {
     .pricing-table-header {
         display: none;
     }
-    
+
     .pricing-row {
         flex-direction: column;
-        gap: 16px;
-        padding: 22px 20px;
+        gap: 10px;
+        padding: 16px 14px;
         text-align: center;
     }
 
     .pricing-col-feat {
         flex-direction: column;
-        gap: 15px;
-        padding: 20px 0;
+        gap: 8px;
+        padding: 10px 0;
         width: 100%;
         border-top: 1px solid rgba(255,255,255,0.05);
         border-bottom: 1px solid rgba(255,255,255,0.05);
     }
-    
+
     .pricing-col-action {
         flex-direction: column;
         justify-content: center;
-        gap: 15px;
+        gap: 8px;
+    }
+
+    .pricing-col-name .pkg-header {
+        font-size: 1.15rem;
+    }
+
+    .price-amount {
+        font-size: 1.4rem;
+    }
+
+    .btn-pricing {
+        padding: 10px 14px;
+        font-size: 0.85rem;
     }
 }
 
