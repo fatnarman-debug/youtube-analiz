@@ -111,13 +111,38 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.navbar a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+            const targetId = this.getAttribute('href').split('#')[1];
+            const target = document.getElementById(targetId);
             if(target) {
+                // Menü açıksa kapat
+                const navContent = document.getElementById('navContent');
+                if(navContent && navContent.classList.contains('active')) {
+                    navContent.classList.remove('active');
+                }
+                
                 target.scrollIntoView({
                     behavior: 'smooth'
                 });
             }
         });
     });
+
+    // Mobil Menü Toggle
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    const navContent = document.getElementById('navContent');
+
+    if (menuToggle && navContent) {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navContent.classList.toggle('active');
+        });
+
+        // Dışarı tıklayınca kapat
+        document.addEventListener('click', (e) => {
+            if (!navContent.contains(e.target) && !menuToggle.contains(e.target)) {
+                navContent.classList.remove('active');
+            }
+        });
+    }
 
 });

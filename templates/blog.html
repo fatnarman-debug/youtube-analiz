@@ -39,22 +39,32 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo">
-            <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo" id="nav-logo"></a>
-        </div>
-        <ul class="nav-links">
-            <li><a href="/#ozellikler">{{ t(request, 'nav_features') }}</a></li>
-            <li><a href="/#fiyatlandirma">{{ t(request, 'nav_pricing') }}</a></li>
-            <li><a href="/#sss">{{ t(request, 'nav_faq') }}</a></li>
-            <li><a href="/blog" class="active">{{ t(request, 'nav_blog') }}</a></li>
-            <li><a href="/giris">{{ t(request, 'nav_login') }}</a></li>
-        </ul>
-        <div class="nav-actions">
-            <div class="lang-flags">
-                <a href="?lang=tr" title="Türkçe">🇹🇷</a>
-                <a href="?lang=en" title="English">🇬🇧</a>
+        <div class="navbar-container">
+            <div class="logo">
+                <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo" id="nav-logo"></a>
             </div>
-            <a href="/kayit" class="btn-primary nav-btn">{{ t(request, 'nav_register') }}</a>
+
+            <div class="nav-content" id="navContent">
+                <ul class="nav-links">
+                    <li><a href="/#ozellikler">{{ t(request, 'nav_features') }}</a></li>
+                    <li><a href="/#fiyatlandirma">{{ t(request, 'nav_pricing') }}</a></li>
+                    <li><a href="/#sss">{{ t(request, 'nav_faq') }}</a></li>
+                    <li><a href="/blog" class="active">{{ t(request, 'nav_blog') }}</a></li>
+                    <li><a href="/giris">{{ t(request, 'nav_login') }}</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-actions">
+                <div class="lang-flags">
+                    <a href="?lang=tr" title="Türkçe">🇹🇷</a>
+                    <a href="?lang=en" title="English">🇬🇧</a>
+                </div>
+                <a href="/kayit" class="btn-primary nav-btn">{{ t(request, 'nav_register') }}</a>
+            </div>
+
+            <button class="menu-toggle" id="mobile-menu-toggle" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </div>
     </nav>
 

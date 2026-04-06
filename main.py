@@ -118,41 +118,44 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM = os.getenv("SMTP_FROM", "VidInsight <noreply@vid-insight.com>")
 
 async def _send_email(message: EmailMessage):
-    """STARTTLS ile dener, başarısız olursa düz TLS ile tekrar dener."""
+    """SMTP sunucusu üzerinden e-posta gönderir. Hata durumunda log tutar."""
     if not SMTP_USER or not SMTP_PASSWORD:
-        print("!!! SMTP ayarları eksik, e-posta gönderilemedi.")
+        print("!!! SMTP ayarları eksik (SMTP_USER/SMTP_PASSWORD), e-posta gönderilemedi.")
         return
-    try:
-        # Önce STARTTLS (587) ile dene - self-signed sertifika için validate_certs=False
-        await aiosmtplib.send(
-            message,
-            hostname=SMTP_HOST,
-            port=SMTP_PORT,
-            username=SMTP_USER,
-            password=SMTP_PASSWORD,
-            use_tls=False,
-            start_tls=True,
-            validate_certs=False,
-            timeout=15
-        )
-        print(f"--- E-posta gönderildi (STARTTLS): {message['To']}")
-    except Exception as e1:
-        print(f"!!! STARTTLS hatası: {e1} — TLS (465) ile tekrar deneniyor...")
+
+    # Gönderen adresin kimlik doğrulaması yapılan kullanıcı ile uyumlu olduğundan emin olun
+    # Bazı sunucular 'From' başlığının tam eşleşmesini gerektirir.
+    if "From" not in message:
+        message["From"] = SMTP_FROM
+
+    # Port deneme listesi: [(Port, use_tls, start_tls), ...]
+    ports_to_try = [
+        (SMTP_PORT, False, True),  # STARTTLS (Genelde 587)
+        (465, True, False),        # Direct SSL (Eski ama stabil)
+    ]
+
+    last_error = None
+    for port, use_tls, start_tls in ports_to_try:
         try:
-            # Yedek: Port 465 SSL ile dene
+            print(f"--- E-posta gönderiliyor ({'SSL' if use_tls else 'STARTTLS'} | Port: {port})...")
             await aiosmtplib.send(
                 message,
                 hostname=SMTP_HOST,
-                port=465,
+                port=port,
                 username=SMTP_USER,
                 password=SMTP_PASSWORD,
-                use_tls=True,
-                validate_certs=False,
+                use_tls=use_tls,
+                start_tls=start_tls,
+                validate_certs=False, # Self-signed sertifikalar için esneklik
                 timeout=15
             )
-            print(f"--- E-posta gönderildi (SSL/465): {message['To']}")
-        except Exception as e2:
-            print(f"!!! E-posta gönderilemedi (her iki yöntem de başarısız): {e2}")
+            print(f"--- E-posta başarıyla gönderildi: {message['To']} (Port: {port})")
+            return # Başarılı ise çık
+        except Exception as e:
+            last_error = e
+            print(f"!!! Port {port} hatası: {str(e)}")
+
+    print(f"!!! E-posta gönderimi Topyekün BAŞARISIZ. Alıcı: {message['To']} | Hata: {last_error}")
 
 async def send_report_email(user_email: str, user_name: str, video_title: str):
     """Kullanıcıya raporunun hazır olduğunu bildiren şık bir HTML e-posta gönderir."""

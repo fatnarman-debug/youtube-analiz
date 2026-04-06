@@ -98,32 +98,62 @@ a { text-decoration: none; color: inherit; }
 
 /* Navbar (Aydınlık Kalan Kısım) */
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.6rem 5%;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    transition: all 0.3s;
-    background: #0f172a; /* Sabit Koyu Lacivert Arka Plain */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    padding: 0.5rem 0;
+}
+
+.navbar-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.logo img {
+    height: 70px;
+    width: auto;
+    max-width: 280px;
+    display: block;
+    object-fit: contain;
+    transition: height 0.3s ease;
+}
+
+.nav-content {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    transition: all 0.3s ease;
 }
 
 .nav-links {
     display: flex;
     list-style: none;
-    gap: 2.5rem;
+    gap: 2rem;
 }
+
 .nav-links a {
-    color: var(--text-light); /* Beyaz Metin */
+    color: var(--text-light);
     font-weight: 600;
+    font-size: 0.95rem;
     transition: all 0.2s;
+    text-decoration: none;
 }
-.nav-links a:hover { color: var(--accent); }
-.nav-btn { font-size: 0.9rem; padding: 0.6rem 1.4rem; }
+
+.nav-links a:hover {
+    color: var(--accent);
+}
 
 .nav-actions {
     display: flex;
@@ -144,7 +174,6 @@ a { text-decoration: none; color: inherit; }
 .lang-flags a {
     text-decoration: none;
     font-size: 1.2rem;
-    cursor: pointer;
     transition: transform 0.2s;
 }
 
@@ -152,14 +181,108 @@ a { text-decoration: none; color: inherit; }
     transform: scale(1.15);
 }
 
-/* Constrain Logo Size */
-#nav-logo {
-    height: 75px; /* Belirtilen 322x75 boyutuna uygun yükseklik */
-    width: auto;
-    max-width: 330px;
-    display: block;
-    object-fit: contain;
-    margin-right: 20px;
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 1100;
+}
+
+/* Mobile Responsive */
+@media (max-width: 992px) {
+    .navbar {
+        padding: 0.6rem 0;
+    }
+
+    .navbar-container {
+        flex-wrap: nowrap;
+        gap: 0;
+        align-items: center;
+    }
+
+    .logo {
+        flex: 0 0 auto;
+    }
+
+    .logo img {
+        height: 28px;
+    }
+
+    .nav-actions {
+        flex: 1;
+        order: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: auto;
+        margin-top: 0;
+        padding: 0 10px;
+        border-top: none;
+    }
+
+    .nav-btn {
+        padding: 0.45rem 0.9rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    .lang-flags {
+        background: none;
+        border: none;
+        padding: 0;
+        gap: 0.4rem;
+    }
+
+    .lang-flags a {
+        font-size: 1.1rem;
+    }
+
+    .menu-toggle {
+        display: block;
+        order: 2;
+        flex: 0 0 auto;
+    }
+
+    .nav-content {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        height: 100vh;
+        background: #111827;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 80px 30px;
+        box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        gap: 2rem;
+        z-index: 1050;
+    }
+
+    .nav-content.active {
+        right: 0;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        width: 100%;
+        gap: 1.5rem;
+    }
+
+    .nav-links li {
+        width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        padding-bottom: 10px;
+    }
+
+    .nav-links a {
+        font-size: 1.1rem;
+        display: block;
+    }
 }
 
 /* Hero Section (Aydınlık Kalan Kısım) */
@@ -532,74 +655,77 @@ footer {
     .navbar { padding: 0.5rem 4%; }
     .nav-links { display: none; }
     #nav-logo { height: 32px; }
-    
-    .hero { 
-        flex-direction: column; 
-        text-align: center; 
-        padding: 4rem 5% 6rem;
+
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 5rem 5% 3rem;
+        gap: 2rem;
     }
     .hero-content {
-        margin-bottom: 3rem;
+        margin-bottom: 1rem;
     }
-    .hero-content p { margin: 0 auto 2.5rem; }
+    .hero-content p { margin: 0 auto 2rem; font-size: 1.1rem; }
     .hero-actions { justify-content: center; }
-    
-    .section-title h2 { font-size: 2rem; }
+    .hero-visual { max-width: 380px; margin: 0 auto; width: 100%; }
+
+    .section-title { margin-bottom: 2rem; }
+    .section-title h2 { font-size: 1.9rem; }
+    .section-title p { font-size: 1.05rem; }
+
+    .features { padding: 4rem 5%; }
+    .feature-card.glass-card { padding: 1.8rem; }
+    .icon-box { width: 54px; height: 54px; font-size: 1.5rem; margin-bottom: 1.2rem; }
+
+    .pricing { padding: 4rem 5%; }
     .pricing-grid {
         grid-template-columns: 1fr;
-        max-width: 450px; /* Kartları ortalamak için mobil-genel genişlik */
+        max-width: 420px;
     }
-    
+
     .pricing-card.popular { transform: scale(1); margin: 1rem 0; }
     .pricing-card.popular:hover { transform: translateY(-5px); }
-    
+
     .footer-content { flex-direction: column; gap: 2rem; text-align: center; }
     .footer-brand p { margin: 0 auto; }
 }
 
 /* Small Mobile (320px - 480px) */
 @media (max-width: 480px) {
-    h1 { font-size: 2.2rem; }
-    h2 { font-size: 1.8rem; }
-    .hero { padding: 3rem 4% 5rem; gap: 2rem; }
-    .hero-actions { flex-direction: column; width: 100%; gap: 1rem; }
-    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
-    
-    /* Navbar Mobile Fix */
-    .navbar { flex-direction: row; gap: 0; padding: 0.5rem 4%; }
-    #nav-logo { height: 26px; }
-    .nav-actions { width: auto; }
-    .nav-btn { font-size: 0.78rem; padding: 0.4rem 0.8rem; }
-    
-    /* Mockup Mobile Widget Redesign */
-    .mockup-body { padding: 1.2rem; }
-    .stat-row { 
-        display: grid; 
-        grid-template-columns: 1fr 1fr; 
-        gap: 0.8rem; 
-    }
-    .stat-box { 
-        flex-direction: column; 
-        justify-content: center;
-        text-align: center;
-        padding: 1.2rem 0.5rem; 
-        gap: 0.5rem; 
-    }
-    .stat-box:nth-child(3) {
-        grid-column: span 2;
-        flex-direction: row;
-        padding: 1rem;
-        gap: 1rem;
-    }
-    .stat-box i { font-size: 1.6rem; }
-    .stat-box span { font-size: 1.3rem; line-height: 1.2; }
-    .stat-box small { font-size: 0.7rem; letter-spacing: 0.5px; }
-    
-    .pricing { padding: 4rem 4%; }
-    .pricing-card { padding: 2.5rem 1.5rem; }
-    .pkg-price { font-size: 2.8rem; }
-    
-    .modal { padding: 2rem 1.5rem; margin: 10px; border-radius: 12px; }
+    h1 { font-size: 2rem; line-height: 1.15; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.15rem; }
+
+    /* Hero */
+    .hero { padding: 5.5rem 4% 2.5rem; gap: 1.5rem; }
+    .hero-visual { display: none; }
+    .hero-content p { font-size: 1rem; margin-bottom: 1.8rem; }
+    .hero-actions { flex-direction: column; width: 100%; gap: 0.8rem; }
+    .btn-primary { width: 100%; justify-content: center; min-height: 48px; }
+    .btn-secondary { width: auto; align-self: center; }
+    .hero-badge { font-size: 0.8rem; padding: 0.4rem 1rem; }
+
+    /* Navbar */
+    .navbar { padding: 0.5rem 0; }
+    .logo img { height: 24px; }
+    .nav-btn { font-size: 0.75rem; padding: 0.4rem 0.7rem; width: auto; }
+    .lang-flags a { font-size: 1rem; }
+
+    /* Sections */
+    .features { padding: 3rem 4%; }
+    .section-title { margin-bottom: 1.5rem; }
+    .section-title p { font-size: 0.95rem; }
+    .feature-card.glass-card { padding: 1.5rem; border-radius: 14px; }
+    .icon-box { width: 48px; height: 48px; font-size: 1.3rem; margin-bottom: 1rem; border-radius: 12px; }
+    .feature-grid { gap: 1rem; }
+
+    /* Pricing */
+    .pricing { padding: 3rem 4%; }
+    .pricing-card { padding: 2rem 1.5rem; }
+    .pkg-price { font-size: 2.5rem; }
+
+    /* Modal */
+    .modal { padding: 2rem 1.5rem; margin: 10px; border-radius: 16px; }
 }
 
 
