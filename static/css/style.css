@@ -267,6 +267,11 @@ a { text-decoration: none; color: inherit; }
         right: 0;
     }
 
+    /* Panel açıkken nav-links görünsün (768px'deki display:none'u override et) */
+    .nav-content .nav-links {
+        display: flex;
+    }
+
     .nav-links {
         flex-direction: column;
         width: 100%;
@@ -723,6 +728,12 @@ footer {
     .pricing { padding: 3rem 4%; }
     .pricing-card { padding: 2rem 1.5rem; }
     .pkg-price { font-size: 2.5rem; }
+    .pricing-row { padding: 18px 16px; gap: 12px; }
+    .pricing-col-feat { gap: 8px; padding: 12px 0; }
+    .pricing-col-action { gap: 10px; }
+    .btn-pricing { min-width: unset; width: 100%; padding: 10px 16px; }
+    .price-amount { font-size: 1.3rem; }
+    .popular-row { transform: scale(1); }
 
     /* Modal */
     .modal { padding: 2rem 1.5rem; margin: 10px; border-radius: 16px; }
@@ -1076,8 +1087,8 @@ footer {
     
     .pricing-row {
         flex-direction: column;
-        gap: 20px;
-        padding: 30px;
+        gap: 16px;
+        padding: 22px 20px;
         text-align: center;
     }
 
