@@ -2,13 +2,11 @@
 <html lang="tr">
 
 <head>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-EYMEQYLN0D"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-EYMEQYLN0D');
     </script>
     <meta charset="UTF-8">
@@ -19,265 +17,548 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 5%;
-        }
-
-        .db-header {
+        /* ── Navbar ── */
+        .db-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 0 5%;
+            height: 60px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
+            justify-content: space-between;
             gap: 1rem;
         }
+        .db-nav-logo img { height: 32px; display: block; }
+        .db-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .db-user-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+            padding: 5px 12px 5px 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        .db-user-avatar {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #d97706);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 800; color: #0f172a;
+            flex-shrink: 0;
+        }
+        .db-logout-btn {
+            display: flex; align-items: center; gap: 6px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .db-logout-btn:hover {
+            background: rgba(220,38,38,0.12);
+            border-color: rgba(220,38,38,0.3);
+            color: #ef4444;
+        }
 
-        .user-welcome h1 {
-            font-size: 2rem;
+        /* ── Page ── */
+        body { background: var(--bg); min-height: 100vh; }
+        .db-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 5% 4rem;
+        }
+
+        /* ── Hero header ── */
+        .db-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .db-welcome h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin: 0 0 4px 0;
+            color: white;
+        }
+        .db-welcome p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
             margin: 0;
         }
 
-        .user-welcome p {
-            color: var(--text-muted);
-            font-weight: 600;
-            margin: 0;
+        /* ── Credit card ── */
+        .credit-card {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 14px;
+            padding: 1rem 1.4rem;
+            min-width: 160px;
+            box-shadow: 0 8px 24px rgba(245,158,11,0.25);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
-
-        .analysis-section {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
+        .credit-card-icon {
+            font-size: 1.6rem;
+            opacity: 0.85;
         }
-
-        @media (max-width: 900px) {
-            .analysis-section {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .status-pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--accent);
-        }
-
-        .status-completed {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-        }
-
-        .reports-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-
-        .reports-table th,
-        .reports-table td {
-            text-align: left;
-            padding: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .reports-table th {
-            color: var(--text-muted);
+        .credit-card-info .label {
+            font-size: 0.72rem;
             font-weight: 700;
             text-transform: uppercase;
-            font-size: 0.8rem;
+            letter-spacing: 0.8px;
+            color: rgba(0,0,0,0.55);
+        }
+        .credit-card-info .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1;
+        }
+        .credit-card-info .plan-tag {
+            display: inline-block;
+            background: rgba(0,0,0,0.12);
+            color: #0f172a;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 20px;
+            margin-top: 3px;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .reports-table tr:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-
-        /* Kredi Kartı Görünümü */
-        .credit-badge {
-            background: linear-gradient(135deg, var(--accent) 0%, #d97706 100%);
-            padding: 1.5rem;
-            border-radius: 15px;
-            color: white;
+        /* ── No credit banner ── */
+        .no-credit-banner {
             display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            min-width: 200px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            align-items: center;
+            gap: 1rem;
+            background: linear-gradient(135deg, rgba(220,38,38,0.12), rgba(245,158,11,0.12));
+            border: 1px solid rgba(245,158,11,0.25);
+            border-radius: 14px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .no-credit-banner .icon { font-size: 1.8rem; flex-shrink: 0; }
+        .no-credit-banner .text { flex: 1; min-width: 200px; }
+        .no-credit-banner .text h3 { margin: 0 0 2px 0; font-size: 1rem; color: white; }
+        .no-credit-banner .text p { margin: 0; font-size: 0.82rem; color: var(--text-muted); }
+        .no-credit-banner .cta { flex-shrink: 0; }
+        .no-credit-banner .cta a {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent), #d97706);
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 0.88rem;
+            border-radius: 9px;
+            text-decoration: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 14px rgba(245,158,11,0.3);
         }
 
-        .credit-badge .label {
-            font-size: 0.8rem;
-            opacity: 0.8;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .credit-badge .value {
-            font-size: 2rem;
-            font-weight: 800;
-        }
-
-        .credit-badge .plan {
-            font-size: 0.9rem;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 2px 8px;
-            border-radius: 5px;
-            align-self: flex-start;
-        }
-
+        /* ── Alert ── */
         .alert-error {
             background: rgba(220, 38, 38, 0.1);
             color: #ef4444;
-            padding: 1rem;
+            padding: 0.8rem 1rem;
             border-radius: 10px;
             border: 1px solid rgba(220, 38, 38, 0.2);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 0.88rem;
+        }
+
+        /* ── Grid ── */
+        .db-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        /* ── Submit card ── */
+        .submit-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        .submit-card h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: white;
+        }
+        .submit-card > p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin: 0 0 1.2rem 0;
+        }
+        .input-group { margin-bottom: 1rem; }
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .input-group input {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: white;
+            font-size: 0.9rem;
+            font-family: 'Outfit', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .input-group input:focus { border-color: var(--accent); }
+        .input-group input::placeholder { color: rgba(255,255,255,0.25); }
+        .submit-hint {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* ── Reports card ── */
+        .reports-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+        .reports-card h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .empty-state i { font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 0.5rem; }
+
+        /* ── Table (desktop) ── */
+        .reports-table-wrap { overflow-x: auto; }
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .reports-table th {
+            text-align: left;
+            padding: 0 1rem 0.7rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            white-space: nowrap;
+        }
+        .reports-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.88rem;
+            vertical-align: middle;
+        }
+        .reports-table tr:last-child td { border-bottom: none; }
+        .reports-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .video-title { font-weight: 600; color: white; margin-bottom: 2px; }
+        .video-url {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .video-url a { color: inherit; text-decoration: none; }
+        .video-url a:hover { color: var(--accent); }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .status-pending { background: rgba(245,158,11,0.12); color: var(--accent); }
+        .status-completed { background: rgba(16,185,129,0.12); color: #10b981; }
+
+        .btn-download {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 6px 12px;
+            background: rgba(16,185,129,0.12);
+            border: 1px solid rgba(16,185,129,0.25);
+            color: #10b981;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-download:hover { background: rgba(16,185,129,0.2); }
+
+        /* ── Mobile cards (table replacement) ── */
+        .analysis-cards { display: none; }
+        .analysis-card-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .analysis-card-item:last-child { border-bottom: none; }
+        .ac-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 6px; }
+        .ac-title { font-weight: 700; color: white; font-size: 0.9rem; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ac-date { font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0; }
+        .ac-footer { display: flex; align-items: center; justify-content: space-between; }
+        .ac-preparing { font-size: 0.75rem; color: var(--text-muted); font-style: italic; }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .db-nav { padding: 0 4%; }
+            .db-user-pill span.name { display: none; }
+
+            .db-page { padding: 1.2rem 4% 3rem; }
+
+            .db-hero { gap: 1rem; margin-bottom: 1.2rem; }
+            .db-welcome h1 { font-size: 1.3rem; }
+
+            .credit-card { padding: 0.8rem 1.1rem; min-width: unset; }
+            .credit-card-info .value { font-size: 1.4rem; }
+            .credit-card-icon { font-size: 1.3rem; }
+
+            .no-credit-banner { gap: 0.8rem; padding: 1rem; }
+            .no-credit-banner .icon { font-size: 1.4rem; }
+
+            .db-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            /* Hide table, show cards */
+            .reports-table-wrap { display: none; }
+            .analysis-cards { display: block; }
+        }
+
+        @media (max-width: 480px) {
+            .db-logout-btn span { display: none; }
+            .db-logout-btn { padding: 7px 10px; }
+            .db-welcome p { display: none; }
         }
     </style>
 </head>
 
 <body>
 
-    <nav class="navbar">
-        <div class="logo">
-            <a href="/"><img src="/static/img/logo.png" alt="VidInsight Logo" id="nav-logo"></a>
-        </div>
-        <div class="nav-links">
-            <a href="/cikis" class="btn-secondary">{{ t(request, 'db_logout') }} <i
-                    class="fa-solid fa-right-from-bracket"></i></a>
+    <nav class="db-nav">
+        <a href="/" class="db-nav-logo">
+            <img src="/static/img/logo.png" alt="VidInsight Logo">
+        </a>
+        <div class="db-nav-right">
+            <div class="db-user-pill">
+                <div class="db-user-avatar">{{ user.full_name[0]|upper }}</div>
+                <span class="name">{{ user.full_name.split(' ')[0] }}</span>
+            </div>
+            <a href="/cikis" class="db-logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>{{ t(request, 'db_logout') }}</span>
+            </a>
         </div>
     </nav>
 
-    <div class="dashboard-container">
-        <div class="db-header">
-            <div class="user-welcome">
-                <h1>{{ t(request, 'db_welcome') }}, {{ user.full_name }}</h1>
+    <div class="db-page">
+
+        <!-- Header -->
+        <div class="db-hero">
+            <div class="db-welcome">
+                <h1>{{ t(request, 'db_welcome') }}, {{ user.full_name.split(' ')[0] }} 👋</h1>
                 <p>{{ t(request, 'db_subtitle') }}</p>
             </div>
-            <div class="db-actions" style="display: flex; gap: 1.5rem; align-items: center;">
-                <div class="credit-badge">
-                    <span class="label">{{ t(request, 'db_credit_label') }}</span>
-                    <span class="value">{{ user.credits }}</span>
-                    <span class="plan">{{ user.subscription_plan|upper }} {{ t(request, 'db_plan_suffix') }}</span>
+            <div class="credit-card">
+                <div class="credit-card-icon">⚡</div>
+                <div class="credit-card-info">
+                    <div class="label">{{ t(request, 'db_credit_label') }}</div>
+                    <div class="value">{{ user.credits }}</div>
+                    <span class="plan-tag">{{ user.subscription_plan|upper }} {{ t(request, 'db_plan_suffix') }}</span>
                 </div>
             </div>
         </div>
 
         {% if error %}
         <div class="alert-error">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            {{ error }}
+            <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
         </div>
         {% endif %}
 
-        {% if user.credits <= 0 %} <div
-            style="background: linear-gradient(135deg, rgba(220,38,38,0.15) 0%, rgba(245,158,11,0.15) 100%); border: 1px solid rgba(245,158,11,0.3); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; text-align: center;">
-            <i class="fa-solid fa-triangle-exclamation"
-                style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1rem;"></i>
-            <h2 style="margin: 0 0 0.5rem 0; font-size: 1.4rem;">{{ t(request, 'db_no_credit_title') }}</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">{{ t(request, 'db_no_credit_desc') }}</p>
-            <a href="/#fiyatlandirma" class="btn-primary"
-                style="font-size: 1.1rem; padding: 0.8rem 2.5rem; background: linear-gradient(135deg, var(--accent) 0%, #d97706 100%); border: none; text-decoration: none; display: inline-block; border-radius: 10px; font-weight: 700; box-shadow: 0 5px 20px rgba(245,158,11,0.3);">
-                <i class="fa-solid fa-rocket"></i> {{ t(request, 'db_buy_pkg') }}
-            </a>
-    </div>
-    {% endif %}
-
-    <div class="analysis-section">
-        <div class="submit-card glass-card" id="submit">
-            <h3>{{ t(request, 'db_analysis_req') }}</h3>
-            {% if user.credits > 0 %}
-            <p>{{ t(request, 'db_analysis_desc') }}</p>
-            <form action="/analyze" method="POST">
-                <div class="input-group">
-                    <label for="videoUrl">{{ t(request, 'db_video_lbl') }}</label>
-                    <input type="url" id="videoUrl" name="video_url" placeholder="https://www.youtube.com/watch?v=..."
-                        required>
-                </div>
-                <button type="submit" class="btn-primary w-100">
-                    {{ t(request, 'db_create_req') }} <i class="fa-solid fa-paper-plane"></i>
-                </button>
-                <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">
-                    {{ t(request, 'db_req_info') }}
-                </p>
-            </form>
-            {% else %}
-            <p style="color: var(--text-muted);">{{ t(request, 'db_error_no_credit') }}</p>
-            <a href="/#fiyatlandirma" class="btn-primary w-100"
-                style="text-align: center; text-decoration: none; display: block; background: linear-gradient(135deg, var(--accent) 0%, #d97706 100%); border: none;">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> {{ t(request, 'hero_btn_plan') }}
-            </a>
-            {% endif %}
-        </div>
-
-        <div class="reports-card glass-card">
-            <h3>{{ t(request, 'db_history') }}</h3>
-            {% if not analyses %}
-            <p style="color: var(--text-muted); text-align: center; padding: 2rem;">{{ t(request, 'db_empty_history') }}</p>
-            {% else %}
-            <div style="overflow-x: auto;">
-                <table class="reports-table">
-                    <thead>
-                        <tr>
-                            <th>{{ t(request, 'db_col_video_detail') }}</th>
-                            <th>{{ t(request, 'db_col_status') }}</th>
-                            <th>{{ t(request, 'db_col_date') }}</th>
-                            <th>{{ t(request, 'db_col_file') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for req in analyses %}
-                        <tr>
-                            <td>
-                                <div style="font-weight:600; font-size:0.95rem;">{{ req.video_title }}</div>
-                                <div style="font-size:0.8rem; color:var(--text-muted); word-break: break-all;">
-                                    <a href="{{ req.video_url }}" target="_blank" style="color: inherit;">{{
-                                        req.video_url[:40] }}...</a>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="status-badge status-{{ req.status }}">
-                                    {{ t(request, 'db_status_wait') if req.status == "pending" else t(request, 'db_status_done') }}
-                                </span>
-                            </td>
-                            <td>{{ req.created_at.strftime('%d.%m.%Y') }}</td>
-                            <td>
-                                {% if req.status == 'completed' %}
-                                <a href="/download/{{ req.id }}" class="btn-primary btn-sm"
-                                    style="background: #10b981; border: none;">
-                                    <i class="fa-solid fa-download"></i> {{ t(request, 'db_col_report') }}u {{
-                                    t(request, 'db_btn_download') }}
-                                </a>
-                                {% else %}
-                                <span style="color:var(--text-muted); font-size:0.8rem;">{{ t(request, 'db_status_preparing') }}</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        {% if user.credits <= 0 %}
+        <div class="no-credit-banner">
+            <div class="icon">⚠️</div>
+            <div class="text">
+                <h3>{{ t(request, 'db_no_credit_title') }}</h3>
+                <p>{{ t(request, 'db_no_credit_desc') }}</p>
             </div>
-            {% endif %}
+            <div class="cta">
+                <a href="/#fiyatlandirma">
+                    <i class="fa-solid fa-rocket"></i> {{ t(request, 'db_buy_pkg') }}
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Main grid -->
+        <div class="db-grid">
+
+            <!-- Analiz talebi -->
+            <div class="submit-card">
+                <h3>{{ t(request, 'db_analysis_req') }}</h3>
+                {% if user.credits > 0 %}
+                <p>{{ t(request, 'db_analysis_desc') }}</p>
+                <form action="/analyze" method="POST">
+                    <div class="input-group">
+                        <label for="videoUrl">{{ t(request, 'db_video_lbl') }}</label>
+                        <input type="url" id="videoUrl" name="video_url"
+                            placeholder="https://www.youtube.com/watch?v=..." required>
+                    </div>
+                    <button type="submit" class="btn-primary w-100">
+                        {{ t(request, 'db_create_req') }} <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                    <p class="submit-hint">{{ t(request, 'db_req_info') }}</p>
+                </form>
+                {% else %}
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">{{ t(request, 'db_error_no_credit') }}</p>
+                <a href="/#fiyatlandirma" class="btn-primary w-100"
+                    style="text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px; background:linear-gradient(135deg,var(--accent),#d97706); border:none;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> {{ t(request, 'hero_btn_plan') }}
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Geçmiş -->
+            <div class="reports-card">
+                <h3>{{ t(request, 'db_history') }}</h3>
+                {% if not analyses %}
+                <div class="empty-state">
+                    <i class="fa-regular fa-folder-open"></i>
+                    {{ t(request, 'db_empty_history') }}
+                </div>
+                {% else %}
+
+                <!-- Desktop tablo -->
+                <div class="reports-table-wrap">
+                    <table class="reports-table">
+                        <thead>
+                            <tr>
+                                <th>{{ t(request, 'db_col_video_detail') }}</th>
+                                <th>{{ t(request, 'db_col_status') }}</th>
+                                <th>{{ t(request, 'db_col_date') }}</th>
+                                <th>{{ t(request, 'db_col_file') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in analyses %}
+                            <tr>
+                                <td>
+                                    <div class="video-title">{{ req.video_title }}</div>
+                                    <div class="video-url">
+                                        <a href="{{ req.video_url }}" target="_blank">{{ req.video_url[:45] }}...</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ req.status }}">
+                                        {% if req.status == "pending" %}
+                                        <i class="fa-solid fa-clock" style="font-size:0.65rem;"></i>
+                                        {{ t(request, 'db_status_wait') }}
+                                        {% else %}
+                                        <i class="fa-solid fa-check" style="font-size:0.65rem;"></i>
+                                        {{ t(request, 'db_status_done') }}
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td style="color:var(--text-muted); white-space:nowrap;">
+                                    {{ req.created_at.strftime('%d.%m.%Y') }}
+                                </td>
+                                <td>
+                                    {% if req.status == 'completed' %}
+                                    <a href="/download/{{ req.id }}" class="btn-download">
+                                        <i class="fa-solid fa-download"></i> {{ t(request, 'db_btn_download') }}
+                                    </a>
+                                    {% else %}
+                                    <span style="color:var(--text-muted); font-size:0.78rem;">{{ t(request, 'db_status_preparing') }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobil kart görünümü -->
+                <div class="analysis-cards">
+                    {% for req in analyses %}
+                    <div class="analysis-card-item">
+                        <div class="ac-row">
+                            <div class="ac-title">{{ req.video_title }}</div>
+                            <div class="ac-date">{{ req.created_at.strftime('%d.%m.%Y') }}</div>
+                        </div>
+                        <div class="ac-footer">
+                            <span class="status-badge status-{{ req.status }}">
+                                {% if req.status == "pending" %}
+                                <i class="fa-solid fa-clock" style="font-size:0.65rem;"></i> {{ t(request, 'db_status_wait') }}
+                                {% else %}
+                                <i class="fa-solid fa-check" style="font-size:0.65rem;"></i> {{ t(request, 'db_status_done') }}
+                                {% endif %}
+                            </span>
+                            {% if req.status == 'completed' %}
+                            <a href="/download/{{ req.id }}" class="btn-download">
+                                <i class="fa-solid fa-download"></i> {{ t(request, 'db_btn_download') }}
+                            </a>
+                            {% else %}
+                            <span class="ac-preparing">{{ t(request, 'db_status_preparing') }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% endif %}
+            </div>
+
         </div>
     </div>
-    </div>
-</body>
 
+</body>
 </html>
