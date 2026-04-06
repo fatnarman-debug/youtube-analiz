@@ -124,10 +124,18 @@ async def _send_email(message: EmailMessage):
         print("!!! SMTP ayarları eksik (SMTP_USER/SMTP_PASSWORD), e-posta gönderilemedi.")
         return
 
-    # Gönderen adresin kimlik doğrulaması yapılan kullanıcı ile uyumlu olduğundan emin olun
-    # Bazı sunucular 'From' başlığının tam eşleşmesini gerektirir.
     if "From" not in message:
         message["From"] = SMTP_FROM
+    if "Reply-To" not in message:
+        message["Reply-To"] = SMTP_USER
+    if "Message-ID" not in message:
+        import uuid
+        domain = SMTP_USER.split("@")[-1]
+        message["Message-ID"] = f"<{uuid.uuid4().hex}@{domain}>"
+    if "List-Unsubscribe" not in message:
+        message["List-Unsubscribe"] = f"<mailto:{SMTP_USER}?subject=unsubscribe>"
+    if "X-Mailer" not in message:
+        message["X-Mailer"] = "VidInsight Mailer"
 
     # Port deneme listesi: [(Port, use_tls, start_tls), ...]
     ports_to_try = [
