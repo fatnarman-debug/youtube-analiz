@@ -1085,39 +1085,63 @@ footer {
         display: none;
     }
 
+    .horizontal-pricing {
+        gap: 10px;
+    }
+
     .pricing-row {
         flex-direction: column;
-        gap: 10px;
-        padding: 16px 14px;
+        gap: 8px;
+        padding: 12px 14px;
         text-align: center;
     }
 
-    .pricing-col-feat {
-        flex-direction: column;
+    .pricing-col-name {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         gap: 8px;
-        padding: 10px 0;
+        flex-wrap: wrap;
+    }
+
+    .pricing-col-name .pkg-header {
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    /* Özellikler: dikey yerine yatay, tek satırda */
+    .pricing-col-feat {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px 14px;
+        padding: 8px 0;
         width: 100%;
         border-top: 1px solid rgba(255,255,255,0.05);
         border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
-    .pricing-col-action {
-        flex-direction: column;
-        justify-content: center;
-        gap: 8px;
+    .pricing-col-feat .feature-item {
+        font-size: 0.78rem;
+        white-space: nowrap;
     }
 
-    .pricing-col-name .pkg-header {
-        font-size: 1.15rem;
+    /* Fiyat + buton: yan yana */
+    .pricing-col-action {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
     }
 
     .price-amount {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
+        white-space: nowrap;
     }
 
     .btn-pricing {
-        padding: 10px 14px;
-        font-size: 0.85rem;
+        padding: 8px 14px;
+        font-size: 0.82rem;
     }
 }
 
