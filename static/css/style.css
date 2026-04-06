@@ -1115,11 +1115,18 @@ footer {
         text-align: center;
     }
 
+    /* flex-basis sıfırla — yoksa column yönünde 200/230px yükseklik zorlar */
+    .pricing-col-name,
+    .pricing-col-feat,
+    .pricing-col-action {
+        flex: none;
+        width: 100%;
+    }
+
     /* Paket adı + kredi: ortalı, dikey */
     .pricing-col-name {
         align-items: center;
         gap: 3px;
-        width: 100%;
     }
 
     .pricing-col-name .pkg-header {
