@@ -84,13 +84,18 @@
         </article>
     </main>
 
-    <footer class="footer">
-        <div class="footer-grid">
+    <footer id="iletisim">
+        <div class="footer-content">
             <div class="footer-brand">
-                <img src="/static/img/logo.png" alt="VidInsight Logo">
+                <img src="/static/img/logo.png" alt="VidInsight Logo" width="150" style="margin-bottom: 20px;">
                 <p>{{ t(request, 'footer_desc') }}</p>
-                <div class="social-links">
-                    <a href="https://www.youtube.com/@vid-insight" target="_blank" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                <div class="footer-social" style="margin-top: 20px;">
+                    <h4 style="font-size: 1rem; margin-bottom: 12px;">{{ t(request, 'footer_social_title') }}</h4>
+                    <div class="social-icons">
+                        <a href="https://www.youtube.com/@vid-insight" target="_blank" class="social-link yt" title="YouTube">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
             <div class="footer-links">
