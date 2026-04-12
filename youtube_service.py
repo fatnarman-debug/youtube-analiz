@@ -2,7 +2,6 @@ import os
 import re
 import pandas as pd
 from googleapiclient.discovery import build
-from textblob import TextBlob
 
 def get_youtube_client():
     api_key = os.getenv("YOUTUBE_API_KEY")
@@ -33,21 +32,120 @@ def get_video_title(video_url: str) -> str:
     return None
 
 
+# --- 1. TÜRKÇE DUYGU ANALİZİ (Leksikon tabanlı) ---
+_POZITIF_KELIMELER = {
+    "harika", "mükemmel", "süper", "enfes", "güzel", "iyi", "sevdim", "beğendim",
+    "teşekkür", "teşekkürler", "sağol", "sağolun", "bravo", "tebrikler", "efsane",
+    "muhteşem", "başarılı", "başarılı", "kaliteli", "seviyorum", "bayıldım",
+    "harikulade", "nefis", "şahane", "memnun", "memnunum", "memnuniyetle",
+    "faydalı", "yararlı", "bilgilendirici", "açıklayıcı", "net", "anlaşılır",
+    "devam", "devamını", "bekliyorum", "takip", "abone", "izledim", "izliyorum",
+    "tavsiye", "öneririm", "kesinlikle", "mutlaka", "doğru", "haklısın",
+    "katılıyorum", "evet", "gerçekten", "sahiden", "vay", "vay be", "helal",
+    "alkış", "👏", "❤️", "🔥", "😍", "👍", "💯", "🙏", "✅", "😊", "🥰",
+    "emek", "emeğine", "zahmet", "güldüm", "eğlenceli", "komik", "güldürdü",
+}
+
+_NEGATIF_KELIMELER = {
+    "kötü", "berbat", "rezalet", "rezil", "saçma", "saçmalık", "yanlış",
+    "hata", "hatalı", "eksik", "yetersiz", "beğenmedim", "sevmedim", "olmamış",
+    "olmaz", "olmadı", "napalım", "boş", "işe yaramaz", "vakit kaybı",
+    "abartı", "abartıyor", "yalan", "yanıltıcı", "aldatıcı", "şüpheli",
+    "kötüleşti", "bozuk", "çalışmıyor", "sorun", "sorunlu", "problem",
+    "şikayet", "şikayetim", "beğenmedim", "izlemedim", "izlemeyeceğim",
+    "neden", "nasıl böyle", "anlamadım", "karmaşık", "zor", "sıkıcı",
+    "uzun", "gereksiz", "aboneliği", "iptal", "bıktım", "usandım",
+    "hayal kırıklığı", "hayal kırıklığına", "üzüldüm", "yazık", "ayıp",
+    "utanç", "rezillik", "acınası", "komedi", "gülünç", "saçma sapan",
+    "😡", "👎", "💩", "🤢", "😤", "😠", "🙄", "😒", "❌",
+}
+
+def turkish_sentiment(text: str) -> str:
+    """Türkçe leksikon tabanlı duygu analizi."""
+    text_lower = str(text).lower()
+    words = re.findall(r'\w+', text_lower)
+    emoji_chars = list(text)
+
+    pos_score = sum(1 for w in words if w in _POZITIF_KELIMELER)
+    neg_score = sum(1 for w in words if w in _NEGATIF_KELIMELER)
+
+    # Emoji kontrolü
+    for ch in emoji_chars:
+        if ch in _POZITIF_KELIMELER: pos_score += 1
+        if ch in _NEGATIF_KELIMELER: neg_score += 1
+
+    # Olumsuzlama: "değil", "yok", "hiç" önceki pozitifi iptal eder
+    negation_words = {"değil", "yok", "hiç", "olmaz", "olmadı", "hayır"}
+    for i, w in enumerate(words):
+        if w in negation_words and i > 0 and words[i-1] in _POZITIF_KELIMELER:
+            pos_score = max(0, pos_score - 2)
+            neg_score += 1
+
+    if pos_score > neg_score:
+        return "olumlu"
+    elif neg_score > pos_score:
+        return "olumsuz"
+    else:
+        return "notr"
+
+
+# --- 2. GENİŞLETİLMİŞ KÜFÜR TESPİTİ ---
+_KUFUR_LISTESI = [
+    # Temel
+    "amk", "amına", "amını", "bok", "boktan", "orospu", "orospuçocuğu",
+    "sik", "sikiş", "sikik", "siktir", "sikerim", "sikicem", "sikeyim",
+    "yarrak", "göt", "götüm", "götveren", "götlek",
+    "piç", "piçi", "piçler", "piçlik",
+    "ibne", "ibnelik",
+    "oç", "sg", "aq",
+    "pezevenk", "pezevengi",
+    "yavşak", "namussuz", "orspu",
+    "kahpe", "kahpenin", "kaltak",
+    "gerizekalı", "geri zekalı", "aptal", "salak", "dangalak", "ahmak",
+    "mal", "malın", "manyak", "deli",
+    "haysiyetsiz", "şerefsiz", "şerefsizin",
+    "it", "köpek", "eşek", "eşşek", "katır",
+    # Kısaltmalar ve varyasyonlar
+    "amq", "orosbuçocuğu", "orsbuçocuğu", "s1k", "s!k",
+]
+
 def extract_profanity(text: str):
-    bad_words = ["amk", "aq", "sg", "siktir", "oç", "piç", "piçi", "piçler", "yavşak", "pezevenk", "göt", "götveren", "götüm", "sik", "sikicem", "ibne", "orospu", "yarrak", "mal", "namussuz"]
-    pattern = r'\b(' + '|'.join(bad_words) + r')\b'
+    escaped = [re.escape(w) for w in _KUFUR_LISTESI]
+    pattern = r'(' + '|'.join(escaped) + r')'
     matches = re.findall(pattern, str(text), re.IGNORECASE)
     return list(set(m.lower() for m in matches)) if matches else []
 
+
+# --- 3. GELİŞTİRİLMİŞ ÖNERİ/ELEŞTİRİ TESPİTİ ---
+_ONERI_KALIPLARI = [
+    r'\bbence\b', r'\bbana göre\b', r'\btavsiye\b', r'\böneri\b', r'\bönerim\b',
+    r'\bkeşke\b', r'\bolsa iyi olur\b', r'\byapılabilir\b', r'\byapılsa\b',
+    r'\bekliyoruz\b', r'\bekliyorum\b', r'\bistiyorum\b', r'\bistiyoruz\b',
+    r'\bdaha iyi\b', r'\bdaha güzel\b', r'\bdaha net\b', r'\bdaha açık\b',
+    r'\böneriyorum\b', r'\bönerim var\b', r'\bönerim\b',
+    r'\bkatılıyorum\b', r'\bhaklısın\b', r'\bdoğru söylüyorsun\b',
+    r'\byani\b.{0,20}\bolsa\b', r'\bşöyle olsa\b', r'\bşunu yapsan\b',
+]
+
+_ELESTIRI_KALIPLARI = [
+    r'\bdüzelt\b', r'\bdüzeltilmeli\b', r'\beleştiri\b', r'\beleştiriyorum\b',
+    r'\bolmamış\b', r'\bolmadı\b', r'\bberbat\b', r'\bkötü\b', r'\brezalet\b',
+    r'\byalan\b', r'\byanıltıcı\b', r'\bsatılmış\b', r'\btaraflı\b',
+    r'\beksik\b', r'\byetersiz\b', r'\bhatalı\b', r'\byanlış\b',
+    r'\bşikayet\b', r'\bsorun var\b', r'\bproblem var\b',
+    r'\bneden böyle\b', r'\bnasıl böyle\b', r'\banlamıyorum\b',
+    r'\bhayal kırıklığı\b', r'\büzüldüm\b', r'\bazıp\b', r'\bayıp\b',
+    r'\bbeğenmedim\b', r'\bsevmedim\b', r'\bişe yaramaz\b',
+]
+
 def get_feedback_type(text: str):
-    suggestions = ["bence", "tavsiye", "öneri", "keşke", "daha net", "harika", "katılıyorum", "iyi olur"]
-    criticisms = ["düzelt", "eleştiri", "olmamış", "berbat", "kötü", "yalan", "taraf", "satılmış"]
-    
-    s_pattern = r'\b(' + '|'.join(suggestions) + r')\b'
-    c_pattern = r'\b(' + '|'.join(criticisms) + r')\b'
-    
-    if re.search(s_pattern, str(text), re.IGNORECASE): return 'öneri'
-    if re.search(c_pattern, str(text), re.IGNORECASE): return 'eleştiri'
+    t = str(text)
+    for pattern in _ELESTIRI_KALIPLARI:
+        if re.search(pattern, t, re.IGNORECASE):
+            return 'eleştiri'
+    for pattern in _ONERI_KALIPLARI:
+        if re.search(pattern, t, re.IGNORECASE):
+            return 'öneri'
     return None
 
 def format_percentage(part, whole):
@@ -68,20 +166,11 @@ def fetch_and_generate_raw_report(video_url: str, output_path: str, max_comments
         date = comment_snippet["publishedAt"]
         likes = comment_snippet["likeCount"]
 
-        analysis = TextBlob(text)
-        polarity = analysis.sentiment.polarity
-        if polarity > 0.1:
-            sentiment = "olumlu"
-        elif polarity < -0.1:
-            sentiment = "olumsuz"
-        else:
-            sentiment = "notr"
-
         return {
             "kullanici": author,
             "yorum": text,
             "begeni_sayisi": int(likes),
-            "duygu": sentiment,
+            "duygu": turkish_sentiment(text),
             "tarih": date[:10],
             "_kufur_listesi": extract_profanity(text),
             "_feedback_type": get_feedback_type(text)
