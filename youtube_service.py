@@ -62,9 +62,34 @@ def fetch_and_generate_raw_report(video_url: str, output_path: str, max_comments
     youtube = get_youtube_client()
     comments_data = []
 
+    def parse_comment(comment_snippet):
+        text = comment_snippet["textDisplay"]
+        author = comment_snippet["authorDisplayName"]
+        date = comment_snippet["publishedAt"]
+        likes = comment_snippet["likeCount"]
+
+        analysis = TextBlob(text)
+        polarity = analysis.sentiment.polarity
+        if polarity > 0.1:
+            sentiment = "olumlu"
+        elif polarity < -0.1:
+            sentiment = "olumsuz"
+        else:
+            sentiment = "notr"
+
+        return {
+            "kullanici": author,
+            "yorum": text,
+            "begeni_sayisi": int(likes),
+            "duygu": sentiment,
+            "tarih": date[:10],
+            "_kufur_listesi": extract_profanity(text),
+            "_feedback_type": get_feedback_type(text)
+        }
+
     try:
         request = youtube.commentThreads().list(
-            part="snippet",
+            part="snippet,replies",
             videoId=video_id,
             maxResults=100,
             textFormat="plainText"
@@ -74,35 +99,38 @@ def fetch_and_generate_raw_report(video_url: str, output_path: str, max_comments
             response = request.execute()
 
             for item in response.get("items", []):
-                comment = item["snippet"]["topLevelComment"]["snippet"]
-                text = comment["textDisplay"]
-                author = comment["authorDisplayName"]
-                date = comment["publishedAt"]
-                likes = comment["likeCount"]
+                # Üst düzey yorum
+                top_comment = item["snippet"]["topLevelComment"]["snippet"]
+                comments_data.append(parse_comment(top_comment))
 
-                analysis = TextBlob(text)
-                polarity = analysis.sentiment.polarity
-                if polarity > 0.1:
-                    sentiment = "olumlu"
-                elif polarity < -0.1:
-                    sentiment = "olumsuz"
-                else:
-                    sentiment = "notr"
+                # Yanıtları da ekle
+                reply_count = item["snippet"].get("totalReplyCount", 0)
+                if reply_count > 0 and len(comments_data) < max_comments:
+                    replies = item.get("replies", {}).get("comments", [])
+                    for reply in replies:
+                        comments_data.append(parse_comment(reply["snippet"]))
 
-                kufurler = extract_profanity(text)
-
-                comments_data.append({
-                    "kullanici": author,
-                    "yorum": text,
-                    "begeni_sayisi": int(likes),
-                    "duygu": sentiment,
-                    "tarih": date[:10],
-                    "_kufur_listesi": kufurler,
-                    "_feedback_type": get_feedback_type(text)
-                })
+                    # 5'ten fazla yanıt varsa ek sayfa çek
+                    if reply_count > 5:
+                        try:
+                            reply_request = youtube.comments().list(
+                                part="snippet",
+                                parentId=item["id"],
+                                maxResults=100,
+                                textFormat="plainText"
+                            )
+                            while reply_request and len(comments_data) < max_comments:
+                                reply_response = reply_request.execute()
+                                fetched_ids = {r["snippet"]["textDisplay"] for r in replies}
+                                for r in reply_response.get("items", []):
+                                    if r["snippet"]["textDisplay"] not in fetched_ids:
+                                        comments_data.append(parse_comment(r["snippet"]))
+                                reply_request = youtube.comments().list_next(reply_request, reply_response)
+                        except Exception:
+                            pass
 
             request = youtube.commentThreads().list_next(request, response)
-            
+
     except Exception as e:
         raise Exception(f"YouTube Veri Çekme Hatası: {str(e)}")
 
