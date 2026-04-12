@@ -152,8 +152,28 @@
                 <p>Göndereceğiniz bu içerikler VidInsight kurumsal şablonunun içine otomatik olarak yerleştirilecektir. (Sitenizin logosu ve üst barı hazır gelir.) Direkt metin veya isterseniz &lt;b&gt;kalın&lt;/b&gt; gibi temel HTML etiketleri kullanabilirsiniz.</p>
             </div>
 
-            <form action="/admin/marketing/send" method="POST" class="marketing-form" onsubmit="return confirm('Tüm aktif kullanıcılara bu maili göndermek istediğinize emin misiniz? İşlem geri alınamaz.');">
-                
+            <form action="/admin/marketing/send" method="POST" class="marketing-form" onsubmit="return onFormSubmit();">
+
+                <div class="input-group">
+                    <label><i class="fa-solid fa-bullseye"></i> Alıcı Hedefi</label>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; color:#0F172A;">
+                            <input type="radio" name="target" value="all" checked onchange="toggleSpecificEmails(this.value)" style="width:18px;height:18px;accent-color:#6366F1;">
+                            Tüm aktif kullanıcılar ({{ user_count }} kişi)
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; color:#0F172A;">
+                            <input type="radio" name="target" value="specific" onchange="toggleSpecificEmails(this.value)" style="width:18px;height:18px;accent-color:#6366F1;">
+                            Belirli kişiler
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group" id="specific-emails-group" style="display:none;">
+                    <label for="specific_emails"><i class="fa-solid fa-envelope"></i> E-posta Adresleri (virgülle ayırın)</label>
+                    <input type="text" id="specific_emails" name="specific_emails" placeholder="ornek@mail.com, diger@mail.com, bir@mail.com">
+                    <span style="font-size:0.8rem; color:#64748B;">Sisteme kayıtlı kullanıcı e-postaları girilmelidir.</span>
+                </div>
+
                 <div class="input-group">
                     <label for="subject"><i class="fa-solid fa-pen"></i> E-posta Konusu (Subject)</label>
                     <input type="text" id="subject" name="subject" placeholder="Örn: VidInsight'a Yeni Özellikler Eklendi!" required>
@@ -165,8 +185,8 @@
                 </div>
 
                 <div style="margin-top: 1rem;">
-                    <button type="submit" class="btn-submit">
-                        <i class="fa-solid fa-paper-plane"></i> Kampanyayı Başlat ({{ user_count }} Kişiye Gönder)
+                    <button type="submit" class="btn-submit" id="submit-btn">
+                        <i class="fa-solid fa-paper-plane"></i> Kampanyayı Başlat
                     </button>
                     <p style="color: #94A3B8; font-size: 0.8rem; margin-top: 10px; font-weight: 600;">
                         <i class="fa-solid fa-triangle-exclamation"></i> Gönderim işlemi (send) butonuna basıldıktan sonra arka planda sırayla yapılacaktır. Beklerken sayfayı kapatabilirsiniz.
@@ -174,6 +194,28 @@
                 </div>
 
             </form>
+
+            <script>
+                function toggleSpecificEmails(value) {
+                    var group = document.getElementById('specific-emails-group');
+                    group.style.display = (value === 'specific') ? 'flex' : 'none';
+                }
+
+                function onFormSubmit() {
+                    var target = document.querySelector('input[name="target"]:checked').value;
+                    if (target === 'specific') {
+                        var emails = document.getElementById('specific_emails').value.trim();
+                        if (!emails) {
+                            alert('Lütfen en az bir e-posta adresi girin.');
+                            return false;
+                        }
+                        var count = emails.split(',').filter(e => e.trim()).length;
+                        return confirm(count + ' kişiye bu maili göndermek istediğinize emin misiniz? İşlem geri alınamaz.');
+                    } else {
+                        return confirm('Tüm aktif kullanıcılara bu maili göndermek istediğinize emin misiniz? İşlem geri alınamaz.');
+                    }
+                }
+            </script>
         </section>
 
         <div style="margin-top: 3rem; text-align: center; color: #CBD5E1; font-size: 0.8rem;">

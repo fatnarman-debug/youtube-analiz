@@ -933,15 +933,21 @@ async def admin_marketing_get(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(request=request, name="admin_marketing.html", context={"user_count": user_count})
 
 @app.post("/admin/marketing/send")
-async def admin_marketing_post(request: Request, background_tasks: BackgroundTasks, subject: str = Form(...), content_html: str = Form(...), db: Session = Depends(get_db)):
+async def admin_marketing_post(request: Request, background_tasks: BackgroundTasks, subject: str = Form(...), content_html: str = Form(...), target: str = Form("all"), specific_emails: str = Form(""), db: Session = Depends(get_db)):
     session = request.cookies.get(ADMIN_SESSION_NAME)
     if session != "authenticated":
         raise HTTPException(status_code=401)
-    
-    active_users = db.query(models.User).filter(models.User.is_active == True).all()
-    if active_users:
-        background_tasks.add_task(bg_send_mass_email, subject, content_html, active_users)
-        
+
+    if target == "specific":
+        # Virgülle ayrılmış e-postaları parse et, boşlukları temizle
+        email_list = [e.strip() for e in specific_emails.split(",") if e.strip()]
+        target_users = db.query(models.User).filter(models.User.email.in_(email_list)).all()
+    else:
+        target_users = db.query(models.User).filter(models.User.is_active == True).all()
+
+    if target_users:
+        background_tasks.add_task(bg_send_mass_email, subject, content_html, target_users)
+
     return RedirectResponse(url="/admin/marketing?success=1", status_code=status.HTTP_303_SEE_OTHER)
 
 # --- STRIPE WEBHOOK ---
