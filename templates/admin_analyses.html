@@ -8,163 +8,399 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Override basic colors for admin white-bg */
-        body { background: #F8FAFC; color: #0F172A; }
-        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
-        .status-pending { background: #FEF9C3; color: #854D0E; }
-        .status-completed { background: #DCFCE7; color: #166534; }
-        .upload-form { margin-top: 1.5rem; padding: 1.5rem; background: #F1F5F9; border-radius: 12px; border: 1px solid #E2E8F0; }
-        .upload-form input, .upload-form textarea { padding: 10px; border: 1px solid #CBD5E1; border-radius: 8px; width: 100%; margin-bottom: 10px; }
-        .analysis-card { margin-bottom: 2rem; }
+        body { background: #F1F5F9; color: #0F172A; }
+
+        /* STATS BAR */
+        .stats-bar { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+        .stat-card {
+            background: white; border-radius: 14px; padding: 16px 24px;
+            flex: 1; min-width: 130px; border: 1px solid #E2E8F0;
+            display: flex; flex-direction: column; gap: 4px;
+        }
+        .stat-card .label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #94A3B8; }
+        .stat-card .value { font-size: 1.8rem; font-weight: 900; }
+        .stat-card.pending   .value { color: #F59E0B; }
+        .stat-card.process   .value { color: #6366F1; }
+        .stat-card.ready     .value { color: #10B981; }
+        .stat-card.completed .value { color: #0EA5E9; }
+        .stat-card.failed    .value { color: #EF4444; }
+
+        /* FILTER TABS */
+        .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn {
+            padding: 8px 18px; border-radius: 30px; font-size: 0.85rem; font-weight: 700;
+            border: 2px solid #E2E8F0; background: white; cursor: pointer; transition: all 0.2s;
+            color: #64748B;
+        }
+        .tab-btn.active, .tab-btn:hover { border-color: #6366F1; color: #6366F1; background: #EEF2FF; }
+        .tab-btn .count { background: #E2E8F0; border-radius: 20px; padding: 1px 7px; font-size: 0.75rem; margin-left: 4px; }
+        .tab-btn.active .count { background: #C7D2FE; }
+
+        /* TABLE */
+        .requests-table { width: 100%; border-collapse: collapse; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .requests-table thead th {
+            background: #F8FAFC; padding: 12px 16px; text-align: left;
+            font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+            color: #94A3B8; border-bottom: 1px solid #E2E8F0;
+        }
+        .requests-table tbody tr { border-bottom: 1px solid #F1F5F9; transition: background 0.15s; }
+        .requests-table tbody tr:last-child { border-bottom: none; }
+        .requests-table tbody tr:hover { background: #F8FAFC; }
+        .requests-table td { padding: 14px 16px; font-size: 0.88rem; vertical-align: middle; }
+
+        /* BADGES */
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-pending   { background: #FEF3C7; color: #92400E; }
+        .badge-processing{ background: #EEF2FF; color: #4338CA; }
+        .badge-ready     { background: #D1FAE5; color: #065F46; }
+        .badge-failed    { background: #FEE2E2; color: #991B1B; }
+        .badge-completed { background: #DBEAFE; color: #1E40AF; }
+        .badge-pulse { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+        /* ACTION BUTTONS */
+        .btn-sm {
+            padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 700;
+            border: none; cursor: pointer; text-decoration: none; display: inline-flex;
+            align-items: center; gap: 5px; transition: all 0.15s;
+        }
+        .btn-download { background: #10B981; color: white; }
+        .btn-download:hover { background: #059669; }
+        .btn-retry { background: #6366F1; color: white; }
+        .btn-retry:hover { background: #4F46E5; }
+        .btn-upload { background: #0F172A; color: white; }
+        .btn-upload:hover { background: #1E293B; }
+        .btn-danger { background: #EF4444; color: white; }
+
+        /* EXPAND ROW */
+        .expand-row { display: none; }
+        .expand-row td { padding: 0; }
+        .expand-content { padding: 20px 24px; background: #F8FAFC; border-top: 1px solid #E2E8F0; }
+        .expand-content input, .expand-content textarea {
+            padding: 9px 12px; border: 1px solid #CBD5E1; border-radius: 8px;
+            width: 100%; font-family: inherit; font-size: 0.9rem; margin-bottom: 10px; box-sizing: border-box;
+        }
+        .expand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+
+        /* USER LINK */
+        .user-link { color: #6366F1; font-weight: 700; text-decoration: none; }
+        .user-link:hover { text-decoration: underline; }
+
+        /* VIDEO TITLE */
+        .video-title { font-weight: 600; color: #0F172A; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .video-url { font-size: 0.75rem; color: #94A3B8; }
+
+        /* AUTO REFRESH */
+        .refresh-bar { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: #94A3B8; margin-bottom: 16px; }
+        .refresh-dot { width: 8px; height: 8px; border-radius: 50%; background: #10B981; animation: pulse 2s infinite; }
+
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 80px 20px; color: #94A3B8; }
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; display: block; }
+
+        /* SEARCH */
+        .search-bar { position: relative; margin-bottom: 20px; }
+        .search-bar input { width: 100%; padding: 10px 16px 10px 40px; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 0.9rem; background: white; box-sizing: border-box; }
+        .search-bar i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94A3B8; }
     </style>
 </head>
 <body class="admin-container">
-    
-    <!-- Modern Side Navigation -->
+
     <aside class="admin-sidebar">
         <div class="sidebar-logo">
             <img src="/static/img/logo.png" alt="VidInsight Logo">
         </div>
         <nav>
-            <a href="/admin/analyses" class="active">
-                <i class="fa-solid fa-chart-pie"></i> Analiz Talepleri
-            </a>
-            <a href="/admin/users">
-                <i class="fa-solid fa-users-gear"></i> Kullanıcı Yönetimi
-            </a>
-            <a href="/admin/blog">
-                <i class="fa-solid fa-pen-nib"></i> Blog Yazıları
-            </a>
-            <a href="/admin/marketing">
-                <i class="fa-solid fa-envelope-open-text"></i> E-posta Pazarlama
-            </a>
-            <a href="/admin/download_db">
-                <i class="fa-solid fa-database"></i> Veritabanı Yedeği
-            </a>
-            <a href="/admin/logout" class="logout-link">
-                <i class="fa-solid fa-power-off"></i> Çıkış Yap
-            </a>
+            <a href="/admin/analyses" class="active"><i class="fa-solid fa-chart-pie"></i> Analiz Talepleri</a>
+            <a href="/admin/users"><i class="fa-solid fa-users-gear"></i> Kullanıcı Yönetimi</a>
+            <a href="/admin/blog"><i class="fa-solid fa-pen-nib"></i> Blog Yazıları</a>
+            <a href="/admin/marketing"><i class="fa-solid fa-envelope-open-text"></i> E-posta Pazarlama</a>
+            <a href="/admin/download_db"><i class="fa-solid fa-database"></i> Veritabanı Yedeği</a>
+            <a href="/admin/logout" class="logout-link"><i class="fa-solid fa-power-off"></i> Çıkış Yap</a>
         </nav>
     </aside>
 
-    <!-- Main Content Area -->
     <main class="admin-content">
-        <header class="admin-header-flex">
+        <header class="admin-header-flex" style="margin-bottom: 24px;">
             <div>
                 <h1>Analiz Talepleri</h1>
-                <p>Müşterilerinizden gelen yeni video analiz isteklerini buradan yönetebilirsiniz.</p>
-            </div>
-            <div class="admin-stats" style="display: flex; gap: 20px;">
-                <div class="admin-card" style="padding: 1rem 1.5rem; text-align: center;">
-                    <div style="font-size: 0.8rem; color: #64748B; font-weight: 600;">TOPLAM İŞ</div>
-                    <div style="font-size: 1.5rem; font-weight: 800; color: #6366F1;">{{ analyses|length }}</div>
-                </div>
+                <p>Müşteri video analiz isteklerini yönetin.</p>
             </div>
         </header>
 
-        {% if filter_user_id %}
-        <div style="background: #E0E7FF; border-left: 4px solid #6366F1; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <i class="fa-solid fa-filter" style="color: #4F46E5; margin-right: 8px;"></i>
-                <span style="color: #3730A3; font-weight: 600;">Sadece belirli bir kullanıcının (ID: {{ filter_user_id }}) analizleri listeleniyor.</span>
+        <!-- STATS BAR -->
+        {% set ns = namespace(pending=0, processing=0, ready=0, completed=0, failed=0) %}
+        {% for r in analyses %}
+            {% if r.status == 'pending' %}{% set ns.pending = ns.pending + 1 %}{% endif %}
+            {% if r.status == 'completed' %}{% set ns.completed = ns.completed + 1 %}{% endif %}
+            {% if r.raw_status == 'processing' and r.status == 'pending' %}{% set ns.processing = ns.processing + 1 %}{% endif %}
+            {% if r.raw_status == 'ready' and r.status == 'pending' %}{% set ns.ready = ns.ready + 1 %}{% endif %}
+            {% if r.raw_status == 'failed' %}{% set ns.failed = ns.failed + 1 %}{% endif %}
+        {% endfor %}
+
+        <div class="stats-bar">
+            <div class="stat-card pending">
+                <span class="label">Bekleyen</span>
+                <span class="value">{{ ns.pending }}</span>
             </div>
-            <a href="/admin/analyses" style="background: #4F46E5; color: white; padding: 6px 15px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 700;">
-                <i class="fa-solid fa-xmark"></i> Filtreyi Temizle
-            </a>
+            <div class="stat-card process">
+                <span class="label">İşleniyor</span>
+                <span class="value">{{ ns.processing }}</span>
+            </div>
+            <div class="stat-card ready">
+                <span class="label">İndirilecek</span>
+                <span class="value">{{ ns.ready }}</span>
+            </div>
+            <div class="stat-card completed">
+                <span class="label">Tamamlandı</span>
+                <span class="value">{{ ns.completed }}</span>
+            </div>
+            <div class="stat-card failed">
+                <span class="label">Başarısız</span>
+                <span class="value">{{ ns.failed }}</span>
+            </div>
+        </div>
+
+        <!-- FILTER + SEARCH -->
+        <div class="filter-tabs">
+            <button class="tab-btn active" onclick="filterTable('all', this)">
+                Tümü <span class="count">{{ analyses|length }}</span>
+            </button>
+            <button class="tab-btn" onclick="filterTable('indirilecek', this)">
+                <i class="fa-solid fa-circle-down"></i> İndirilecek <span class="count">{{ ns.ready }}</span>
+            </button>
+            <button class="tab-btn" onclick="filterTable('isleniyor', this)">
+                <i class="fa-solid fa-spinner"></i> İşleniyor <span class="count">{{ ns.processing }}</span>
+            </button>
+            <button class="tab-btn" onclick="filterTable('pending', this)">
+                Bekleyen <span class="count">{{ ns.pending }}</span>
+            </button>
+            <button class="tab-btn" onclick="filterTable('completed', this)">
+                Tamamlandı <span class="count">{{ ns.completed }}</span>
+            </button>
+            <button class="tab-btn" onclick="filterTable('failed', this)">
+                Başarısız <span class="count">{{ ns.failed }}</span>
+            </button>
+        </div>
+
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Kullanıcı adı veya video başlığı ara..." onkeyup="searchTable()">
+        </div>
+
+        <!-- AUTO REFRESH -->
+        <div class="refresh-bar">
+            <span class="refresh-dot"></span>
+            <span id="refreshTimer">Otomatik yenileme: <strong>30</strong>s</span>
+        </div>
+
+        {% if filter_user_id %}
+        <div style="background: #E0E7FF; border-left: 4px solid #6366F1; padding: 12px 18px; border-radius: 8px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: #3730A3; font-weight: 600;"><i class="fa-solid fa-filter" style="margin-right: 8px;"></i>Kullanıcı #{{ filter_user_id }} filtresi aktif</span>
+            <a href="/admin/analyses" style="background: #4F46E5; color: white; padding: 5px 12px; border-radius: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 700;">Temizle</a>
         </div>
         {% endif %}
 
-        <section class="admin-job-list">
-            {% for req in analyses %}
-            <div class="admin-card analysis-card">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-                    <div>
-                        <div style="font-size: 0.75rem; color: #94A3B8; font-weight: 700; text-transform: uppercase;">TALEP #{{ req.id }} • {{ req.created_at.strftime('%d %B %H:%M') }}</div>
-                        <h3 style="margin: 5px 0; color: #0F172A; font-size: 1.25rem;">{{ req.user.full_name }}</h3>
-                        <a href="{{ req.video_url }}" target="_blank" style="color: #6366F1; font-size: 0.9rem; font-weight: 600;">
-                            <i class="fa-solid fa-link"></i> Videoyu Görüntüle
-                        </a>
-                    </div>
-                    <div>
-                        <span class="status-badge status-{{ req.status }}">
-                            {{ "BEKLEMEDE" if req.status == 'pending' else "TAMAMLANDI" }}
-                        </span>
-                    </div>
-                </div>
+        <!-- TABLE -->
+        {% if analyses %}
+        <table class="requests-table" id="requestsTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Kullanıcı</th>
+                    <th>Video</th>
+                    <th>Durum</th>
+                    <th>Ham Veri</th>
+                    <th>Tarih</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in analyses %}
+                {% set raw = req.raw_status if req.raw_status else 'processing' %}
+                {% set raw_file = 'storage/raw_analysis_' ~ req.id ~ '.xlsx' %}
+                <tr class="request-row"
+                    data-status="{{ req.status }}"
+                    data-raw="{{ raw }}"
+                    data-search="{{ req.user.full_name|lower }} {{ req.video_title|lower }}">
 
-                <div style="margin-bottom: 25px; padding: 15px; background: #EEF2FF; border-radius: 10px; border: 1px dashed #A5B4FC; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-weight: 800; font-size: 0.95rem; color: #3730A3;">🤖 Otomatik Yorum Çekimi</div>
-                        <div style="font-size: 0.8rem; color: #4F46E5; margin-top: 2px;">Videodaki popüler yorumları çekip Excel (Ham Rapor) oluşturur.</div>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px;">
-                        <form action="/admin/analyses/{{ req.id }}/generate_raw" method="POST" style="margin: 0; display: flex; gap: 8px; align-items: center;" onsubmit="return confirm('Bu işlem videodaki yorumları çekecektir. Belirttiğiniz limite göre zaman alabilir. Başlamak istiyor musunuz?');">
-                            <input type="number" name="max_comments" value="1000" min="100" max="20000" step="100" style="padding: 7px 10px; width: 85px; border-radius: 8px; border: 1px solid #C7D2FE; font-size: 0.85rem; font-weight: 600; color: #3730A3; outline: none; background: white;" title="Maksimum Çekilecek Yorum">
-                            <button type="submit" style="background: #312E81; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: transform 0.2s;">
-                                <i class="fa-solid fa-cloud-arrow-down"></i> {{ "Yeniden Çek" if req.raw_exists else "Asistanı Başlat" }}
-                            </button>
-                        </form>
-                        
-                        {% if req.raw_exists %}
-                        <a href="/admin/download_raw/{{ req.id }}" style="background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; transition: transform 0.2s;">
-                            <i class="fa-solid fa-file-excel"></i> Ham Veriyi İndir
+                    <td style="color: #94A3B8; font-weight: 700; font-size: 0.8rem;">#{{ req.id }}</td>
+
+                    <td>
+                        <a href="/admin/analyses?user_id={{ req.user_id }}" class="user-link">{{ req.user.full_name }}</a>
+                        <div style="font-size: 0.75rem; color: #94A3B8;">{{ req.user.email }}</div>
+                    </td>
+
+                    <td>
+                        <div class="video-title" title="{{ req.video_title }}">{{ req.video_title }}</div>
+                        <a href="{{ req.video_url }}" target="_blank" class="video-url">
+                            <i class="fa-brands fa-youtube" style="color: #EF4444;"></i> Videoyu aç
                         </a>
+                    </td>
+
+                    <td>
+                        {% if req.status == 'completed' %}
+                            <span class="badge badge-completed"><i class="fa-solid fa-check"></i> Tamamlandı</span>
+                        {% else %}
+                            <span class="badge badge-pending"><i class="fa-solid fa-clock"></i> Bekliyor</span>
                         {% endif %}
-                    </div>
-                </div>
+                    </td>
 
-                <!-- Final Rapor Yükleme Alanı -->
-                <form action="/admin/upload_report/{{ req.id }}" method="POST" enctype="multipart/form-data" class="upload-form">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
-                        <div>
-                            <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px;">Video Başlığı</label>
-                            <input type="text" name="video_title" placeholder="Rapor Başlığı" value="{{ req.video_title }}" required>
+                    <td>
+                        {% if raw == 'ready' %}
+                            <span class="badge badge-ready"><i class="fa-solid fa-circle-check"></i> Hazır</span>
+                        {% elif raw == 'processing' %}
+                            <span class="badge badge-processing badge-pulse"><i class="fa-solid fa-spinner fa-spin"></i> İşleniyor</span>
+                        {% elif raw == 'failed' %}
+                            <span class="badge badge-failed"><i class="fa-solid fa-circle-xmark"></i> Başarısız</span>
+                        {% else %}
+                            <span class="badge badge-pending">Bekliyor</span>
+                        {% endif %}
+                    </td>
+
+                    <td style="font-size: 0.8rem; color: #64748B; white-space: nowrap;">
+                        {{ req.created_at.strftime('%d.%m %H:%M') }}
+                    </td>
+
+                    <td>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            {% if raw == 'ready' %}
+                            <a href="/admin/download_raw/{{ req.id }}" class="btn-sm btn-download">
+                                <i class="fa-solid fa-file-excel"></i> İndir
+                            </a>
+                            {% endif %}
+
+                            {% if raw == 'failed' or raw == 'ready' %}
+                            <form action="/admin/analyses/{{ req.id }}/generate_raw" method="POST" style="margin:0;" onsubmit="return confirm('Yeniden çekilsin mi?');">
+                                <input type="hidden" name="max_comments" value="1000">
+                                <button type="submit" class="btn-sm btn-retry">
+                                    <i class="fa-solid fa-rotate-right"></i> Tekrar
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            {% if raw == 'processing' %}
+                            <span style="font-size:0.78rem; color:#6366F1; font-weight:600;">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Oto. çekiliyor
+                            </span>
+                            {% endif %}
+
+                            <button class="btn-sm btn-upload" onclick="toggleUpload({{ req.id }})">
+                                <i class="fa-solid fa-upload"></i>
+                                {{ "Güncelle" if req.status == 'completed' else "Rapor Yükle" }}
+                            </button>
                         </div>
-                        <div>
-                            <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px;">Rapor Dosyası (.xlsx)</label>
-                            <input type="file" name="report_file" {% if not req.report_file_name %}required{% endif %}>
+                    </td>
+                </tr>
+
+                <!-- EXPAND: UPLOAD FORM -->
+                <tr class="expand-row" id="expand-{{ req.id }}">
+                    <td colspan="7">
+                        <div class="expand-content">
+                            <form action="/admin/upload_report/{{ req.id }}" method="POST" enctype="multipart/form-data">
+                                <div class="expand-grid">
+                                    <div>
+                                        <label style="font-size:0.8rem;font-weight:700;display:block;margin-bottom:5px;">Video Başlığı</label>
+                                        <input type="text" name="video_title" value="{{ req.video_title }}" required>
+                                    </div>
+                                    <div>
+                                        <label style="font-size:0.8rem;font-weight:700;display:block;margin-bottom:5px;">Rapor Dosyası (.xlsx)</label>
+                                        <input type="file" name="report_file" {% if not req.report_file_name %}required{% endif %}>
+                                        {% if req.report_file_name %}
+                                        <div style="font-size:0.75rem;color:#10B981;margin-top:4px;"><i class="fa-solid fa-file-excel"></i> {{ req.report_file_name }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <label style="font-size:0.8rem;font-weight:700;display:block;margin-bottom:5px;">Kullanıcıya Not</label>
+                                <textarea name="admin_note" rows="2" placeholder="Analiz hakkında kısa bir not...">{{ req.admin_note or '' }}</textarea>
+                                <div style="display:flex;gap:10px;align-items:center;">
+                                    <button type="submit" class="btn-sm btn-upload" style="padding:9px 18px;font-size:0.88rem;">
+                                        <i class="fa-solid fa-check-circle"></i>
+                                        {{ "Güncelle ve Bildir" if req.status == 'completed' else "Tamamla ve Kullanıcıya Bildir" }}
+                                    </button>
+                                    <button type="button" class="btn-sm" style="background:#E2E8F0;color:#475569;" onclick="toggleUpload({{ req.id }})">İptal</button>
+                                </div>
+                            </form>
                         </div>
-                    </div>
-                    <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 5px;">Kullanıcıya Not</label>
-                    <textarea name="admin_note" rows="2" placeholder="Analiz hakkında kısa bir not...">{{ req.admin_note or '' }}</textarea>
-                    
-                    <button type="submit" class="btn-primary" style="width: auto; padding: 10px 25px; font-size: 0.9rem; background: #0F172A; color: white;">
-                        <i class="fa-solid fa-check-circle"></i> {{ "Güncelle ve Bildirim Gönder" if req.status == 'completed' else "Tamamla ve Kullanıcıya Bildir" }}
-                    </button>
-
-                    {% if req.report_file_name %}
-                    <div style="margin-top: 15px; color: #166534; font-size: 0.85rem; font-weight: 600;">
-                        <i class="fa-solid fa-file-excel"></i> Mevcut: {{ req.report_file_name }}
-                    </div>
-                    {% endif %}
-                </form>
-            </div>
-            {% else %}
-            <div class="admin-card" style="text-align: center; padding: 100px;">
-                <i class="fa-solid fa-hourglass-empty" style="font-size: 4rem; color: #CBD5E1; margin-bottom: 20px;"></i>
-                <p style="color: #64748B; font-weight: 600;">Henüz bekleyen bir analiz talebi yok.</p>
-            </div>
-            {% endfor %}
-        </section>
-
-        <!-- DEBUG INFO (Bottom) -->
-        <div style="margin-top: 40px; padding: 20px; background: #1E293B; border-radius: 12px; color: #94A3B8; font-size: 0.8rem;">
-            <strong>STORAGE:</strong> {{ storage_status }} | <strong>DB:</strong> {{ db_url }}
-            <button onclick="testEmail()" style="margin-left: 15px; background: #6366F1; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem;">Test E-posta Gönder</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <p style="font-weight: 600;">Henüz analiz talebi yok.</p>
         </div>
+        {% endif %}
+
+        <!-- DEBUG (gizli, sadece gerektiğinde) -->
+        <details style="margin-top:30px;">
+            <summary style="cursor:pointer;font-size:0.78rem;color:#94A3B8;font-weight:600;">Sistem Bilgisi</summary>
+            <div style="padding:12px;background:#1E293B;border-radius:8px;color:#94A3B8;font-size:0.78rem;margin-top:8px;">
+                <strong>STORAGE:</strong> {{ storage_status }} | <strong>DB:</strong> {{ db_url }}
+                <button onclick="testEmail()" style="margin-left:10px;background:#6366F1;color:white;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:0.7rem;">Test E-posta</button>
+            </div>
+        </details>
     </main>
 
     <script>
+        // Toggle upload form
+        function toggleUpload(id) {
+            const row = document.getElementById('expand-' + id);
+            row.style.display = row.style.display === 'table-row' ? 'none' : 'table-row';
+        }
+
+        // Filter by tab
+        function filterTable(filter, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            document.querySelectorAll('.request-row').forEach(row => {
+                const status = row.dataset.status;
+                const raw = row.dataset.raw;
+                let show = false;
+
+                if (filter === 'all') show = true;
+                else if (filter === 'completed') show = status === 'completed';
+                else if (filter === 'pending') show = status === 'pending' && raw !== 'ready' && raw !== 'processing';
+                else if (filter === 'indirilecek') show = raw === 'ready';
+                else if (filter === 'isleniyor') show = raw === 'processing' && status !== 'completed';
+                else if (filter === 'failed') show = raw === 'failed';
+
+                row.style.display = show ? '' : 'none';
+                const expandRow = document.getElementById('expand-' + row.querySelector('[id]')?.id?.split('-')[1]);
+                if (expandRow) expandRow.style.display = 'none';
+            });
+        }
+
+        // Search
+        function searchTable() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.request-row').forEach(row => {
+                row.style.display = row.dataset.search.includes(q) ? '' : 'none';
+            });
+        }
+
+        // Auto refresh countdown
+        let seconds = 30;
+        const timerEl = document.getElementById('refreshTimer');
+        setInterval(() => {
+            seconds--;
+            timerEl.innerHTML = `Otomatik yenileme: <strong>${seconds}</strong>s`;
+            if (seconds <= 0) location.reload();
+        }, 1000);
+    </script>
+
+    <script>
         async function testEmail() {
-            if(!confirm("SMTP ayarlarınızı test etmek için admin hesabınıza bir e-posta gönderilsin mi?")) return;
-            
+            if(!confirm("Test e-postası gönderilsin mi?")) return;
             try {
                 const res = await fetch('/admin/test_email');
                 const data = await res.json();
                 alert(data.message);
-            } catch (e) {
-                alert("Hata oluştu! Coolify üzerindeki SMTP ayarlarınızı kontrol edin.");
+            } catch(e) {
+                alert("Hata oluştu!");
             }
         }
     </script>
