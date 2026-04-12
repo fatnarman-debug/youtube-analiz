@@ -941,11 +941,14 @@ async def admin_marketing_post(request: Request, background_tasks: BackgroundTas
     if target == "specific":
         email_list = [e.strip() for e in specific_emails.split(",") if e.strip()]
         print(f"[MARKETING] Hedef: specific | Girilen e-postalar: {email_list}")
-        target_users = db.query(models.User).filter(models.User.email.in_(email_list)).all()
+        # Doğrudan e-posta listesinden sahte user nesneleri oluştur
+        class _FakeUser:
+            def __init__(self, email): self.email = email
+        target_users = [_FakeUser(e) for e in email_list]
     else:
         target_users = db.query(models.User).filter(models.User.is_active == True).all()
 
-    print(f"[MARKETING] Bulunan kullanıcı sayısı: {len(target_users)} | Hedef: {target}")
+    print(f"[MARKETING] Gönderilecek kişi sayısı: {len(target_users)} | Hedef: {target}")
 
     if target_users:
         print(f"[MARKETING] Arka plan görevi başlatılıyor...")
