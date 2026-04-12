@@ -934,7 +934,11 @@ async def bg_send_mass_email(subject: str, content_html: str, user_list: list):
                 </body>
             </html>
             """
-            message.set_content("Lütfen HTML destekli bir e-posta istemcisi kullanın.")
+            # Düz metin versiyonu HTML ile uyumlu olsun (spam filtrelerini geçmek için)
+            import re as _re
+            plain_text = _re.sub(r'<[^>]+>', '', content_html).strip()
+            plain_text = _re.sub(r'\n{3,}', '\n\n', plain_text)
+            message.set_content(plain_text)
             message.add_alternative(wrapped_html, subtype="html")
             await _send_email(message)
         except Exception as e:
