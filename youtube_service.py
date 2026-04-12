@@ -111,7 +111,8 @@ _KUFUR_LISTESI = [
 
 def extract_profanity(text: str):
     escaped = [re.escape(w) for w in _KUFUR_LISTESI]
-    pattern = r'(' + '|'.join(escaped) + r')'
+    # (?<!\w) ve (?!\w) ile tam kelime eşleşmesi — "amcana" içindeki "am" eşleşmez
+    pattern = r'(?<!\w)(' + '|'.join(escaped) + r')(?!\w)'
     matches = re.findall(pattern, str(text), re.IGNORECASE)
     return list(set(m.lower() for m in matches)) if matches else []
 
