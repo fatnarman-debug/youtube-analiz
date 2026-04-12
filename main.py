@@ -821,23 +821,40 @@ async def admin_delete_user(user_id: int, request: Request, db: Session = Depend
     return RedirectResponse(url="/admin/users", status_code=status.HTTP_303_SEE_OTHER)
 
 @app.get("/admin/test_email")
-async def admin_test_email(request: Request, background_tasks: BackgroundTasks):
+async def admin_test_email(request: Request, to: str = ""):
     session = request.cookies.get(ADMIN_SESSION_NAME)
     if session != "authenticated":
         return RedirectResponse(url="/girisburdan")
 
-    smtp_ok = bool(SMTP_USER and SMTP_PASSWORD)
-    background_tasks.add_task(send_report_email, ADMIN_EMAIL, "Yönetici Testi", "SİSTEM TEST VİDEOSU")
-    return {
-        "status": "ok",
-        "smtp_configured": smtp_ok,
-        "smtp_host": SMTP_HOST,
-        "smtp_port": SMTP_PORT,
-        "smtp_user": SMTP_USER,
-        "smtp_from": SMTP_FROM,
-        "admin_email": ADMIN_EMAIL,
-        "message": f"Test e-postası gönderildi → {ADMIN_EMAIL}"
-    }
+    target = to or ADMIN_EMAIL
+    result = {"smtp_host": SMTP_HOST, "smtp_port": SMTP_PORT, "smtp_user": SMTP_USER, "target": target}
+
+    try:
+        msg = EmailMessage()
+        msg["From"] = SMTP_FROM
+        msg["To"] = target
+        msg["Subject"] = "VidInsight SMTP Test"
+        msg.set_content("Bu bir test mailidir.")
+        msg.add_alternative("<h2>VidInsight SMTP Test</h2><p>Bağlantı başarılı!</p>", subtype="html")
+
+        await aiosmtplib.send(
+            msg,
+            hostname=SMTP_HOST,
+            port=SMTP_PORT,
+            username=SMTP_USER,
+            password=SMTP_PASSWORD,
+            use_tls=False,
+            start_tls=True,
+            validate_certs=False,
+            timeout=20
+        )
+        result["status"] = "BAŞARILI"
+        result["message"] = f"Mail gönderildi → {target}"
+    except Exception as e:
+        result["status"] = "HATA"
+        result["message"] = str(e)
+
+    return result
 
 @app.post("/admin/upload_report/{analysis_id}")
 async def upload_report(analysis_id: int, 
