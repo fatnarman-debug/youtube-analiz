@@ -157,9 +157,9 @@
                 <div class="pricing-col-action">
                     <div class="price-amount">{{ t(request, 'pkg_single_price') }}<span class="price-sub">{{ t(request, 'pkg_single_sub') }}</span></div>
                     {% if user %}
-                    <a href="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y?client_reference_id={{ user.id }}" class="btn-primary btn-pricing">{{ t(request, 'pkg_buy') }}</a>
+                    <a href="https://buy.stripe.com/4gMeVd6foeNMb7zcIicZa0C?client_reference_id={{ user.id }}" class="btn-primary btn-pricing">{{ t(request, 'pkg_buy') }}</a>
                     {% else %}
-                    <button class="btn-primary open-modal-btn btn-pricing" data-package="{{ t(request, 'pkg_single_name') }}" data-link="https://buy.stripe.com/28E4gzfPY9tsfnPeQqcZa0y">{{ t(request, 'pkg_buy') }}</button>
+                    <button class="btn-primary open-modal-btn btn-pricing" data-package="{{ t(request, 'pkg_single_name') }}" data-link="https://buy.stripe.com/4gMeVd6foeNMb7zcIicZa0C">{{ t(request, 'pkg_buy') }}</button>
                     {% endif %}
                 </div>
             </div>
