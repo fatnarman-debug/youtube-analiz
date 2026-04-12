@@ -27,6 +27,7 @@ class AnalysisRequest(Base):
     video_url = Column(String(255))
     video_title = Column(String(255), default="İşleniyor...")
     status = Column(String(20), default="pending") # pending, completed
+    raw_status = Column(String(20), default="processing") # processing, ready, failed
     report_file_name = Column(String(255), nullable=True) # Adminin yüklediği dosya adı
     admin_note = Column(String(2000), nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)

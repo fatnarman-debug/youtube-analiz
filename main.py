@@ -41,6 +41,17 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 # --- ZIRHLI BASLATMA VE KURULUM ---
 try:
     models.Base.metadata.create_all(bind=engine)
+    # Migration: raw_status kolonu yoksa ekle
+    from sqlalchemy import text as sa_text
+    _mig_db = SessionLocal()
+    try:
+        _mig_db.execute(sa_text("ALTER TABLE analysis_requests ADD COLUMN raw_status VARCHAR(20) DEFAULT 'processing'"))
+        _mig_db.commit()
+        print("[Migration] raw_status kolonu eklendi.")
+    except Exception:
+        pass  # Kolon zaten varsa hata yoksay
+    finally:
+        _mig_db.close()
     db = SessionLocal()
     # Admin 'hadibaslayalim' (Turkce karakter icermez)
     admin_exists = db.query(models.User).filter(models.User.username == "hadibaslayalim").first()
@@ -598,6 +609,10 @@ async def create_analysis(request: Request,
     
     db.add(new_request)
     db.commit()
+    db.refresh(new_request)
+
+    # Otomatik analiz başlat
+    background_tasks.add_task(bg_generate_raw_report, new_request.id, video_url, 1000)
 
     # Analiz talebi alınınca e-posta gönder
     background_tasks.add_task(send_analysis_received_email, user.email, user.full_name, video_url)
@@ -747,13 +762,24 @@ async def admin_blog_delete(id: int, request: Request, db: Session = Depends(get
 from youtube_service import fetch_and_generate_raw_report
 
 def bg_generate_raw_report(req_id: int, video_url: str, max_comments: int = 1000):
+    db = SessionLocal()
     try:
         raw_path = os.path.join(STORAGE_ROOT, f"raw_analysis_{req_id}.xlsx")
         print(f"--- [START] Yorum çekme başlatıldı: İstek {req_id} (Limit: {max_comments}) ---")
         fetch_and_generate_raw_report(video_url, raw_path, max_comments=max_comments)
         print(f"--- [SUCCESS] Yorum çekme tamamlandı: İstek {req_id} ---")
+        req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == req_id).first()
+        if req:
+            req.raw_status = "ready"
+            db.commit()
     except Exception as e:
         print(f"!!! [ERROR] {req_id} için yorum çekilemedi: {e}")
+        req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == req_id).first()
+        if req:
+            req.raw_status = "failed"
+            db.commit()
+    finally:
+        db.close()
 
 @app.post("/admin/analyses/{analysis_id}/generate_raw")
 async def admin_generate_raw(analysis_id: int, request: Request, background_tasks: BackgroundTasks, max_comments: int = Form(1000), db: Session = Depends(get_db)):
