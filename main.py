@@ -939,14 +939,19 @@ async def admin_marketing_post(request: Request, background_tasks: BackgroundTas
         raise HTTPException(status_code=401)
 
     if target == "specific":
-        # Virgülle ayrılmış e-postaları parse et, boşlukları temizle
         email_list = [e.strip() for e in specific_emails.split(",") if e.strip()]
+        print(f"[MARKETING] Hedef: specific | Girilen e-postalar: {email_list}")
         target_users = db.query(models.User).filter(models.User.email.in_(email_list)).all()
     else:
         target_users = db.query(models.User).filter(models.User.is_active == True).all()
 
+    print(f"[MARKETING] Bulunan kullanıcı sayısı: {len(target_users)} | Hedef: {target}")
+
     if target_users:
+        print(f"[MARKETING] Arka plan görevi başlatılıyor...")
         background_tasks.add_task(bg_send_mass_email, subject, content_html, target_users)
+    else:
+        print(f"[MARKETING] UYARI: Gönderilecek kullanıcı bulunamadı!")
 
     return RedirectResponse(url="/admin/marketing?success=1", status_code=status.HTTP_303_SEE_OTHER)
 
