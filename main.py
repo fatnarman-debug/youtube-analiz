@@ -687,7 +687,9 @@ async def download_report(request_id: int, request: Request, db: Session = Depen
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Dosya sistemde bulunamadı.")
     
-    return FileResponse(path=str(file_path), filename=req.report_file_name)
+    safe_title = re.sub(r'[^\w\s-]', '', req.video_title or "rapor")[:40].strip()
+    download_name = f"vidinsight_{safe_title}.html" if req.report_file_name.endswith(".html") else req.report_file_name
+    return FileResponse(path=str(file_path), filename=download_name)
 
 # --- ADMIN ROUTES ---
 @app.get("/girisburdan", response_class=HTMLResponse)
@@ -877,7 +879,7 @@ Aşağıdaki JSON formatında yanıt ver (başka hiçbir şey yazma, sadece JSON
 }}"""
 
     message = client.messages.create(
-        model="claude-opus-4-6",
+        model="claude-sonnet-4-6",
         max_tokens=4000,
         messages=[{"role": "user", "content": prompt}]
     )
