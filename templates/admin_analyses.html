@@ -272,11 +272,25 @@
 
                             {% if raw == 'failed' or raw == 'ready' %}
                             <form action="/admin/analyses/{{ req.id }}/generate_raw" method="POST" style="margin:0;" onsubmit="return confirm('Yeniden çekilsin mi?');">
-                                <input type="hidden" name="max_comments" value="1000">
+                                <input type="hidden" name="max_comments" value="5000">
                                 <button type="submit" class="btn-sm btn-retry">
                                     <i class="fa-solid fa-rotate-right"></i> Tekrar
                                 </button>
                             </form>
+                            {% endif %}
+
+                            {% if req.status != 'completed' and req.status != 'iptal' %}
+                            <form action="/admin/analyses/{{ req.id }}/cancel" method="POST" style="margin:0;" onsubmit="return confirm('Bu analiz iptal edilsin mi?');">
+                                <button type="submit" class="btn-sm" style="background:#FEE2E2;color:#DC2626;border:1px solid #FECACA;">
+                                    <i class="fa-solid fa-xmark"></i> İptal
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            {% if req.status == 'iptal' %}
+                            <span style="font-size:0.78rem;color:#DC2626;font-weight:600;">
+                                <i class="fa-solid fa-ban"></i> İptal Edildi
+                            </span>
                             {% endif %}
 
                             {% if raw == 'processing' %}

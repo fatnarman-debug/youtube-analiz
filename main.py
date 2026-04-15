@@ -1024,6 +1024,11 @@ def bg_generate_raw_report(req_id: int, video_url: str, max_comments: int = 5000
             req.raw_status = "ready"
             db.commit()
 
+        # İptal edildiyse AI adımını atla
+        if req and req.status == "iptal":
+            print(f"--- [SKIP] İstek {req_id} iptal edilmiş, AI raporu oluşturulmadı ---")
+            return
+
         # Aşama 2: Claude API ile rapor oluştur
         print(f"--- [AI] Rapor oluşturuluyor: İstek {req_id} ---")
         try:
@@ -1055,6 +1060,17 @@ async def admin_generate_raw(analysis_id: int, request: Request, background_task
             os.remove(raw_path)
         background_tasks.add_task(bg_generate_raw_report, analysis_id, req.video_url, max_comments)
         
+    return RedirectResponse(url="/admin/analyses", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.post("/admin/analyses/{analysis_id}/cancel")
+async def admin_cancel_analysis(analysis_id: int, request: Request, db: Session = Depends(get_db)):
+    session = request.cookies.get(ADMIN_SESSION_NAME)
+    if session != "authenticated": raise HTTPException(status_code=401)
+    req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == analysis_id).first()
+    if req:
+        req.status = "iptal"
+        req.raw_status = "failed"
+        db.commit()
     return RedirectResponse(url="/admin/analyses", status_code=status.HTTP_303_SEE_OTHER)
 
 @app.get("/admin/download_raw/{analysis_id}")
