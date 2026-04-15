@@ -26,3 +26,7 @@ vidinsight.db
 
 # Storage
 storage/
+
+# Environment variables (API keys, passwords — never commit)
+.env
+.env.*

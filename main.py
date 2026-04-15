@@ -20,6 +20,7 @@ import json
 from functools import lru_cache
 import re
 import unicodedata
+import anthropic
 
 def slugify(text):
     text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('ascii')
@@ -451,6 +452,60 @@ def check_and_renew_credits(user: models.User, db: Session):
                 db.commit()
 
 # --- PUBLIC ROUTES ---
+@app.get("/robots.txt")
+async def robots_txt():
+    content = """User-agent: *
+Allow: /
+Allow: /blog
+Allow: /blog/
+Allow: /gizlilik-politikasi
+
+Disallow: /giris
+Disallow: /kayit
+Disallow: /dashboard
+Disallow: /cikis
+Disallow: /admin/
+Disallow: /girisburdan
+Disallow: /download/
+Disallow: /analyze
+Disallow: /stripe-webhook
+Disallow: /debug
+
+Sitemap: https://vid-insight.com/sitemap.xml
+"""
+    return Response(content=content, media_type="text/plain")
+
+@app.get("/sitemap.xml")
+async def sitemap_xml(db: Session = Depends(get_db)):
+    blog_posts = db.query(models.BlogPost).filter(models.BlogPost.is_published == True).all()
+
+    urls = [
+        {"loc": "https://vid-insight.com/", "priority": "1.0", "changefreq": "weekly"},
+        {"loc": "https://vid-insight.com/blog", "priority": "0.8", "changefreq": "weekly"},
+        {"loc": "https://vid-insight.com/gizlilik-politikasi", "priority": "0.3", "changefreq": "yearly"},
+    ]
+    for post in blog_posts:
+        urls.append({
+            "loc": f"https://vid-insight.com/blog/{post.slug}",
+            "priority": "0.7",
+            "changefreq": "monthly",
+            "lastmod": post.created_at.strftime("%Y-%m-%d") if post.created_at else ""
+        })
+
+    url_entries = ""
+    for u in urls:
+        lastmod_tag = f"\n    <lastmod>{u['lastmod']}</lastmod>" if u.get("lastmod") else ""
+        url_entries += f"""  <url>
+    <loc>{u['loc']}</loc>{lastmod_tag}
+    <changefreq>{u['changefreq']}</changefreq>
+    <priority>{u['priority']}</priority>
+  </url>\n"""
+
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{url_entries}</urlset>"""
+    return Response(content=xml, media_type="application/xml")
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
     user = get_current_user(request, db)
@@ -612,7 +667,7 @@ async def create_analysis(request: Request,
     db.refresh(new_request)
 
     # Otomatik analiz başlat
-    background_tasks.add_task(bg_generate_raw_report, new_request.id, video_url, 1000)
+    background_tasks.add_task(bg_generate_raw_report, new_request.id, video_url, 5000)
 
     # Analiz talebi alınınca e-posta gönder
     background_tasks.add_task(send_analysis_received_email, user.email, user.full_name, video_url)
@@ -761,19 +816,215 @@ async def admin_blog_delete(id: int, request: Request, db: Session = Depends(get
 
 from youtube_service import fetch_and_generate_raw_report
 
-def bg_generate_raw_report(req_id: int, video_url: str, max_comments: int = 1000):
+def generate_ai_report_html(req_id: int, raw_path: str, video_title: str) -> str:
+    """Excel verilerini okur, Claude API ile Türkçe HTML rapor üretir, dosyaya kaydeder."""
+    import pandas as pd
+
+    xl = pd.ExcelFile(raw_path)
+
+    # İstatistikler
+    df_stats = xl.parse("Istatistikler")
+    stats_text = df_stats.to_string(index=False)
+
+    # En beğenilen yorumlar (ilk 15)
+    df_top = xl.parse("En Begilen Yorumlar").head(15)
+    top_text = df_top[['kullanici', 'yorum', 'begeni_sayisi', 'duygu']].to_string(index=False)
+
+    # Öneri / Eleştiri özeti (ilk 20 satır)
+    df_feedback = xl.parse("Oneri_Elestiri_Ozeti").head(20)
+    feedback_text = df_feedback.to_string(index=False)
+
+    # Küfür içeren yorum sayısı
+    df_profane = xl.parse("Kufur Iceren Yorumlar")
+    profane_count = len(df_profane[df_profane['yorum'] != '-'])
+
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise ValueError("ANTHROPIC_API_KEY tanımlı değil.")
+
+    client = anthropic.Anthropic(api_key=api_key)
+
+    prompt = f"""Sen bir YouTube yorum analizi uzmanısın. Aşağıdaki ham verilere dayanarak profesyonel bir analiz raporu hazırla.
+
+Video Başlığı: {video_title}
+
+--- İSTATİSTİKLER ---
+{stats_text}
+
+--- EN BEĞENİLEN YORUMLAR (Top 15) ---
+{top_text}
+
+--- ÖNERİ / ELEŞTİRİ ÖZETİ ---
+{feedback_text}
+
+--- KÜFÜR / SALDIRGAN İÇERİK SAYISI ---
+{profane_count} yorum
+
+Aşağıdaki JSON formatında yanıt ver (başka hiçbir şey yazma, sadece JSON):
+{{
+  "yonetici_ozeti": "3-4 cümlelik genel değerlendirme. İzleyici kitlesinin genel tutumu, öne çıkan temalar.",
+  "duygu_analizi_yorumu": "Duygu dağılımını yorumla. Olumlu/olumsuz/nötr oranlarının ne anlama geldiğini açıkla.",
+  "one_cikan_elestiriler": ["eleştiri 1", "eleştiri 2", "eleştiri 3"],
+  "izleyici_onerileri": ["öneri 1", "öneri 2", "öneri 3"],
+  "en_etkili_yorumlar": [
+    {{"yorum": "yorum metni", "neden_onemli": "kısa açıklama"}},
+    {{"yorum": "yorum metni", "neden_onemli": "kısa açıklama"}},
+    {{"yorum": "yorum metni", "neden_onemli": "kısa açıklama"}}
+  ],
+  "icerik_onerileri": ["bir sonraki video için öneri 1", "öneri 2", "öneri 3", "öneri 4"],
+  "kufur_degerlendirmesi": "Küfür/saldırgan yorum oranını değerlendir ve ne yapılması gerektiğini belirt.",
+  "sonuc": "2-3 cümlelik kapanış. Kanalın güçlü yönleri ve dikkat edilmesi gerekenler."
+}}"""
+
+    message = client.messages.create(
+        model="claude-opus-4-6",
+        max_tokens=4000,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    raw_json = message.content[0].text.strip()
+    # Bazen model ```json bloğu içinde döner, temizle
+    if raw_json.startswith("```"):
+        raw_json = re.sub(r"```(?:json)?", "", raw_json).strip().rstrip("```").strip()
+
+    data = json.loads(raw_json)
+
+    # Etkili yorumları HTML listesine çevir
+    etkili_yorumlar_html = ""
+    for item in data.get("en_etkili_yorumlar", []):
+        etkili_yorumlar_html += f"""
+        <div class="comment-card">
+          <p class="comment-text">"{item['yorum']}"</p>
+          <p class="comment-note">→ {item['neden_onemli']}</p>
+        </div>"""
+
+    elestiri_items = "".join(f"<li>{e}</li>" for e in data.get("one_cikan_elestiriler", []))
+    oneri_items    = "".join(f"<li>{o}</li>" for o in data.get("izleyici_onerileri", []))
+    icerik_items   = "".join(f"<li>{i}</li>" for i in data.get("icerik_onerileri", []))
+
+    uretim_tarihi = datetime.datetime.utcnow().strftime("%d.%m.%Y %H:%M")
+
+    html = f"""<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yorum Analiz Raporu — {video_title}</title>
+<style>
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{ font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; color: #1a1a2e; line-height: 1.7; }}
+  .header {{ background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); color: #fff; padding: 40px 48px; }}
+  .header h1 {{ font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }}
+  .header .meta {{ font-size: 0.85rem; opacity: 0.7; }}
+  .badge {{ display: inline-block; background: #3b82f6; color: #fff; font-size: 0.75rem; padding: 3px 10px; border-radius: 20px; margin-right: 8px; }}
+  .container {{ max-width: 860px; margin: 0 auto; padding: 36px 24px; }}
+  .section {{ background: #fff; border-radius: 12px; padding: 28px 32px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }}
+  .section h2 {{ font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }}
+  .section h2 .icon {{ font-size: 1.2rem; }}
+  .ozet-text {{ font-size: 0.97rem; color: #334155; }}
+  ul {{ padding-left: 20px; }}
+  ul li {{ margin-bottom: 8px; font-size: 0.95rem; color: #334155; }}
+  .comment-card {{ background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 6px; padding: 14px 18px; margin-bottom: 12px; }}
+  .comment-text {{ font-size: 0.92rem; color: #1e293b; font-style: italic; margin-bottom: 6px; }}
+  .comment-note {{ font-size: 0.85rem; color: #64748b; }}
+  .stats-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-top: 4px; }}
+  .stat-card {{ background: #f1f5f9; border-radius: 8px; padding: 16px; text-align: center; }}
+  .stat-card .val {{ font-size: 1.5rem; font-weight: 800; color: #0f172a; }}
+  .stat-card .lbl {{ font-size: 0.78rem; color: #64748b; margin-top: 2px; }}
+  .kufur-box {{ background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 14px 18px; font-size: 0.93rem; color: #991b1b; }}
+  .footer {{ text-align: center; font-size: 0.78rem; color: #94a3b8; padding: 24px; }}
+  @media print {{ body {{ background: #fff; }} .section {{ box-shadow: none; border: 1px solid #e2e8f0; }} }}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="meta"><span class="badge">VidInsight</span> Otomatik Analiz Raporu &nbsp;·&nbsp; {uretim_tarihi} UTC</div>
+  <h1 style="margin-top:12px">{video_title}</h1>
+</div>
+
+<div class="container">
+
+  <div class="section">
+    <h2><span class="icon">📋</span> Yönetici Özeti</h2>
+    <p class="ozet-text">{data['yonetici_ozeti']}</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="icon">💬</span> Duygu Analizi</h2>
+    <p class="ozet-text">{data['duygu_analizi_yorumu']}</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="icon">⚠️</span> Öne Çıkan Eleştiriler</h2>
+    <ul>{elestiri_items}</ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="icon">💡</span> İzleyici Önerileri</h2>
+    <ul>{oneri_items}</ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="icon">⭐</span> En Etkili Yorumlar</h2>
+    {etkili_yorumlar_html}
+  </div>
+
+  <div class="section">
+    <h2><span class="icon">🎬</span> Bir Sonraki Video İçin Öneriler</h2>
+    <ul>{icerik_items}</ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="icon">🚨</span> Küfür / Saldırgan İçerik</h2>
+    <div class="kufur-box">{data['kufur_degerlendirmesi']}</div>
+  </div>
+
+  <div class="section">
+    <h2><span class="icon">✅</span> Sonuç</h2>
+    <p class="ozet-text">{data['sonuc']}</p>
+  </div>
+
+</div>
+<div class="footer">Bu rapor VidInsight tarafından otomatik olarak oluşturulmuştur · vid-insight.com</div>
+</body>
+</html>"""
+
+    report_dir = REPORTS_DIR / str(req_id)
+    report_dir.mkdir(parents=True, exist_ok=True)
+    report_path = report_dir / "rapor.html"
+    with open(report_path, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    return "rapor.html"
+
+
+def bg_generate_raw_report(req_id: int, video_url: str, max_comments: int = 5000):
     db = SessionLocal()
     try:
         raw_path = os.path.join(STORAGE_ROOT, f"raw_analysis_{req_id}.xlsx")
         print(f"--- [START] Yorum çekme başlatıldı: İstek {req_id} (Limit: {max_comments}) ---")
         fetch_and_generate_raw_report(video_url, raw_path, max_comments=max_comments)
         print(f"--- [SUCCESS] Yorum çekme tamamlandı: İstek {req_id} ---")
+
         req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == req_id).first()
         if req:
             req.raw_status = "ready"
             db.commit()
+
+        # Claude API ile otomatik rapor oluştur
+        print(f"--- [AI] Rapor oluşturuluyor: İstek {req_id} ---")
+        video_title = req.video_title if req else "Bilinmiyor"
+        report_filename = generate_ai_report_html(req_id, raw_path, video_title)
+
+        if req:
+            req.status = "completed"
+            req.report_file_name = report_filename
+            req.completed_at = datetime.datetime.utcnow()
+            db.commit()
+        print(f"--- [AI SUCCESS] Rapor hazır: İstek {req_id} ---")
+
     except Exception as e:
-        print(f"!!! [ERROR] {req_id} için yorum çekilemedi: {e}")
+        print(f"!!! [ERROR] {req_id} için işlem başarısız: {e}")
         req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == req_id).first()
         if req:
             req.raw_status = "failed"

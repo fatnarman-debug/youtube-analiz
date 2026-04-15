@@ -153,33 +153,33 @@ def format_percentage(part, whole):
     if whole == 0: return "0%"
     return f"{round((part / whole) * 100, 1)}%"
 
-def fetch_and_generate_raw_report(video_url: str, output_path: str, max_comments: int = 1000):
+def fetch_and_generate_raw_report(video_url: str, output_path: str, max_comments: int = 5000):
     video_id = extract_video_id(video_url)
     if not video_id:
         raise ValueError("Geçersiz YouTube URL'si: Video ID bulunamadı.")
 
     youtube = get_youtube_client()
     comments_data = []
+    seen_ids = set()  # ID bazlı dedup — metin bazlı değil
 
-    def parse_comment(comment_snippet):
-        text = comment_snippet["textDisplay"]
-        author = comment_snippet["authorDisplayName"]
-        date = comment_snippet["publishedAt"]
-        likes = comment_snippet["likeCount"]
-
+    def parse_comment(snippet):
+        text = snippet["textDisplay"]
         return {
-            "kullanici": author,
+            "kullanici": snippet["authorDisplayName"],
             "yorum": text,
-            "begeni_sayisi": int(likes),
+            "begeni_sayisi": int(snippet["likeCount"]),
             "duygu": turkish_sentiment(text),
-            "tarih": date[:10],
+            "tarih": snippet["publishedAt"][:10],
             "_kufur_listesi": extract_profanity(text),
             "_feedback_type": get_feedback_type(text)
         }
 
     try:
+        # --- Aşama 1: Tüm üst düzey thread'leri çek ---
+        threads_with_replies = []  # yanıtı olan thread ID'leri
+
         request = youtube.commentThreads().list(
-            part="snippet,replies",
+            part="snippet",
             videoId=video_id,
             maxResults=100,
             textFormat="plainText"
@@ -189,37 +189,41 @@ def fetch_and_generate_raw_report(video_url: str, output_path: str, max_comments
             response = request.execute()
 
             for item in response.get("items", []):
-                # Üst düzey yorum
-                top_comment = item["snippet"]["topLevelComment"]["snippet"]
-                comments_data.append(parse_comment(top_comment))
+                thread_id = item["id"]
+                if thread_id in seen_ids:
+                    continue
+                seen_ids.add(thread_id)
 
-                # Yanıtları da ekle
+                top_snippet = item["snippet"]["topLevelComment"]["snippet"]
+                comments_data.append(parse_comment(top_snippet))
+
                 reply_count = item["snippet"].get("totalReplyCount", 0)
-                if reply_count > 0 and len(comments_data) < max_comments:
-                    replies = item.get("replies", {}).get("comments", [])
-                    for reply in replies:
-                        comments_data.append(parse_comment(reply["snippet"]))
-
-                    # 5'ten fazla yanıt varsa ek sayfa çek
-                    if reply_count > 5:
-                        try:
-                            reply_request = youtube.comments().list(
-                                part="snippet",
-                                parentId=item["id"],
-                                maxResults=100,
-                                textFormat="plainText"
-                            )
-                            while reply_request and len(comments_data) < max_comments:
-                                reply_response = reply_request.execute()
-                                fetched_ids = {r["snippet"]["textDisplay"] for r in replies}
-                                for r in reply_response.get("items", []):
-                                    if r["snippet"]["textDisplay"] not in fetched_ids:
-                                        comments_data.append(parse_comment(r["snippet"]))
-                                reply_request = youtube.comments().list_next(reply_request, reply_response)
-                        except Exception:
-                            pass
+                if reply_count > 0:
+                    threads_with_replies.append(thread_id)
 
             request = youtube.commentThreads().list_next(request, response)
+
+        # --- Aşama 2: Her thread için TÜM yanıtları çek (5+ dahil) ---
+        for thread_id in threads_with_replies:
+            if len(comments_data) >= max_comments:
+                break
+            try:
+                reply_request = youtube.comments().list(
+                    part="snippet",
+                    parentId=thread_id,
+                    maxResults=100,
+                    textFormat="plainText"
+                )
+                while reply_request and len(comments_data) < max_comments:
+                    reply_response = reply_request.execute()
+                    for r in reply_response.get("items", []):
+                        cid = r["id"]
+                        if cid not in seen_ids:
+                            seen_ids.add(cid)
+                            comments_data.append(parse_comment(r["snippet"]))
+                    reply_request = youtube.comments().list_next(reply_request, reply_response)
+            except Exception:
+                pass
 
     except Exception as e:
         raise Exception(f"YouTube Veri Çekme Hatası: {str(e)}")
