@@ -1043,7 +1043,7 @@ def bg_generate_raw_report(req_id: int, video_url: str, max_comments: int = 5000
         db.close()
 
 @app.post("/admin/analyses/{analysis_id}/generate_raw")
-async def admin_generate_raw(analysis_id: int, request: Request, background_tasks: BackgroundTasks, max_comments: int = Form(1000), db: Session = Depends(get_db)):
+async def admin_generate_raw(analysis_id: int, request: Request, background_tasks: BackgroundTasks, max_comments: int = Form(5000), db: Session = Depends(get_db)):
     session = request.cookies.get(ADMIN_SESSION_NAME)
     if session != "authenticated": raise HTTPException(status_code=401)
     
