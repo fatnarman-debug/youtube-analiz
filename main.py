@@ -1000,35 +1000,43 @@ Aşağıdaki JSON formatında yanıt ver (başka hiçbir şey yazma, sadece JSON
 
 def bg_generate_raw_report(req_id: int, video_url: str, max_comments: int = 5000):
     db = SessionLocal()
+    req = None
     try:
         raw_path = os.path.join(STORAGE_ROOT, f"raw_analysis_{req_id}.xlsx")
         print(f"--- [START] Yorum çekme başlatıldı: İstek {req_id} (Limit: {max_comments}) ---")
-        fetch_and_generate_raw_report(video_url, raw_path, max_comments=max_comments)
-        print(f"--- [SUCCESS] Yorum çekme tamamlandı: İstek {req_id} ---")
+
+        # Aşama 1: YouTube yorumlarını çek
+        try:
+            fetch_and_generate_raw_report(video_url, raw_path, max_comments=max_comments)
+            print(f"--- [SUCCESS] Yorum çekme tamamlandı: İstek {req_id} ---")
+        except Exception as e:
+            print(f"!!! [YOUTUBE ERROR] {req_id} yorum çekme hatası: {e}")
+            req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == req_id).first()
+            if req:
+                req.raw_status = "failed"
+                db.commit()
+            return
 
         req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == req_id).first()
         if req:
             req.raw_status = "ready"
             db.commit()
 
-        # Claude API ile otomatik rapor oluştur
+        # Aşama 2: Claude API ile rapor oluştur
         print(f"--- [AI] Rapor oluşturuluyor: İstek {req_id} ---")
-        video_title = req.video_title if req else "Bilinmiyor"
-        report_filename = generate_ai_report_html(req_id, raw_path, video_title)
+        try:
+            video_title = req.video_title if req else "Bilinmiyor"
+            report_filename = generate_ai_report_html(req_id, raw_path, video_title)
+            if req:
+                req.status = "completed"
+                req.report_file_name = report_filename
+                req.completed_at = datetime.datetime.utcnow()
+                db.commit()
+            print(f"--- [AI SUCCESS] Rapor hazır: İstek {req_id} ---")
+        except Exception as e:
+            # AI raporu başarısız olsa bile raw veri hazır — admin manuel yükleyebilir
+            print(f"!!! [AI ERROR] {req_id} Claude API hatası: {e}")
 
-        if req:
-            req.status = "completed"
-            req.report_file_name = report_filename
-            req.completed_at = datetime.datetime.utcnow()
-            db.commit()
-        print(f"--- [AI SUCCESS] Rapor hazır: İstek {req_id} ---")
-
-    except Exception as e:
-        print(f"!!! [ERROR] {req_id} için işlem başarısız: {e}")
-        req = db.query(models.AnalysisRequest).filter(models.AnalysisRequest.id == req_id).first()
-        if req:
-            req.raw_status = "failed"
-            db.commit()
     finally:
         db.close()
 
