@@ -459,6 +459,8 @@ Allow: /
 Allow: /blog
 Allow: /blog/
 Allow: /gizlilik-politikasi
+Allow: /pricing.md
+Allow: /llms.txt
 
 Disallow: /giris
 Disallow: /kayit
@@ -475,6 +477,24 @@ Sitemap: https://vid-insight.com/sitemap.xml
 """
     return Response(content=content, media_type="text/plain")
 
+@app.get("/pricing.md")
+async def pricing_md():
+    file_path = BASE_DIR / "pricing.md"
+    if file_path.exists():
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        return Response(content=content, media_type="text/markdown")
+    raise HTTPException(status_code=404)
+
+@app.get("/llms.txt")
+async def llms_txt():
+    file_path = BASE_DIR / "llms.txt"
+    if file_path.exists():
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        return Response(content=content, media_type="text/plain")
+    raise HTTPException(status_code=404)
+
 @app.get("/sitemap.xml")
 async def sitemap_xml(db: Session = Depends(get_db)):
     blog_posts = db.query(models.BlogPost).filter(models.BlogPost.is_published == True).all()
@@ -483,6 +503,8 @@ async def sitemap_xml(db: Session = Depends(get_db)):
         {"loc": "https://vid-insight.com/", "priority": "1.0", "changefreq": "weekly"},
         {"loc": "https://vid-insight.com/blog", "priority": "0.8", "changefreq": "weekly"},
         {"loc": "https://vid-insight.com/gizlilik-politikasi", "priority": "0.3", "changefreq": "yearly"},
+        {"loc": "https://vid-insight.com/pricing.md", "priority": "0.5", "changefreq": "monthly"},
+        {"loc": "https://vid-insight.com/llms.txt", "priority": "0.5", "changefreq": "monthly"},
     ]
     for post in blog_posts:
         urls.append({

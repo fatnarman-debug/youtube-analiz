@@ -1,0 +1,28 @@
+# VidInsight — YouTube Comment Analysis System
+
+VidInsight is an AI-powered platform designed for YouTubers and marketing agencies to transform thousands of video comments into actionable data insights.
+
+## Core Capabilities
+- **Sentiment Analysis**: Automatically detects the emotional tone (positive, negative, neutral) of comments.
+- **Moderation Tools**: Intelligent filtering of hidden or disguised swear words and insults.
+- **Engagement Insights**: Automatically extracts common questions, suggestions, and criticisms from viewers.
+- **Reporting**: Generates professional multi-sheet Excel (.xlsx) reports for deep-dive analysis.
+
+## Key Links
+- [Home Page](https://vid-insight.com/) — Overview of features and benefits.
+- [Pricing](https://vid-insight.com/pricing.md) — Detailed breakdown of plans and credits.
+- [Blog](https://vid-insight.com/blog) — Insights on YouTube growth and audience engagement.
+- [Privacy Policy](https://vid-insight.com/gizlilik-politikasi) — Data protection and usage terms.
+
+## Technical Context
+- **API**: Uses YouTube Data API v3 for comment retrieval.
+- **AI Models**: Leveraging advanced LLMs for linguistic analysis and classification.
+- **Format**: Reports are delivered in browser-viewable dashboards and downloadable Excel files.
+
+## Target Audience
+- **Creators**: Looking to understand their audience and find new video ideas.
+- **Brands**: Managing online reputation and customer feedback on YouTube.
+- **Agencies**: Providing social media management and reporting for clients.
+
+---
+*This file provides context for LLMs and AI systems. See https://llmstxt.org for more information.*

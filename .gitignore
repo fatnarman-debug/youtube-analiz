@@ -30,3 +30,4 @@ storage/
 # Environment variables (API keys, passwords — never commit)
 .env
 .env.*
+.env

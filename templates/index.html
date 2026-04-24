@@ -62,6 +62,9 @@
                 <a href="#fiyatlandirma" class="btn-primary">{{ t(request, 'hero_btn_plan') }}</a>
                 <a href="#ozellikler" class="btn-secondary">{{ t(request, 'hero_btn_why') }} <i class="fa-solid fa-arrow-right"></i></a>
             </div>
+            <p class="hero-trust-signal" style="margin-top: 15px; font-size: 0.85rem; color: #94a3b8; opacity: 0.8;">
+                <i class="fa-solid fa-shield-check" style="margin-right: 5px; color: #10b981;"></i> {{ t(request, 'hero_trust_signal') }}
+            </p>
         </div>
         <div class="hero-visual">
             <div class="glass-card mockup">
@@ -98,6 +101,175 @@
             </div>
         </div>
     </header>
+    <div style="margin-top: -40px;"></div>
+
+    <!-- VidInsight Tanım Bloğu (AEO için Kritik) -->
+    <section class="definition-section" style="padding: 60px 20px; background: var(--bg); position: relative; z-index: 2;">
+        <div class="container" style="max-width: 1000px; margin: 0 auto; text-align: center;">
+            <div class="glass-card" style="padding: 40px; border-radius: 24px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                <h2 style="font-size: 2rem; margin-bottom: 20px; background: linear-gradient(135deg, #fff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ t(request, 'definition_title') }}</h2>
+                <p style="font-size: 1.2rem; line-height: 1.8; color: #94a3b8; max-width: 800px; margin: 0 auto;">
+                    {{ t(request, 'definition_text') }}
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Karşılaştırma Tablosu (AEO için Kritik) -->
+    <section class="comparison-section" style="padding: 80px 20px; background: var(--bg-dark);">
+        <div class="container" style="max-width: 1000px; margin: 0 auto;">
+            <div class="section-title" style="text-align: center; margin-bottom: 50px;">
+                <h2 style="font-size: 2.5rem; color: #fff;">{{ t(request, 'comp_title') }}</h2>
+            </div>
+            
+            <div class="glass-card" style="padding: 0; border-radius: 20px; overflow: hidden; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="background: rgba(99, 102, 241, 0.1);">
+                            <th style="padding: 20px; color: var(--accent); font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1);">{{ t(request, 'comp_col_feat') }}</th>
+                            <th style="padding: 20px; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.1);">{{ t(request, 'comp_col_manual') }}</th>
+                            <th style="padding: 20px; color: #fff; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1);">{{ t(request, 'comp_col_vid') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 20px; color: #fff; font-weight: 600;">{{ t(request, 'comp_f1') }}</td>
+                            <td style="padding: 20px; color: #64748b;">{{ t(request, 'comp_f1_m') }}</td>
+                            <td style="padding: 20px; color: #10b981; font-weight: 800;"><i class="fa-solid fa-bolt" style="margin-right:8px;"></i> {{ t(request, 'comp_f1_v') }}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 20px; color: #fff; font-weight: 600;">{{ t(request, 'comp_f2') }}</td>
+                            <td style="padding: 20px; color: #64748b;">{{ t(request, 'comp_f2_m') }}</td>
+                            <td style="padding: 20px; color: #10b981; font-weight: 800;"><i class="fa-solid fa-check-double" style="margin-right:8px;"></i> {{ t(request, 'comp_f2_v') }}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 20px; color: #fff; font-weight: 600;">{{ t(request, 'comp_f3') }}</td>
+                            <td style="padding: 20px; color: #64748b;">{{ t(request, 'comp_f3_m') }}</td>
+                            <td style="padding: 20px; color: #10b981; font-weight: 800;"><i class="fa-solid fa-shield-halved" style="margin-right:8px;"></i> {{ t(request, 'comp_f3_v') }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 20px; color: #fff; font-weight: 600;">{{ t(request, 'comp_f4') }}</td>
+                            <td style="padding: 20px; color: #64748b;">{{ t(request, 'comp_f4_m') }}</td>
+                            <td style="padding: 20px; color: #10b981; font-weight: 800;"><i class="fa-solid fa-file-excel" style="margin-right:8px;"></i> {{ t(request, 'comp_f4_v') }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- İstatistikler ve Veriler (AEO için Kritik) -->
+    <section class="stats-section" style="padding: 100px 20px; background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg) 100%);">
+        <div class="container" style="max-width: 1100px; margin: 0 auto;">
+            <div class="section-title" style="text-align: center; margin-bottom: 60px;">
+                <h2 style="font-size: 2.2rem; color: #fff; margin-bottom: 20px;">{{ t(request, 'stats_title') }}</h2>
+                <div style="width: 80px; height: 4px; background: var(--accent); margin: 0 auto; border-radius: 2px;"></div>
+            </div>
+            
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+                <div class="stat-card glass-card" style="padding: 40px; text-align: center; border: 1px solid rgba(255,255,255,0.05); transition: transform 0.3s ease;">
+                    <div style="font-size: 3.5rem; font-weight: 800; color: var(--accent); margin-bottom: 15px;">{{ t(request, 'stats_1_val') }}</div>
+                    <p style="color: #94a3b8; line-height: 1.6; font-size: 1.1rem;">{{ t(request, 'stats_1_desc') }}</p>
+                </div>
+                
+                <div class="stat-card glass-card" style="padding: 40px; text-align: center; border: 1px solid rgba(255,255,255,0.05); transition: transform 0.3s ease;">
+                    <div style="font-size: 3.5rem; font-weight: 800; color: #f59e0b; margin-bottom: 15px;">{{ t(request, 'stats_2_val') }}</div>
+                    <p style="color: #94a3b8; line-height: 1.6; font-size: 1.1rem;">{{ t(request, 'stats_2_desc') }}</p>
+                </div>
+                
+                <div class="stat-card glass-card" style="padding: 40px; text-align: center; border: 1px solid rgba(255,255,255,0.05); transition: transform 0.3s ease;">
+                    <div style="font-size: 3.5rem; font-weight: 800; color: #10b981; margin-bottom: 15px;">{{ t(request, 'stats_3_val') }}</div>
+                    <p style="color: #94a3b8; line-height: 1.6; font-size: 1.1rem;">{{ t(request, 'stats_3_desc') }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Uzman Görüşleri / Testimonials (AEO için Kritik) -->
+    <section class="testimonials-section" style="padding: 100px 20px; background: var(--bg);">
+        <div class="container" style="max-width: 1100px; margin: 0 auto;">
+            <div class="section-title" style="text-align: center; margin-bottom: 60px;">
+                <h2 style="font-size: 2.2rem; color: #fff; margin-bottom: 20px;">{{ t(request, 'test_title') }}</h2>
+                <div style="width: 80px; height: 4px; background: var(--accent); margin: 0 auto; border-radius: 2px;"></div>
+            </div>
+            
+            <div class="testimonials-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
+                <!-- Testimonial 1 -->
+                <div class="test-card glass-card" style="padding: 40px; border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; position: relative;">
+                    <i class="fa-solid fa-quote-left" style="position: absolute; top: 30px; left: 30px; font-size: 2rem; color: rgba(99, 102, 241, 0.2);"></i>
+                    <p style="color: #cbd5e1; line-height: 1.8; font-style: italic; margin-bottom: 30px; position: relative; z-index: 1;">
+                        "{{ t(request, 'test_1_text') }}"
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #6366f1, #a855f7); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800;">AY</div>
+                        <div>
+                            <h4 style="color: #fff; font-size: 1.1rem; margin: 0;">{{ t(request, 'test_1_name') }}</h4>
+                            <small style="color: var(--accent);">{{ t(request, 'test_1_role') }}</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="test-card glass-card" style="padding: 40px; border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; position: relative;">
+                    <i class="fa-solid fa-quote-left" style="position: absolute; top: 30px; left: 30px; font-size: 2rem; color: rgba(245, 158, 11, 0.2);"></i>
+                    <p style="color: #cbd5e1; line-height: 1.8; font-style: italic; margin-bottom: 30px; position: relative; z-index: 1;">
+                        "{{ t(request, 'test_2_text') }}"
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f59e0b, #ef4444); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800;">SK</div>
+                        <div>
+                            <h4 style="color: #fff; font-size: 1.1rem; margin: 0;">{{ t(request, 'test_2_name') }}</h4>
+                            <small style="color: #f59e0b;">{{ t(request, 'test_2_role') }}</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="test-card glass-card" style="padding: 40px; border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; position: relative;">
+                    <i class="fa-solid fa-quote-left" style="position: absolute; top: 30px; left: 30px; font-size: 2rem; color: rgba(16, 185, 129, 0.2);"></i>
+                    <p style="color: #cbd5e1; line-height: 1.8; font-style: italic; margin-bottom: 30px; position: relative; z-index: 1;">
+                        "{{ t(request, 'test_3_text') }}"
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #10b981, #3b82f6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800;">MD</div>
+                        <div>
+                            <h4 style="color: #fff; font-size: 1.1rem; margin: 0;">{{ t(request, 'test_3_name') }}</h4>
+                            <small style="color: #10b981;">{{ t(request, 'test_3_role') }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Örnek Rapor Gösterimi (CRO için Kritik) -->
+    <section class="sample-report-section" style="padding: 100px 20px; background: var(--bg-dark);">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 60px; flex-wrap: wrap;">
+            <div class="report-text" style="flex: 1; min-width: 320px;">
+                <h2 style="font-size: 2.5rem; color: #fff; margin-bottom: 25px;">{{ t(request, 'sample_report_title') }}</h2>
+                <p style="font-size: 1.2rem; color: #94a3b8; line-height: 1.8; margin-bottom: 40px;">
+                    {{ t(request, 'sample_report_desc') }}
+                </p>
+                <div class="report-features" style="margin-bottom: 40px;">
+                    <div style="display: flex; align-items: center; gap: 10px; color: #fff; margin-bottom: 15px;">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Çok sayfalı Excel dökümü
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; color: #fff; margin-bottom: 15px;">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Duygu analizi grafikleri
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; color: #fff; margin-bottom: 15px;">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Soru ve öneri listeleri
+                    </div>
+                </div>
+                <a href="#" class="btn-primary" style="padding: 15px 35px;">{{ t(request, 'sample_report_btn') }}</a>
+            </div>
+            <div class="report-image" style="flex: 1.2; min-width: 320px;">
+                <div class="glass-card" style="padding: 10px; border-radius: 20px; background: rgba(255,255,255,0.05); box-shadow: 0 30px 60px rgba(0,0,0,0.4);">
+                    <img src="/static/img/sample_report.png" alt="VidInsight Sample Report" style="width: 100%; border-radius: 15px; display: block;">
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Özellikler (Neden VidInsight?) -->
     <section id="ozellikler" class="features">
@@ -256,6 +428,24 @@
         </div>
     </section>
 
+    <!-- Final CTA Bölümü (CRO için Kritik) -->
+    <section class="final-cta" style="padding: 100px 20px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); text-align: center; color: #fff;">
+        <div class="container" style="max-width: 800px; margin: 0 auto;">
+            <h2 style="font-size: 3rem; margin-bottom: 20px; font-weight: 800;">{{ t(request, 'final_cta_title') }}</h2>
+            <p style="font-size: 1.3rem; margin-bottom: 40px; opacity: 0.9;">
+                {{ t(request, 'final_cta_desc') }}
+            </p>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                <a href="/kayit" class="btn-primary" style="background: #fff; color: #6366f1; padding: 18px 50px; font-size: 1.2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                    {{ t(request, 'final_cta_btn') }}
+                </a>
+                <span style="font-size: 0.9rem; opacity: 0.8;">
+                    <i class="fa-solid fa-circle-check"></i> Kredi kartı gerekmez • <i class="fa-solid fa-circle-check"></i> Hemen kurulum
+                </span>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer id="iletisim">
         <div class="footer-content">
@@ -291,7 +481,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 VidInsight. {{ t(request, 'footer_rights') }}</p>
+            <p>&copy; 2026 VidInsight. {{ t(request, 'footer_rights') }} | <span style="color: var(--accent);">{{ t(request, 'last_updated') }}</span></p>
             <p style="font-size: 0.75rem; opacity: 0.7; margin-top: 10px; max-width: 800px; margin-left: auto; margin-right: auto;">
                 {{ t(request, 'footer_kvkk_note') }}
             </p>
@@ -347,6 +537,39 @@
     </div>
 
     <!-- FAQ JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "VidInsight",
+      "url": "https://vid-insight.com",
+      "logo": "https://vid-insight.com/static/img/logo.png",
+      "sameAs": [
+        "https://www.youtube.com/@vid-insight"
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "VidInsight",
+      "operatingSystem": "All",
+      "applicationCategory": "BusinessApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "5.00",
+        "priceCurrency": "EUR"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "124"
+      }
+    }
+    </script>
+
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
