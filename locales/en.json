@@ -69,6 +69,8 @@
   "free_tool_sentiment_loading": "Analyzing...",
   
   "stat_positive": "Positive",
+  "stat_notr": "Neutral",
+  "stat_negative": "Negative",
   "stat_question": "Questions",
   "stat_swear": "Profanity",
   

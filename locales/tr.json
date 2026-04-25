@@ -67,6 +67,8 @@
   "free_tool_sentiment_cta_btn": "Full Analiz Al",
   "free_tool_sentiment_loading": "Analiz Ediliyor...",
   "stat_positive": "Olumlu",
+  "stat_notr": "Nötr",
+  "stat_negative": "Olumsuz",
   "stat_question": "Soru",
   "stat_swear": "Küfür",
   "feat_title": "Neden VidInsight?",

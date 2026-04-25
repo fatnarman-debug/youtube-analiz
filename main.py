@@ -500,12 +500,12 @@ async def free_sentiment_analyze(request: Request):
             
         title = youtube_service.get_video_title(video_url)
         
-        # Ücretsiz araç için sadece ilk 50 yorumu hızlıca çekelim
+        # Ücretsiz araç için ilk 100 yorumu hızlıca çekelim
         youtube = youtube_service.get_youtube_client()
         response = youtube.commentThreads().list(
             part="snippet",
             videoId=video_id,
-            maxResults=50,
+            maxResults=100,
             textFormat="plainText"
         ).execute()
         

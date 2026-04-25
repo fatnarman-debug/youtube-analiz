@@ -237,24 +237,24 @@
                         <span class="stat-name">{{ t(request, 'stat_positive') }}</span>
                     </div>
                     <div class="stat-item" style="border-bottom: 3px solid var(--warning)">
-                        <span class="stat-val" id="notr-val">5</span>
-                        <span class="stat-name">{{ t(request, 'stat_notr') or 'Nötr' }}</span>
+                        <span class="stat-val" id="notr-val">0</span>
+                        <span class="stat-name">{{ t(request, 'stat_notr') }}</span>
                     </div>
                     <div class="stat-item" style="border-bottom: 3px solid var(--danger)">
-                        <span class="stat-val" id="neg-val">3</span>
-                        <span class="stat-name">{{ t(request, 'stat_negative') or 'Olumsuz' }}</span>
+                        <span class="stat-val" id="neg-val">0</span>
+                        <span class="stat-name">{{ t(request, 'stat_negative') }}</span>
                     </div>
                 </div>
 
                 <div class="cta-box">
                     <p>{{ t(request, 'free_tool_sentiment_footer_cta') }}</p>
-                    <a href="/login" class="cta-btn">{{ t(request, 'free_tool_sentiment_cta_btn') }}</a>
+                    <a href="/kayit" class="cta-btn">✨ {{ t(request, 'free_tool_sentiment_cta_btn') }}</a>
                 </div>
             </div>
         </div>
 
         <div style="margin-top: 40px; opacity: 0.5;">
-            <a href="/" style="color: white; text-decoration: none;">&larr; {{ t(request, 'back_to_home') or 'Ana Sayfaya Dön' }}</a>
+            <a href="/" style="color: white; text-decoration: none;">&larr; {{ t(request, 'back_to_home') }}</a>
         </div>
     </div>
 
