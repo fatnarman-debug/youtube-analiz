@@ -208,13 +208,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>{{ t.free_tool_sentiment_title }}</h1>
-        <p style="opacity: 0.7; font-size: 1.2rem;">{{ t.free_tool_sentiment_desc }}</p>
+        <h1>{{ t(request, 'free_tool_sentiment_title') }}</h1>
+        <p style="opacity: 0.7; font-size: 1.2rem;">{{ t(request, 'free_tool_sentiment_desc') }}</p>
 
         <div class="tool-card">
             <div class="input-group">
-                <input type="text" id="video-url" placeholder="{{ t.free_tool_sentiment_placeholder }}">
-                <button class="btn-analyze" onclick="analyzeVideo()">{{ t.free_tool_sentiment_analyze_btn }}</button>
+                <input type="text" id="video-url" placeholder="{{ t(request, 'free_tool_sentiment_placeholder') }}">
+                <button class="btn-analyze" onclick="analyzeVideo()">{{ t(request, 'free_tool_sentiment_analyze_btn') }}</button>
             </div>
 
             <div class="loading-spinner" id="loader"></div>
@@ -234,27 +234,27 @@
                 <div class="stats-grid">
                     <div class="stat-item" style="border-bottom: 3px solid var(--success)">
                         <span class="stat-val" id="pos-val">42</span>
-                        <span class="stat-name">{{ t.stat_positive }}</span>
+                        <span class="stat-name">{{ t(request, 'stat_positive') }}</span>
                     </div>
                     <div class="stat-item" style="border-bottom: 3px solid var(--warning)">
                         <span class="stat-val" id="notr-val">5</span>
-                        <span class="stat-name">{{ t.stat_notr || 'Nötr' }}</span>
+                        <span class="stat-name">{{ t(request, 'stat_notr') or 'Nötr' }}</span>
                     </div>
                     <div class="stat-item" style="border-bottom: 3px solid var(--danger)">
                         <span class="stat-val" id="neg-val">3</span>
-                        <span class="stat-name">{{ t.stat_negative || 'Olumsuz' }}</span>
+                        <span class="stat-name">{{ t(request, 'stat_negative') or 'Olumsuz' }}</span>
                     </div>
                 </div>
 
                 <div class="cta-box">
-                    <p>{{ t.free_tool_sentiment_footer_cta }}</p>
-                    <a href="/login" class="cta-btn">{{ t.free_tool_sentiment_cta_btn }}</a>
+                    <p>{{ t(request, 'free_tool_sentiment_footer_cta') }}</p>
+                    <a href="/login" class="cta-btn">{{ t(request, 'free_tool_sentiment_cta_btn') }}</a>
                 </div>
             </div>
         </div>
 
         <div style="margin-top: 40px; opacity: 0.5;">
-            <a href="/" style="color: white; text-decoration: none;">&larr; {{ t.back_to_home || 'Ana Sayfaya Dön' }}</a>
+            <a href="/" style="color: white; text-decoration: none;">&larr; {{ t(request, 'back_to_home') or 'Ana Sayfaya Dön' }}</a>
         </div>
     </div>
 
@@ -297,13 +297,13 @@
                     // Update Status Text
                     const statusText = document.getElementById('score-status');
                     if (data.score > 70) {
-                        statusText.innerText = '{{ t.free_tool_sentiment_happy }}';
+                        statusText.innerText = "{{ t(request, 'free_tool_sentiment_happy') }}";
                         statusText.style.color = 'var(--success)';
                     } else if (data.score > 40) {
-                        statusText.innerText = '{{ t.free_tool_sentiment_neutral }}';
+                        statusText.innerText = "{{ t(request, 'free_tool_sentiment_neutral') }}";
                         statusText.style.color = 'var(--warning)';
                     } else {
-                        statusText.innerText = '{{ t.free_tool_sentiment_sad }}';
+                        statusText.innerText = "{{ t(request, 'free_tool_sentiment_sad') }}";
                         statusText.style.color = 'var(--danger)';
                     }
 
