@@ -103,6 +103,22 @@
     </header>
     <div style="margin-top: -40px;"></div>
 
+    <!-- Ücretsiz Araçlar Bölümü -->
+    <section class="free-tools-teaser" style="padding: 40px 20px; text-align: center; background: linear-gradient(to bottom, transparent, rgba(99, 102, 241, 0.05));">
+        <div class="container" style="max-width: 1000px; margin: 0 auto;">
+            <div class="glass-card" style="padding: 30px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2);">
+                <div style="text-align: left; flex: 1; min-width: 300px;">
+                    <span style="background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; display: inline-block;">YENİ: Ücretsiz Araç</span>
+                    <h3 style="font-size: 1.5rem; color: #fff; margin-bottom: 8px;">{{ t(request, 'free_tool_sentiment_title') }}</h3>
+                    <p style="color: #94a3b8; font-size: 1rem;">{{ t(request, 'free_tool_sentiment_desc') }}</p>
+                </div>
+                <a href="/free-tool/sentiment-analyzer" class="btn" style="background: white; color: var(--primary); padding: 14px 28px; white-space: nowrap;">
+                    {{ t(request, 'free_tool_sentiment_analyze_btn') }} &rarr;
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- VidInsight Tanım Bloğu (AEO için Kritik) -->
     <section class="definition-section" style="padding: 60px 20px; background: var(--bg); position: relative; z-index: 2;">
         <div class="container" style="max-width: 1000px; margin: 0 auto; text-align: center;">

@@ -54,14 +54,23 @@
   "final_cta_title": "Hala Karar Veremediniz mi?",
   "final_cta_desc": "Kaybedecek bir şeyiniz yok. Ücretsiz hesabınızı oluşturun ve kitlenizin sesini duymaya hemen başlayın.",
   "final_cta_btn": "Ücretsiz Denemeyi Başlat",
-  
+  "free_tool_sentiment_title": "Ücretsiz YouTube Duygu Analizi Ölçer",
+  "free_tool_sentiment_desc": "Videonuzun kitle tepkisini saniyeler içinde ölçün. İlk 50 yorumu analiz ederek videonun genel havasını görün.",
+  "free_tool_sentiment_placeholder": "YouTube Video URL'sini Yapıştırın...",
+  "free_tool_sentiment_analyze_btn": "Hemen Analiz Et",
+  "free_tool_sentiment_result_title": "Video Nabız Ölçer",
+  "free_tool_sentiment_score": "Duygu Skoru",
+  "free_tool_sentiment_happy": "Harika!",
+  "free_tool_sentiment_neutral": "İdare Eder",
+  "free_tool_sentiment_sad": "Dikkat!",
+  "free_tool_sentiment_footer_cta": "Tüm yorumları detaylı raporlamak ister misiniz?",
+  "free_tool_sentiment_cta_btn": "Full Analiz Al",
+  "free_tool_sentiment_loading": "Analiz Ediliyor...",
   "stat_positive": "Olumlu",
   "stat_question": "Soru",
   "stat_swear": "Küfür",
-  
   "feat_title": "Neden VidInsight?",
   "feat_desc": "İzleyicilerinizin söylediklerinin çok ötesini görün.",
-  
   "feat_1_title": "📈 Kitlenizin Ruh Halini Ölçün",
   "feat_1_desc": "İzleyicilerinizin videonuza karşı genel tutumunu (olumlu/olumsuz) yüzdesel raporlarla görün ve kitlenizi gerçekten tanıyın.",
   "feat_2_title": "🛡️ Marka Güvenliğinizi Korumaya Alın",
@@ -74,16 +83,13 @@
   "feat_5_desc": "Tüm analiz verilerini dilediğiniz zaman tek tıkla şık bir Excel (XLSX) dökümü olarak indirin.",
   "feat_6_title": "Sahte/Spam Engeli",
   "feat_6_desc": "Bot hesaplardan gelen sahte veya kopya spam yorumları kolayca deşifre edin.",
-
   "price_title": "Kanalınız İçin En Doğru Planı Seçin",
   "price_desc": "İhtiyacınıza uygun paketi seçin, analize hemen başlayın. Gizli ücret veya sözleşme yok.",
   "price_starter": "Başlangıç",
   "price_pro": "Pro",
   "price_month": "/aylık",
   "price_buy": "Hemen Başla",
-  
   "footer_rights": "Tüm Hakları Saklıdır.",
-  
   "login_title": "Müşteri Girişi",
   "login_subtitle": "Hesabınıza giriş yaparak analizlerinize devam edin.",
   "label_email": "E-posta Adresi",

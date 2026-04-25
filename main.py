@@ -477,6 +477,71 @@ Sitemap: https://vid-insight.com/sitemap.xml
 """
     return Response(content=content, media_type="text/plain")
 
+@app.get("/free-tool/sentiment-analyzer")
+async def free_sentiment_page(request: Request):
+    locale_code = get_locale(request)
+    translations = load_translations()
+    t = translations.get(locale_code, translations.get("tr"))
+    return templates.TemplateResponse("free_tool_sentiment.html", {
+        "request": request,
+        "t": t,
+        "lang": locale_code
+    })
+
+@app.post("/free-tool/sentiment-analyzer/analyze")
+async def free_sentiment_analyze(request: Request):
+    try:
+        data = await request.json()
+        video_url = data.get("video_url")
+        if not video_url:
+            return JSONResponse({"error": "URL gerekli"}, status_code=400)
+            
+        import youtube_service
+        video_id = youtube_service.extract_video_id(video_url)
+        if not video_id:
+            return JSONResponse({"error": "Geçersiz YouTube URL'si"}, status_code=400)
+            
+        title = youtube_service.get_video_title(video_url)
+        
+        # Ücretsiz araç için sadece ilk 50 yorumu hızlıca çekelim
+        youtube = youtube_service.get_youtube_client()
+        response = youtube.commentThreads().list(
+            part="snippet",
+            videoId=video_id,
+            maxResults=50,
+            textFormat="plainText"
+        ).execute()
+        
+        comments = []
+        pos = 0
+        neg = 0
+        notr = 0
+        
+        for item in response.get("items", []):
+            text = item["snippet"]["topLevelComment"]["snippet"]["textDisplay"]
+            sentiment = youtube_service.turkish_sentiment(text)
+            if sentiment == "olumlu": pos += 1
+            elif sentiment == "olumsuz": neg += 1
+            else: notr += 1
+            
+        total = pos + neg + notr
+        score = 0
+        if total > 0:
+            # Basit bir skor hesabı: (Olumlu - Olumsuz + 100) / 2 -> 0-100 arası bir değer
+            # Daha iyisi: (pos / total) * 100
+            score = round((pos / total) * 100)
+            
+        return {
+            "title": title,
+            "score": score,
+            "pos": pos,
+            "neg": neg,
+            "notr": notr,
+            "total": total
+        }
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
 @app.get("/pricing.md")
 async def pricing_md():
     file_path = BASE_DIR / "pricing.md"
