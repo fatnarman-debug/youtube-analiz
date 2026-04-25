@@ -481,10 +481,9 @@ Sitemap: https://vid-insight.com/sitemap.xml
 async def free_sentiment_page(request: Request):
     locale_code = get_locale(request)
     context = {
-        "request": request,
         "lang": locale_code
     }
-    return templates.TemplateResponse("free_tool_sentiment.html", context)
+    return templates.TemplateResponse(request=request, name="free_tool_sentiment.html", context=context)
 
 @app.post("/free-tool/sentiment-analyzer/analyze")
 async def free_sentiment_analyze(request: Request):
