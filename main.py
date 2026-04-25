@@ -500,32 +500,43 @@ async def free_sentiment_analyze(request: Request):
             
         title = youtube_service.get_video_title(video_url)
         
-        # Ücretsiz araç için ilk 100 yorumu hızlıca çekelim
+        # Ücretsiz araç için ilk 1000 yorumu çekelim
         youtube = youtube_service.get_youtube_client()
-        response = youtube.commentThreads().list(
+        comments_count = 0
+        pos = 0
+        neg = 0
+        notr = 0
+        profane_count = 0
+        
+        request_yt = youtube.commentThreads().list(
             part="snippet",
             videoId=video_id,
             maxResults=100,
             textFormat="plainText"
-        ).execute()
+        )
         
-        comments = []
-        pos = 0
-        neg = 0
-        notr = 0
-        
-        for item in response.get("items", []):
-            text = item["snippet"]["topLevelComment"]["snippet"]["textDisplay"]
-            sentiment = youtube_service.turkish_sentiment(text)
-            if sentiment == "olumlu": pos += 1
-            elif sentiment == "olumsuz": neg += 1
-            else: notr += 1
+        while request_yt and comments_count < 1000:
+            response = request_yt.execute()
+            for item in response.get("items", []):
+                text = item["snippet"]["topLevelComment"]["snippet"]["textDisplay"]
+                # Duygu Analizi
+                sentiment = youtube_service.turkish_sentiment(text)
+                if sentiment == "olumlu": pos += 1
+                elif sentiment == "olumsuz": neg += 1
+                else: notr += 1
+                
+                # Küfür Analizi
+                if youtube_service.extract_profanity(text):
+                    profane_count += 1
+                
+                comments_count += 1
+                if comments_count >= 1000: break
+            
+            request_yt = youtube.commentThreads().list_next(request_yt, response)
             
         total = pos + neg + notr
         score = 0
         if total > 0:
-            # Basit bir skor hesabı: (Olumlu - Olumsuz + 100) / 2 -> 0-100 arası bir değer
-            # Daha iyisi: (pos / total) * 100
             score = round((pos / total) * 100)
             
         return {
@@ -534,6 +545,7 @@ async def free_sentiment_analyze(request: Request):
             "pos": pos,
             "neg": neg,
             "notr": notr,
+            "profane": profane_count,
             "total": total
         }
     except Exception as e:

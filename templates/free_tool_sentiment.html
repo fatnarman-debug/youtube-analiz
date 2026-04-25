@@ -226,14 +226,14 @@
                     <div class="gauge-bg"></div>
                     <div class="gauge-fill" id="gauge-fill"></div>
                     <div class="gauge-text">
-                        <div class="score-value" id="score-val">85%</div>
-                        <div class="score-label" id="score-status">Harika!</div>
+                        <div class="score-value" id="score-val">0%</div>
+                        <div class="score-label" id="score-status">...</div>
                     </div>
                 </div>
 
-                <div class="stats-grid">
+                <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
                     <div class="stat-item" style="border-bottom: 3px solid var(--success)">
-                        <span class="stat-val" id="pos-val">42</span>
+                        <span class="stat-val" id="pos-val">0</span>
                         <span class="stat-name">{{ t(request, 'stat_positive') }}</span>
                     </div>
                     <div class="stat-item" style="border-bottom: 3px solid var(--warning)">
@@ -244,6 +244,14 @@
                         <span class="stat-val" id="neg-val">0</span>
                         <span class="stat-name">{{ t(request, 'stat_negative') }}</span>
                     </div>
+                    <div class="stat-item" style="border-bottom: 3px solid #64748b">
+                        <span class="stat-val" id="profane-val">0</span>
+                        <span class="stat-name">{{ t(request, 'stat_swear') }}</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; font-size: 0.9rem; opacity: 0.6;">
+                    {{ t(request, 'total_comments_analyzed') or 'Analiz Edilen Toplam Yorum' }}: <span id="total-val">0</span>
                 </div>
 
                 <div class="cta-box">
@@ -288,6 +296,8 @@
                     document.getElementById('pos-val').innerText = data.pos;
                     document.getElementById('notr-val').innerText = data.notr;
                     document.getElementById('neg-val').innerText = data.neg;
+                    document.getElementById('profane-val').innerText = data.profane;
+                    document.getElementById('total-val').innerText = data.total;
 
                     // Update Gauge
                     // 0% -> 45deg, 100% -> 225deg
