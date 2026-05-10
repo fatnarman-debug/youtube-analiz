@@ -1,0 +1,19 @@
+{
+  "skill_name": "seo-first-page-expert",
+  "evals": [
+    {
+      "id": 1,
+      "name": "site-audit-and-planning",
+      "prompt": "Analyze the current site's SEO status and create a comprehensive 3-month plan to rank #1 for the keyword 'İsveç'te Şirket Kurma'. List specific technical fixes and content ideas.",
+      "expected_output": "A detailed SEO audit report and a 3-month action plan with technical and content recommendations.",
+      "files": ["index.html", "blog/index.html"]
+    },
+    {
+      "id": 2,
+      "name": "technical-optimization-execution",
+      "prompt": "Optimize the `index.html` file's meta tags and heading structure to improve ranking for 'İsveç vizesi'. Also, add appropriate Schema.org markup if missing.",
+      "expected_output": "Updated index.html with optimized meta tags, H1-H3 structure, and valid JSON-LD schema.",
+      "files": ["index.html"]
+    }
+  ]
+}
