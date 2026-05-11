@@ -40,13 +40,18 @@
         .back-to-blog { display: inline-flex; align-items: center; gap: 10px; color: #64748b; text-decoration: none; font-weight: 700; margin-bottom: 40px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; transition: color 0.2s; }
         .back-to-blog:hover { color: #6366f1; }
     </style>
-    <link rel="canonical" href="https://vidinsight.com/blog_detail">
+    <link rel="canonical" href="https://vid-insight.com/blog/{{ post.slug }}">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
-      "name": "VidInsight Page",
-      "url": "https://vidinsight.com/blog_detail"
+      "headline": "{{ post.title }}",
+      "datePublished": "{{ post.created_at.isoformat() }}",
+      "author": {
+        "@type": "Organization",
+        "name": "VidInsight"
+      },
+      "url": "https://vid-insight.com/blog/{{ post.slug }}"
     }
     </script>
 </head>
