@@ -21,6 +21,7 @@ from functools import lru_cache
 import re
 import unicodedata
 import anthropic
+import markdown
 
 def slugify(text):
     text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('ascii')
@@ -399,6 +400,11 @@ if TEMPLATES_DIR.exists():
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
     templates.env.globals["t"] = t
     templates.env.globals["get_locale"] = get_locale
+    
+    def markdown_filter(text):
+        if not text: return ""
+        return markdown.markdown(text, extensions=['fenced_code', 'tables', 'nl2br', 'toc'])
+    templates.env.filters["markdown"] = markdown_filter
 else:
     templates = None
 
